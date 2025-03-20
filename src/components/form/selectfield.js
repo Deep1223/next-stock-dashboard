@@ -21,10 +21,13 @@ const SelectField = (props) => {
 
     useEffect(() => {
         if (Array.isArray(props.field.options)) {
-            const selectedOption = props.field.options.find(opt => opt.value === props.formData[props.field.field]);
-            setSelectedLabel(selectedOption ? selectedOption.label : props.field.Placeholder || 'Select an option');
+            const selectedOption = props.field.options.find(
+                opt => opt.value === props.formData[props.field.field]?.value
+            );
+            setSelectedLabel(selectedOption ? selectedOption.label : props.field.placeholder || 'Select an option');
         }
     }, [props.formData, props.field]);
+    
     
     const filteredOptions = props.field.searchable
         ? props.field.options.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -85,7 +88,7 @@ const SelectField = (props) => {
                                         key={index}
                                         className="p-2 hover:bg-gray-100 cursor-pointer"
                                         onClick={() => {
-                                            props.handleChange({ target: { value: option.value } }, props.field);
+                                            props.handleChange({ target: { value: option } }, props.field);
                                             setSelectedLabel(option.label);
                                             setSearchTerm('');
                                             setIsDropdownOpen(false);

@@ -104,7 +104,6 @@ const Field = () => {
             tab.fields.forEach((field) => {
                 const fieldValue = formData[field.field] || '';
                 const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
-
                 if (field.required && !fieldValue) {
                     emptyFields = true;
                     newErrors[field.field] = Config.thisfieldrequirederror;

@@ -278,16 +278,74 @@ const MasterJson = {
             pagename: "Field",
             fields: [
                 {
-                    "field": "displayname",
-                    "text": "Display Name",
-                    "type": "text",
-                    "size": "w-full",
-                    "required": true,
-                    "placeholder": "Enter Display Name",
+                    field: "displayname",
+                    text: "Display Name",
+                    type: "text",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Display Name",
                 }
             ]
         }
     ],
+
+    // users list
+    users: [
+        {
+            pagename: "Users",
+            fields: [
+                {
+                    field: "fullname",
+                    text: "Full Name",
+                    type: "text",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Full Name",
+                },
+                {
+                    field: "email",
+                    text: "Email",
+                    type: "text",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Email",
+                    regextype: 'email',
+                },
+                {
+                    field: "phone",
+                    text: "Phone",
+                    type: "text",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Phone Number",
+                    regextype: 'number',
+                }, 
+                {
+                    field: "role",
+                    text: "Role",
+                    type: "select",
+                    size: "w-full",
+                    required: true,
+                    options: [
+                        { label: "Admin", value: "9a64550e-3f34-467b-872d-a05ccf00bdca" },
+                        { label: "Sales Person", value: "18bfa287-ba71-4bfe-ae2f-4f6e7b6586e5" },
+                    ],
+                    placeholder: "Select Role",
+                    searchable: true,
+                    clearable: true,
+                },
+                {
+                    field: "password",
+                    text: "Password",
+                    type: "password",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Password",
+                    regextype: 'password',
+                }
+            ]
+        }
+    ]
 };
 
 export default MasterJson;
