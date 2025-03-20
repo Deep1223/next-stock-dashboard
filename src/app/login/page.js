@@ -1,9 +1,9 @@
 import React from 'react'
-import Crm from './login/loginpage'
+import Login from './loginpage'
 export default function page() {
   return (
     <div>
-      <Crm/>
+        <Login/>
     </div>
   )
 }

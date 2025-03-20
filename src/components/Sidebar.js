@@ -4,6 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { FaHome, FaCog, FaUser, FaBars, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FiSidebar } from "react-icons/fi";
+import { FaClipboardList, FaTasks, FaUserTie } from "react-icons/fa";
+
+// Example Usage:
+// <FaClipboardList />
+// <FaTasks />
+// <FaUserTie />
 
 const Sidebar = (props) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +47,7 @@ const Sidebar = (props) => {
                 <ul>
                     <li className="flex items-center gap-3 py-2 cursor-pointer">
                         <span className="w-6 flex justify-center"><FaHome /></span>
-                        <Link href="/" className={`transition-all ${isOpen || props.isFixed ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}>
+                        <Link href="/dashboard" className={`transition-all ${isOpen || props.isFixed ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}>
                             Home
                         </Link>
                     </li>
@@ -77,6 +83,12 @@ const Sidebar = (props) => {
                         <span className="w-6 flex justify-center"><FaUser /></span>
                         <Link href="/users" className={`transition-all ${isOpen || props.isFixed ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}>
                             Users
+                        </Link>
+                    </li>
+                    <li className="flex items-center gap-3 py-2 cursor-pointer">
+                        <span className="w-6 flex justify-center"><FaClipboardList /></span>
+                        <Link href="/manageleads" className={`transition-all ${isOpen || props.isFixed ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}>
+                            manageleads
                         </Link>
                     </li>
                 </ul>

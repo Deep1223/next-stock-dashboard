@@ -2,10 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import { FaUserCircle, FaUser, FaCog, FaQuestionCircle, FaSignOutAlt } from "react-icons/fa";
 
+import { useRouter } from "next/navigation";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+  const router = useRouter();
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -63,7 +64,7 @@ const Header = () => {
                   <FaQuestionCircle className="mr-2 text-gray-600" />
                   Need Help?
                 </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer border-t">
+                <li onClick={() => router.push("/login")} className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 cursor-pointer border-t">
                   <FaSignOutAlt className="mr-2 text-red-500" />
                   <span className="text-red-500">Sign Out</span>
                 </li>
