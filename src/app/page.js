@@ -1,103 +1,253 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState, useEffect } from 'react';
+import Table from '@/components/Table';
+import Config from '@/config/config';
+import { toast } from 'react-toastify';
+import validateField from '@/components/Validation';
+import SearchBar from '@/components/SearchBar';
+import DeleteModal from '@/components/DeleteModal';
+import MasterJson from '@/config/masterJSON';
+import ViewModal from '@/components/ViewModal';
+import CreateModal from '@/components/CreateModal';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+const Home = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
+  const [viewDetails, setViewDetails] = useState('')
+  const [modalViewOpen, setModalViewOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filtereddata, setFilteredData] = useState([])
+  const [modalDeleteOpen, setModalDeleteOpen] = useState(false)
+  const [deleteDetails, setDeleteDetails] = useState('')
+  const [rightSidebarData, setRightSidebarData] = useState(MasterJson.leads)
+  const [activeTab, setActiveTab] = useState(rightSidebarData[0].tabname);
+
+  const fieldOrder = [
+    {
+      label: 'Product Name',
+      field: 'productName',
+      type: 'text',
+      size: 'min-w-[150px]',
+      sorting: true,
+    },
+    {
+      label: 'Category',
+      field: 'category',
+      type: 'text',
+      size: 'min-w-[150px]',
+      sorting: true,
+    },
+    {
+      label: 'Brand',
+      field: 'brand',
+      type: 'text',
+      size: 'min-w-[150px]',
+      sorting: true,
+    },
+    {
+      label: 'Description',
+      field: 'description',
+      type: 'text',
+      size: 'min-w-[150px]',
+      sorting: true,
+    },
+    {
+      label: 'Price',
+      field: 'price',
+      type: 'text',
+      size: 'min-w-[150px]',
+      sorting: true,
+    }
+  ]
+
+  const sampleData = [
+    { "id": 1, "productName": "Apple iPhone 14", "category": "Electronics", "brand": "Apple", "description": "Latest iPhone model", "price": 999 },
+    { "id": 2, "productName": "Samsung Galaxy S23", "category": "Electronics", "brand": "Samsung", "description": "High-end Android phone", "price": 899 },
+    { "id": 3, "productName": "Sony WH-1000XM5", "category": "Accessories", "brand": "Sony", "description": "Noise-canceling headphones", "price": 350 },
+    { "id": 4, "productName": "Dell XPS 13", "category": "Computers", "brand": "Dell", "description": "Premium ultrabook", "price": 1299 },
+    { "id": 5, "productName": "Nike Air Max 90", "category": "Footwear", "brand": "Nike", "description": "Classic running shoes", "price": 150 },
+    { "id": 6, "productName": "Adidas Ultraboost", "category": "Footwear", "brand": "Adidas", "description": "Comfortable running shoes", "price": 180 },
+    { "id": 7, "productName": "MacBook Pro 16", "category": "Computers", "brand": "Apple", "description": "Powerful laptop for professionals", "price": 2399 },
+    { "id": 8, "productName": "Logitech MX Master 3", "category": "Accessories", "brand": "Logitech", "description": "Ergonomic wireless mouse", "price": 99 },
+    { "id": 9, "productName": "Bose QuietComfort 45", "category": "Accessories", "brand": "Bose", "description": "Premium noise-canceling headphones", "price": 329 },
+    { "id": 10, "productName": "Google Pixel 7", "category": "Electronics", "brand": "Google", "description": "Pure Android experience", "price": 799 },
+    { "id": 11, "productName": "HP Spectre x360", "category": "Computers", "brand": "HP", "description": "2-in-1 convertible laptop", "price": 1499 },
+    { "id": 12, "productName": "PlayStation 5", "category": "Gaming", "brand": "Sony", "description": "Next-gen gaming console", "price": 499 },
+    { "id": 13, "productName": "Xbox Series X", "category": "Gaming", "brand": "Microsoft", "description": "High-performance gaming console", "price": 499 },
+    { "id": 14, "productName": "Samsung 4K Smart TV", "category": "Electronics", "brand": "Samsung", "description": "Crystal clear UHD display", "price": 1200 },
+    { "id": 15, "productName": "Canon EOS R6", "category": "Cameras", "brand": "Canon", "description": "Mirrorless camera for professionals", "price": 2500 }
+  ];
+
+  // Reset form data and errors when modal opens/closes
+  useEffect(() => {
+    setFormData({});
+    setErrors({});
+    setActiveTab(rightSidebarData[0].tabname)
+  }, [modalOpen]);
+
+  // Handle input change and validate field
+  const handleChange = (e, field) => {
+    const { files, value } = e.target;
+    const fieldValue = files ? files[0] : value;
+    const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
+    setFormData((prev) => ({ ...prev, [field.field]: fieldValue }));
+    setErrors((prev) => ({ ...prev, [field.field]: errorMessage }));
+  };
+
+  // Handle form submission
+  const handleAddButtonClick = async () => {
+    let newErrors = {};
+    let emptyFields = false;
+
+    // Validate all fields
+    rightSidebarData.forEach((tab) => {
+      tab.fields.forEach((field) => {
+        const fieldValue = formData[field.field] || '';
+        const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
+
+        if (field.required && !fieldValue) {
+          emptyFields = true;
+          newErrors[field.field] = Config.thisfieldrequirederror;
+        } else if (errorMessage) {
+          newErrors[field.field] = errorMessage;
+        }
+      });
+    });
+
+    // Show error toast if fields are empty
+    if (emptyFields) {
+      setErrors(newErrors);
+      toast.error(Config.fillallfieldserror);
+      return;
+    }
+
+    // Show first validation error (if any)
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error(Object.values(newErrors)[0]);
+      return;
+    }
+
+    // Clear errors before API call
+    setErrors({});
+
+    console.log('formData', formData)
+    // Prepare form data for API request
+    const formDataToSend = new FormData();
+    formDataToSend.append("file", formData.lead);
+
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/uploadleads", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(Config.fileuploadsuccessfullyerror);
+        setModalOpen(false);
+      } else {
+        toast.error(result.message || Config.fileuploadfailederror);
+      }
+    } catch (error) {
+      toast.error(Config.errouploadingfileerror);
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    setFilteredData(sampleData);
+  }, []);
+
+  const handleSearch = (searchText) => {
+    if (!searchText.trim()) {
+      setFilteredData(sampleData);
+      return;
+    }
+
+    const lowerCaseSearch = searchText.toLowerCase();
+
+    const filtered = sampleData.filter(item =>
+      item.productName.toLowerCase().includes(lowerCaseSearch) ||
+      item.category.toLowerCase().includes(lowerCaseSearch) ||
+      item.brand.toLowerCase().includes(lowerCaseSearch) ||
+      item.description.toLowerCase().includes(lowerCaseSearch) ||
+      item.price.toString().includes(lowerCaseSearch)
+    );
+
+    setFilteredData(filtered);
+  };
+
+  try {
+    return (
+      <>
+        {/* Page Header */}
+        <div className="flex items-center justify-between pb-4">
+          <h1 className="text-[22px] font-medium text-gray-800 tracking-wider">Lead Management</h1>
+          <div className="flex items-center gap-2">
+            <SearchBar
+              setSearchTerm={setSearchTerm}
+              searchTerm={searchTerm}
+              handleSearch={handleSearch}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+              onClick={() => setModalOpen(true)}
+            >
+              {Config.createbtn}
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+
+        {/* Table Component */}
+        <Table
+          invisibleEdit={true}
+          setViewDetails={setViewDetails}
+          setModalViewOpen={setModalViewOpen}
+          filtereddata={filtereddata}
+          sampleData={sampleData}
+          setModalDeleteOpen={setModalDeleteOpen}
+          setDeleteDetails={setDeleteDetails}
+          fieldOrder={fieldOrder}
+        />
+
+        <CreateModal
+          title={'Create Lead'}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          rightSidebarData={rightSidebarData}
+          setActiveTab={setActiveTab}
+          activeTab={activeTab}
+          errors={errors}
+          handleChange={handleChange}
+          formData={formData}
+          handleAddButtonClick={handleAddButtonClick}
+          // handleNextButtonClick={handleNextButtonClick}
+          setErrors={setErrors}
+        />
+
+        <ViewModal
+          modalViewOpen={modalViewOpen}
+          setModalViewOpen={setModalViewOpen}
+          viewDetails={viewDetails}
+          title={'Lead Detail'}
+          fieldOrder={fieldOrder}
+        />
+
+        <DeleteModal
+          setModalDeleteOpen={setModalDeleteOpen}
+          modalDeleteOpen={modalDeleteOpen}
+        />
+      </>
+    );
+  }
+  catch (e) {
+    console.log(e);
+    return <></>;
+  }
+};
+
+export default Home;
