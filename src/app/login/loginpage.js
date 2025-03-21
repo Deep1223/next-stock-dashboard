@@ -32,15 +32,16 @@ export default function LoginPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
-
+    
             const result = await response.json();
             console.log(result);
-
+    
             if (response.ok) {
                 localStorage.setItem("userrole", result.user.userRole);
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("userId", result.user.userid);
-
+                localStorage.setItem("lastActivity", Date.now().toString()); // Start session timer
+    
                 // Store credentials only if "Remember Me" is checked
                 if (rememberMe) {
                     localStorage.setItem("rememberedEmail", data.userEmail);
@@ -51,7 +52,7 @@ export default function LoginPage() {
                     localStorage.removeItem("rememberedPassword");
                     localStorage.removeItem("rememberMe");
                 }
-
+    
                 // Redirect based on role
                 if (result.user.userRole === "Administrator") {
                     router.push("/dashboard");
@@ -70,6 +71,7 @@ export default function LoginPage() {
             setIsSubmitting(false);
         }
     };
+    
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
