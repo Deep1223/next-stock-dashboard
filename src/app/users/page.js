@@ -203,7 +203,7 @@ const Users = () => {
       return;
     }
 
-    const lowerCaseSearch = searchTerm.toLowerCase();
+    const lowerCaseSearch = searchText.toLowerCase();
 
     const filtered = users.filter(item =>
       item.userName.toLowerCase().includes(lowerCaseSearch) ||
@@ -212,7 +212,6 @@ const Users = () => {
       item.userRole.toLowerCase().includes(lowerCaseSearch)
     );
     
-
     setFilteredData(filtered);
   };
 
@@ -229,7 +228,7 @@ const Users = () => {
               handleSearch={handleSearch}
             />
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+              className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md text-sm hover:bg-blue-700"
               onClick={() => setModalOpen(true)}
             >
               {Config.createbtn}

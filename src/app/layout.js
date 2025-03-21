@@ -14,8 +14,8 @@ const Layout = ({ children }) => {
   const [isFixed, setIsFixed] = useState(false);
   const pathname = usePathname();
 
-  // Check if the current path is 'login'
-  const isLoginPage = pathname.startsWith("/login");
+  // Check if the current path is 'login' or 'landing page (/)' 
+  const isAuthPage = pathname === "/login" || pathname === "/";
 
   try {
     return (
@@ -23,18 +23,18 @@ const Layout = ({ children }) => {
         <body className="flex h-screen">
           <ToastContainer />
 
-          {/* Show Sidebar and Header for all modules except login */}
-          {!isLoginPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
+          {/* Show Sidebar and Header for all modules except login & landing page */}
+          {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
 
-          <div className={`flex flex-col transition-all ${!isLoginPage && isFixed ? "ml-[240px]" : "ml-16"} flex-1 w-full`}>
-            {!isLoginPage && <Header />}
+          <div className={`flex flex-col transition-all ${!isAuthPage && isFixed ? "ml-[240px]" : "ml-16"} flex-1 w-full`}>
+            {!isAuthPage && <Header />}
 
             <main className="p-4 flex-grow">
               {children}
             </main>
 
-            {/* Hide Footer for login page */}
-            {!isLoginPage && <Footer />}
+            {/* Hide Footer for login and landing page */}
+            {!isAuthPage && <Footer />}
           </div>
         </body>
       </html>

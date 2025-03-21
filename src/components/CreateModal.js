@@ -152,7 +152,7 @@ const CreateModal = (props) => {
                         })() : (
                             <button
                                 onClick={props.handleAddButtonClick}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                className="px-4 py-2 bg-blue-500 text-white cursor-pointer rounded hover:bg-blue-600"
                             >
                                 {Config.createbtn}
                             </button>
@@ -161,7 +161,7 @@ const CreateModal = (props) => {
                         {/* Close Button */}
                         <button
                             onClick={() => props.setModalOpen(false)}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                            className="px-4 py-2 bg-gray-200 text-gray-700 cursor-pointer rounded hover:bg-gray-300"
                         >
                             {Config.closebtn}
                         </button>

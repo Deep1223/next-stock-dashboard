@@ -28,37 +28,20 @@ const Dashboard = () => {
 
   const [fullscreenComponent, setFullscreenComponent] = useState(null);
   const [isFixed, setIsFixed] = useState(false);
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    if (typeof window !== "undefined") { // Ensure it's running on the client
-      setToken(localStorage.getItem('token'));
-      setUserId(localStorage.getItem('userid'));
-      setUserRole(localStorage.getItem('userrole'));
-    }
-  }, []);
+
+
   useEffect(() => {
     localStorage.setItem("dashboardComponents", JSON.stringify(addedComponents));
   }, [addedComponents]);
 
-
-  // useEffect(()=>{
-  //   if(!token){
-  //     router.push('/login')
-  //   }
-  // },[])
-  // Function to refresh all components
-  const refreshAllComponents = () => {
-    // Here, you can implement logic to refresh each component
-    // For example, you could trigger a state update or call a refresh method in each component
-    // Since components are rendered dynamically, we'll assume they have their own refresh logic
-    // You might need to pass a refresh callback to each component or use a context/event system
-    console.log("Refreshing all dashboard components...");
-    // For now, this is a placeholder. You would need to implement refresh logic for each component.
-    // One approach is to use a context or prop to trigger a re-fetch in each component.
-  };
+const token=localStorage.getItem('token')
+const userId=localStorage.getItem('userid')
+const userRole=localStorage.getItem('userrole')
+  useEffect(() => {
+    if (!token) {
+      router.replace('/login'); 
+    }
+  }, []); 
 
   const handleAddComponent = (componentId) => {
     if (!addedComponents.includes(componentId)) {
@@ -94,14 +77,16 @@ const Dashboard = () => {
           <div className="flex space-x-2">
             <button
               onClick={() => toggleFullscreen(comp.id)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2  rounded-full transition-colors"
             >
               {isFullscreen ? (
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
+                
               ) : (
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-4">
+                                  <svg className="w-5 h-5   text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -109,16 +94,19 @@ const Dashboard = () => {
                     d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"
                   />
                 </svg>
-              )}
-            </button>
-            <button
+                <button
               onClick={() => handleRemoveComponent(comp.id)}
               className="p-2 hover:bg-red-100 rounded-full transition-colors"
             >
-              <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-red-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+                </div>
+                
+              )}
+            </button>
+            
           </div>
         </div>
         <div className={isFullscreen ? "h-[calc(100%-4rem)] overflow-auto" : ""}>
@@ -133,29 +121,28 @@ const Dashboard = () => {
     const rows = [];
     let currentRow = [];
     let currentWidth = 0;
-
+  
     addedComponents.forEach((compId) => {
       const comp = availableComponents.find((c) => c.id === compId);
       if (!comp) return;
-
-      const compWidth = comp.width;
-
-      if (currentWidth + compWidth <= 2 && currentRow.length < 2) {
-        currentRow.push(comp);
-        currentWidth += compWidth;
-      } else {
+  
+      // Force width 1 on mobile
+      const compWidth = window.innerWidth < 768 ? 1 : comp.width; 
+  
+      if (currentWidth + compWidth > 2) {
         rows.push(currentRow);
-        currentRow = [comp];
-        currentWidth = compWidth;
+        currentRow = [];
+        currentWidth = 0;
       }
+  
+      currentRow.push(comp);
+      currentWidth += compWidth;
     });
-
-    if (currentRow.length > 0) {
-      rows.push(currentRow);
-    }
-
+  
+    if (currentRow.length > 0) rows.push(currentRow);
     return rows;
   };
+  
 
   const rows = getRows();
 
@@ -164,7 +151,7 @@ const Dashboard = () => {
       {/* Updated Header with Refresh Button */}
     
       
-      <div className="p-8">
+      <div className=" md:p-8">
         {/* Add Dashboard Button */}
         <div className="mb-8">
           <button
@@ -176,19 +163,24 @@ const Dashboard = () => {
         </div>
 
         {/* Dashboard Components Grid */}
-        <div className="space-y-6">
-          {rows.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className="grid grid-cols-2 gap-6"
-              style={{ gridTemplateColumns: row.length === 1 && row[0].width === 2 ? "1fr" : "1fr 1fr" }}
-            >
-              {row.map((comp) => renderComponent(comp))}
-              {/* Add empty div if only one narrow component in row */}
-              {row.length === 1 && row[0].width === 1 && <div className="col-span-1"></div>}
-            </div>
-          ))}
-        </div>
+        <div className="space-y-6 overflow-x-auto md:overflow-visible">
+  {rows.map((row, rowIndex) => (
+    <div
+      key={rowIndex}
+      className="grid gap-6"
+      style={{
+        gridTemplateColumns:
+          window.innerWidth < 768 ? "1fr" : row.length === 1 && row[0].width === 2 ? "1fr" : "1fr 1fr",
+        minWidth: window.innerWidth < 768 ? "600px" : "auto", // Forces horizontal scroll in mobile view
+      }}
+    >
+      {row.map((comp) => renderComponent(comp))}
+      {/* Add empty div if only one narrow component in row (for desktop view) */}
+      {window.innerWidth >= 768 && row.length === 1 && row[0].width === 1 && <div className="col-span-1"></div>}
+    </div>
+  ))}
+</div>
+
 
         {/* Modal for Dashlist */}
         {isModalOpen && (
