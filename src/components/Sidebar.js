@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // ✅ Correct Hook
 import { FaHome, FaCog, FaUser, FaBars, FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -11,7 +11,17 @@ const Sidebar = (props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isConfigOpen, setIsConfigOpen] = useState(false); // Dropdown state for Configuration
     const pathname = usePathname(); // ✅ Get Current Path
-
+    const [token, setToken] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [userRole, setUserRole] = useState(null);
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+      if (typeof window !== "undefined") { // Ensure it's running on the client
+        setToken(localStorage.getItem('token'));
+        setUserId(localStorage.getItem('userid'));
+        setUserRole(localStorage.getItem('userrole'));
+      }
+    }, []);
     // Active Route Function
     const isActive = (path) => pathname === path;
 
@@ -111,20 +121,23 @@ const Sidebar = (props) => {
                         )}
                     </li>
 
-                    <li>
-                        <Link href="/users" 
-                            className={`flex items-center gap-3 py-2 px-2 rounded-md transition ${
-                                isActive("/users") ? "bg-gray-300 text-black" : "hover:bg-gray-200"
-                            }`}
-                        >
-                            <span className="w-6 flex justify-center"><FaUser /></span>
-                            <span className={`transition-all whitespace-nowrap overflow-hidden ${
-                                isOpen || props.isFixed ? "opacity-100 translate-x-0 w-auto" : "opacity-0 -translate-x-5 w-0"
-                            }`}>
-                                Users
-                            </span>
-                        </Link>
-                    </li>
+                    {userRole === "Administrator" && (
+  <li>
+    <Link href="/users" 
+      className={`flex items-center gap-3  py-2 px-2 rounded-md transition ${
+        isActive("/users") ? "bg-gray-300  text-black" : "hover:bg-gray-200"
+      }`}
+    >
+      <span className="w-6 flex justify-center"><FaUser /></span>
+      <span className={`transition-all whitespace-nowrap overflow-hidden ${
+        isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 -translate-x-5 w-0"
+      }`}>
+        Users
+      </span>
+    </Link>
+  </li>
+)}
+
                     <li>
                         <Link href="/manageleads" 
                             className={`flex items-center gap-3 py-2 px-2 rounded-md transition ${

@@ -14,6 +14,7 @@ import CreateModal from '@/components/CreateModal';
 const Users = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [viewDetails, setViewDetails] = useState('')
   const [modalViewOpen, setModalViewOpen] = useState(false)
@@ -23,164 +24,222 @@ const Users = () => {
   const [deleteDetails, setDeleteDetails] = useState('')
   const [rightSidebarData, setRightSidebarData] = useState(MasterJson.users)
   const [activeTab, setActiveTab] = useState(rightSidebarData[0].tabname);
-
-  const fieldOrder = [
-    {
-      label: 'Product Name',
-      field: 'productName',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Category',
-      field: 'category',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Brand',
-      field: 'brand',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Description',
-      field: 'description',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Price',
-      field: 'price',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") { // Ensure it's running on the client
+      setToken(localStorage.getItem('token'));
+      setUserId(localStorage.getItem('userid'));
+      setUserRole(localStorage.getItem('userrole'));
     }
-  ]
-
-  const sampleData = [
-    { "id": 1, "productName": "Apple iPhone 14", "category": "Electronics", "brand": "Apple", "description": "Latest iPhone model", "price": 999 },
-    { "id": 2, "productName": "Samsung Galaxy S23", "category": "Electronics", "brand": "Samsung", "description": "High-end Android phone", "price": 899 },
-    { "id": 3, "productName": "Sony WH-1000XM5", "category": "Accessories", "brand": "Sony", "description": "Noise-canceling headphones", "price": 350 },
-    { "id": 4, "productName": "Dell XPS 13", "category": "Computers", "brand": "Dell", "description": "Premium ultrabook", "price": 1299 },
-    { "id": 5, "productName": "Nike Air Max 90", "category": "Footwear", "brand": "Nike", "description": "Classic running shoes", "price": 150 },
-    { "id": 6, "productName": "Adidas Ultraboost", "category": "Footwear", "brand": "Adidas", "description": "Comfortable running shoes", "price": 180 },
-    { "id": 7, "productName": "MacBook Pro 16", "category": "Computers", "brand": "Apple", "description": "Powerful laptop for professionals", "price": 2399 },
-    { "id": 8, "productName": "Logitech MX Master 3", "category": "Accessories", "brand": "Logitech", "description": "Ergonomic wireless mouse", "price": 99 },
-    { "id": 9, "productName": "Bose QuietComfort 45", "category": "Accessories", "brand": "Bose", "description": "Premium noise-canceling headphones", "price": 329 },
-    { "id": 10, "productName": "Google Pixel 7", "category": "Electronics", "brand": "Google", "description": "Pure Android experience", "price": 799 },
-    { "id": 11, "productName": "HP Spectre x360", "category": "Computers", "brand": "HP", "description": "2-in-1 convertible laptop", "price": 1499 },
-    { "id": 12, "productName": "PlayStation 5", "category": "Gaming", "brand": "Sony", "description": "Next-gen gaming console", "price": 499 },
-    { "id": 13, "productName": "Xbox Series X", "category": "Gaming", "brand": "Microsoft", "description": "High-performance gaming console", "price": 499 },
-    { "id": 14, "productName": "Samsung 4K Smart TV", "category": "Electronics", "brand": "Samsung", "description": "Crystal clear UHD display", "price": 1200 },
-    { "id": 15, "productName": "Canon EOS R6", "category": "Cameras", "brand": "Canon", "description": "Mirrorless camera for professionals", "price": 2500 }
+  }, []);
+  const fieldOrder = [
+    { label: 'User Name', field: 'userName', type: 'text', size: 'min-w-[150px]', sorting: true },
+    { label: 'Email', field: 'userEmail', type: 'text', size: 'min-w-[200px]', sorting: true },
+    { label: 'Phone Number', field: 'userPhoneNumber', type: 'text', size: 'min-w-[150px]', sorting: true },
+    { label: 'Role', field: 'userRole', type: 'text', size: 'min-w-[150px]', sorting: true },
+    { label: 'Actions', field: 'actions', type: 'custom', size: 'min-w-[100px]', render: (row) => (
+      <button onClick={() => handleEditClick(row)} className="p-2 bg-blue-500 text-white rounded">Edit</button>
+    )}
   ];
-
+ 
+ 
   // Reset form data and errors when modal opens/closes
   useEffect(() => {
     setFormData({});
     setErrors({});
     setActiveTab(rightSidebarData[0].tabname)
   }, [modalOpen]);
-
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setFormData({ userRole: user.userRole, password: '' });
+    setEditModalOpen(true);
+  };
   // Handle input change and validate field
   const handleChange = (e, field) => {
     const { files, value } = e.target;
     const fieldValue = files ? files[0] : value;
-    const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
-    setFormData((prev) => ({ ...prev, [field.field]: fieldValue }));
-    setErrors((prev) => ({ ...prev, [field.field]: errorMessage }));
+  
+  
+    setFormData((prev) => ({
+      ...prev,
+      [field.field]: fieldValue,
+    }));
   };
+  const handleChangeedit = (e) => {
+    const { name, files, value } = e.target;
+    const fieldValue = files ? files[0] : value;
+
+    setFormData((prev) => ({
+        ...prev,
+        [name]: fieldValue,  // ✅ Use `name` instead of `field.field`
+    }));
+};
+
+  
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+  
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  
+  // Fetch users when token changes
+  useEffect(() => {
+    if (token) {
+      fetchUsers();
+    }
+  }, [token]); 
 
   // Handle form submission
   const handleAddButtonClick = async () => {
     let newErrors = {};
     let emptyFields = false;
-
-    // Validate all fields
+    let tempData = { ...formData }; // Copy existing form data
+  
     rightSidebarData.forEach((tab) => {
       tab.fields.forEach((field) => {
-        const fieldValue = formData[field.field] || '';
+        const fieldValue = formData[field.field] || "";
         const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
-
+  
         if (field.required && !fieldValue) {
           emptyFields = true;
-          newErrors[field.field] = Config.thisfieldrequirederror;
+          newErrors[field.field] = "This field is required";
         } else if (errorMessage) {
           newErrors[field.field] = errorMessage;
         }
+  
+        tempData[field.field] = fieldValue;
       });
     });
-
-    // Show error toast if fields are empty
+  
     if (emptyFields) {
       setErrors(newErrors);
-      toast.error(Config.fillallfieldserror);
+      toast.error("Please fill in all required fields.");
       return;
     }
-
-    // Show first validation error (if any)
+  
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error(Object.values(newErrors)[0]);
       return;
     }
+  
+    // **Convert data to match backend field names**
+    const getMappedRole = (roleLabel) => {
+        const roleMap = {
+          "Admin": "Administrator",
+          "Sales Person": "sales user"
+        };
+        return roleMap[roleLabel] || roleLabel; // Default to the same label if not found
+      };
+      
+      const formattedData = {
+        userName: tempData.fullname,
+        userEmail: tempData.email,
+        userPassword: tempData.password,
+        userPhoneNumber: tempData.phone,
+        userRole: getMappedRole(tempData.role.label), // Convert role label using the mapping function
+      };
+  
+  
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formattedData),
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        toast.success("User registered successfully!");
+        setModalOpen(false);
+        fetchUsers();
+      } else {
+        toast.error(result.message || "Failed to register user.");
+      }
+    } catch (error) {
+      toast.error("Error uploading data.");
+      console.error(error);
+    }
+  };
+  
+  
 
-    // Clear errors before API call
-    setErrors({});
+  useEffect(() => {
+    setFilteredData(users);
+  }, [users]);  // ✅ Ensure filtered data updates when users change
+  
+  const handleUpdate = async () => {
+    if (!formData.userRole || !formData.password) {
+      toast.error("Role and Password are required!");
+      return;
+    }
 
-    // Prepare form data for API request
-    const formDataToSend = new FormData();
-    formDataToSend.append("fullname", formData.fullname);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("phone", formData.phone);
-    formDataToSend.append("phone", formData.phone);
-    formDataToSend.append("password", formData.password);
+    const updateData = {
+      userRole: formData.userRole,
+      userPassword: formData.password
+    };
 
     try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/uploadleads", {
-        method: "POST",
-        body: formDataToSend,
+      const response = await fetch(`https://dev.crmbackend.finnovationz.com/api/users/signup`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateData),
       });
 
       const result = await response.json();
-
       if (response.ok) {
-        toast.success(Config.fileuploadsuccessfullyerror);
-        setModalOpen(false);
+        toast.success("User updated successfully!");
+        setEditModalOpen(false);
+        fetchUsers();
       } else {
-        toast.error(result.message || Config.fileuploadfailederror);
+        toast.error(result.message || "Failed to update user.");
       }
     } catch (error) {
-      toast.error(Config.errouploadingfileerror);
+      toast.error("Error updating user.");
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    setFilteredData(sampleData);
-  }, []);
-
   const handleSearch = (searchText) => {
     if (!searchText.trim()) {
-      setFilteredData(sampleData);
+      setFilteredData(users);
       return;
     }
 
     const lowerCaseSearch = searchText.toLowerCase();
 
-    const filtered = sampleData.filter(item =>
-      item.productName.toLowerCase().includes(lowerCaseSearch) ||
-      item.category.toLowerCase().includes(lowerCaseSearch) ||
-      item.brand.toLowerCase().includes(lowerCaseSearch) ||
-      item.description.toLowerCase().includes(lowerCaseSearch) ||
-      item.price.toString().includes(lowerCaseSearch)
+    const filtered = users.filter(item =>
+      item.userName.toLowerCase().includes(lowerCaseSearch) ||
+      item.userEmail.toLowerCase().includes(lowerCaseSearch) ||
+      item.userPhoneNumber.toString().includes(lowerCaseSearch) ||
+      item.userRole.toLowerCase().includes(lowerCaseSearch)
     );
-
+    
     setFilteredData(filtered);
   };
 
@@ -197,7 +256,7 @@ const Users = () => {
               handleSearch={handleSearch}
             />
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+              className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md text-sm hover:bg-blue-700"
               onClick={() => setModalOpen(true)}
             >
               {Config.createbtn}
@@ -211,12 +270,32 @@ const Users = () => {
           setViewDetails={setViewDetails}
           setModalViewOpen={setModalViewOpen}
           filtereddata={filtereddata}
-          sampleData={sampleData}
+          sampleData={users}
           setModalDeleteOpen={setModalDeleteOpen}
           setDeleteDetails={setDeleteDetails}
           fieldOrder={fieldOrder}
         />
+{editModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-md w-96">
+            <h2 className="text-xl font-bold mb-4">Edit User</h2>
+            <label className="block mb-2">Role</label>
+            <select name="userRole" value={formData.userRole} onChange={handleChangeedit} className="w-full p-2 border rounded">
+              <option value="Administrator">Administrator</option>
+              <option value="sales user">Sales User</option>
+              <option value="User">User</option>
+            </select>
 
+            <label className="block mt-4 mb-2">New Password</label>
+            <input type="password" name="password" value={formData.password} onChange={handleChangeedit} className="w-full p-2 border rounded" />
+
+            <div className="flex justify-end mt-4 space-x-2">
+              <button onClick={() => setEditModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+              <button onClick={handleUpdate} className="px-4 py-2 bg-green-500 text-white rounded">Update</button>
+            </div>
+          </div>
+        </div>
+      )}
         <CreateModal
           title={`Create ${rightSidebarData[0].pagename}`}
           modalOpen={modalOpen}

@@ -119,9 +119,9 @@ const MasterJson = {
                     type: "radio",
                     size: "w-full",
                     options: [
-                        { label: "Ignore duplicates", value: "u2mrab0x" },
-                        { label: "Overwrite duplicates", value: "v0dnah8f" },
-                        { label: "Update empty fields of duplicates", value: "ye6rw1a2" },
+                        { label: "Ignore duplicates", value: "1" },
+                        { label: "Overwrite duplicates", value: "2" },
+                        { label: "Update empty fields of duplicates", value: "3" },
                     ],
                     required: true,
                 },
@@ -131,22 +131,22 @@ const MasterJson = {
                     type: "checkbox",
                     size: "w-full",
                     required: true,
-                    showIf: { field: "handlingduplicateleadrecords", values: ["u2mrab0x", "ye6rw1a2", "v0dnah8f"] },
+                    showIf: { field: "handlingduplicateleadrecords", values: ["1", "3", "2"] },
                     options: [
                         {
                             label: "Import Only if Valid Phone Number exists in CSV",
                             value: "5f6w79qnl2zbxa",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["u2mrab0x", "ye6rw1a2", "v0dnah8f"] }
+                            showIf: { field: "handlingduplicateleadrecords", values: ["1", "3", "2"] }
                         },
                         {
                             label: "Do not update owner of existing leads",
                             value: "4tqwiuxkgvcod9",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["v0dnah8f"] }
+                            showIf: { field: "handlingduplicateleadrecords", values: ["2"] }
                         },
                         {
                             label: "Do not create new leads",
                             value: "5c3t8vqrxemnbg",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["v0dnah8f"] }
+                            showIf: { field: "handlingduplicateleadrecords", values: ["2"] }
                         }
                     ]
                 },
@@ -181,15 +181,24 @@ const MasterJson = {
                     Placeholder: "Select Lead Owner",
                     clearable: true,
                 },
+                {   
+                    field: "ownerEmail",
+                    text: "Owner Email",
+                    type: "text",
+                    size: "w-full",
+                    required: true,
+                    placeholder: "Enter Owner Email",
+                    regextype: "email",
+                },
                 {
                     field: "addtolist",
                     text: "Add To List",
                     type: "radio",
                     size: "w-full",
                     options: [
-                        { label: "New List", value: "u5rxilaejm40oz" },
-                        { label: "Existing List", value: "xp13sh5lzgnqa8" },
-                        { label: "None", value: "xaikg8c40w3ynh" },
+                        { label: "New List", value: "1" },
+                        { label: "Existing List", value: "2" },
+                        { label: "None", value: "3" },
                     ],
                     required: true,
                 },
@@ -199,7 +208,7 @@ const MasterJson = {
                     type: "text",
                     size: "w-full",
                     required: true,
-                    showIf: { field: "addtolist", values: ["u5rxilaejm40oz"] },
+                    showIf: { field: "addtolist", values: ["1"] },
                     placeholder: "Enter List Name",
                 },
                 {
@@ -208,7 +217,7 @@ const MasterJson = {
                     type: "textarea",
                     size: "w-full",
                     required: true,
-                    showIf: { field: "addtolist", values: ["u5rxilaejm40oz"] },
+                    showIf: { field: "addtolist", values: ["1"] },
                     placeholder: "Enter List Description",
                 },
                 {
@@ -224,7 +233,7 @@ const MasterJson = {
                         { label: "The Complete Fundamental Analysis Course in Hindi", value: "374bfp2ruteaz8" },
                         { label: "The Foundation Course on Indian Stock Market For Beginners", value: "8ym3sj6xc1ol7i" }
                     ],
-                    showIf: { field: "addtolist", values: ["xp13sh5lzgnqa8"] },
+                    showIf: { field: "addtolist", values: ["2"] },
                     placeholder: "Select List Name",
                     searchable: true,
                 },

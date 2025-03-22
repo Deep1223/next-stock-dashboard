@@ -23,6 +23,17 @@ const Home = () => {
   const [deleteDetails, setDeleteDetails] = useState('')
   const [rightSidebarData, setRightSidebarData] = useState(MasterJson.leads)
   const [activeTab, setActiveTab] = useState(rightSidebarData[0].tabname);
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") { // Ensure it's running on the client
+      setToken(localStorage.getItem('token'));
+      setUserId(localStorage.getItem('userid'));
+      setUserRole(localStorage.getItem('userrole'));
+    }
+  }, []);
 
   const fieldOrder = [
     {
@@ -133,19 +144,42 @@ const Home = () => {
     // Clear errors before API call
     setErrors({});
 
-    console.log('formData', formData)
     // Prepare form data for API request
     const formDataToSend = new FormData();
     formDataToSend.append("file", formData.lead);
+    formDataToSend.append("importsummarynote", formData.importsummarynote);
+    formDataToSend.append("leadowner", formData.leadowner.label);
+    formDataToSend.append("leadownerid", formData.leadowner.value);
+
+    const selectedAddToList = rightSidebarData?.flatMap(tab =>
+      tab.fields.find(field => field.field === "addtolist")?.options?.find(opt => opt.value === formData?.addtolist)
+    ).filter(item => item !== undefined)[0]; 
+
+    formDataToSend.append("addtolistid", selectedAddToList ? selectedAddToList.value : "");
+    formDataToSend.append("addtolist", selectedAddToList ? selectedAddToList.label : "");
+
+    // Handle 'listname' based on addtolist value
+    if (formData.addtolist === '1') {
+      formDataToSend.append("listname", formData.listname);
+      formDataToSend.append("listdescription", formData.listdescription);
+    } else if (formData.addtolist === '2') {
+      formDataToSend.append("listname", formData.listname.label);
+      formDataToSend.append("listnameid", formData.listname.value);
+    }
+    
+    formDataToSend.append("ownerEmail", formData.ownerEmail);
+
 
     try {
       const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/uploadleads", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
         body: formDataToSend,
       });
 
       const result = await response.json();
-
       if (response.ok) {
         toast.success(Config.fileuploadsuccessfullyerror);
         setModalOpen(false);
