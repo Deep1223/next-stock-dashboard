@@ -5,6 +5,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { IoEyeOutline } from "react-icons/io5";
 import { TbGridDots } from "react-icons/tb";
 import { FaSortAmountDown, FaSortAmountDownAlt } from "react-icons/fa";
+import { AiOutlineFileAdd } from "react-icons/ai";
+import { FaAngleDown, FaAngleUp, FaX } from 'react-icons/fa6';
 
 const Table = (props) => {
     const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -12,6 +14,18 @@ const Table = (props) => {
 
     const [sortState, setSortState] = useState({});
     const [sortedData, setSortedData] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setDropdownOpen(null);
+        }
+    };
 
     // Initialize sortedData from filtereddata
     useEffect(() => {
@@ -31,14 +45,18 @@ const Table = (props) => {
 
         // Create a copy and sort it based on the fieldName.
         const sorted = [...sortedData].sort((a, b) => {
-            // Use current sort state for fieldName to decide sort direction
-            if (a[fieldName] < b[fieldName]) return sortState[fieldName] === "asc" ? -1 : 1;
-            if (a[fieldName] > b[fieldName]) return sortState[fieldName] === "asc" ? 1 : -1;
+            // Convert values to lowercase for case-insensitive sorting
+            const valA = a[fieldName].toLowerCase();
+            const valB = b[fieldName].toLowerCase();
+
+            if (valA < valB) return sortState[fieldName] === "asc" ? -1 : 1;
+            if (valA > valB) return sortState[fieldName] === "asc" ? 1 : -1;
             return 0;
         });
 
         setSortedData(sorted);
     };
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -66,9 +84,9 @@ const Table = (props) => {
                                                 <TbGridDots className="text-gray-600 text-lg" />
                                             </div>
                                         </th>
-                                        {props.fieldOrder.map((field) => (
+                                        {props.fieldOrder.map((field, index) => (
                                             <th
-                                                key={field.field}
+                                                key={index}
                                                 className={`px-4 py-3 ${field.size} cursor-pointer`}
                                                 onClick={field.sorting ? () => toggleSort(field.field) : undefined}
                                             >
@@ -92,7 +110,7 @@ const Table = (props) => {
                                     {sortedData.length > 0 ? (
                                         sortedData.map((formData, index) => (
                                             <tr
-                                                key={formData.id}
+                                                key={index}
                                                 className="border-b even:bg-gray-50 hover:bg-gray-100 transition relative"
                                             >
                                                 <td className="p-3 w-[30px] text-center relative">
@@ -105,7 +123,7 @@ const Table = (props) => {
                                                     {dropdownOpen === index && (
                                                         <div
                                                             ref={dropdownRef}
-                                                            className="absolute right-[-100px] top-8 bg-white shadow-lg rounded-lg border w-32 z-10"
+                                                            className="absolute right-[-120px] top-8 bg-white shadow-lg rounded-lg border w-37 z-10"
                                                         >
                                                             <ul className="py-2 text-sm text-gray-700">
                                                                 {!props.invisibleEdit && (
@@ -137,21 +155,55 @@ const Table = (props) => {
                                                                         <IoEyeOutline /> View
                                                                     </li>
                                                                 )}
+                                                                {props.showleads && (
+                                                                    <li
+                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        onClick={async () => {
+                                                                            props.handleleads(formData.id);
+                                                                            setDropdownOpen(null);
+                                                                        }}
+                                                                    >
+                                                                        <AiOutlineFileAdd /> Show Leads
+                                                                    </li>
+                                                                )}
                                                             </ul>
                                                         </div>
                                                     )}
                                                 </td>
-                                                {props.fieldOrder.map((field) => (
-                                                    <td key={field.field} className={`p-3 ${field.size}`}>
-                                                        {field.type === "text" ? (
-                                                            field.field === "price" ? (
-                                                                <span>{formData[field.field] ? `$${formData[field.field]}` : '-'}</span>
-                                                            ) : (
-                                                                <span>{formData[field.field] ? formData[field.field] : '-'}</span>
+                                                {props.fieldOrder.map((field, index) => (
+                                                    <td key={index} className={`p-3 ${field.size}`}>
+                                                        {
+                                                            field.type === "text" ? (
+                                                                field.field === "price" ? (
+                                                                    <span>{formData[field.field] ? `$${formData[field.field]}` : '-'}</span>
+                                                                ) : (
+                                                                    <span>{formData[field.field] ? formData[field.field] : '-'}</span>
+                                                                )
                                                             )
-                                                        ) : (
-                                                            <></>
-                                                        )}
+                                                                : field.type === "select" ? (
+                                                                    <div className="relative w-full">
+                                                                        <select
+                                                                            value={formData[field.field] || ""}
+                                                                            onChange={(e) => props.handleleadstatusChange(e, field.field)}
+                                                                            className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white cursor-pointer"
+                                                                            onFocus={() => setIsOpen(true)}
+                                                                            onBlur={() => setIsOpen(false)}
+                                                                        >
+                                                                            <option value="">Select Brand</option>
+                                                                            {props.brandOptions.map((option, idx) => (
+                                                                                <option key={idx} value={option.value}>
+                                                                                    {option.label}
+                                                                                </option>
+                                                                            ))}
+                                                                        </select>
+                                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                                            {isOpen ? <FaAngleUp /> : <FaAngleDown />}
+                                                                        </span>
+                                                                    </div>
+                                                                )
+                                                                    : (
+                                                                        <></>
+                                                                    )}
                                                     </td>
                                                 ))}
                                             </tr>

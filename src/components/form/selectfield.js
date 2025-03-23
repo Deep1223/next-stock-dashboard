@@ -6,7 +6,7 @@ import { FaAngleDown, FaAngleUp, FaX } from 'react-icons/fa6';
 const SelectField = (props) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedLabel, setSelectedLabel] = useState('Select an option');
+    const [selectedLabel, setSelectedLabel] = useState('');
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -24,20 +24,20 @@ const SelectField = (props) => {
             const selectedOption = props.field.options.find(
                 opt => opt.value === props.formData[props.field.field]?.value
             );
-            setSelectedLabel(selectedOption ? selectedOption.label : props.field.placeholder || 'Select an option');
+            setSelectedLabel(selectedOption ? selectedOption.label : props.field.placeholder);
         }
     }, [props.formData, props.field]);
     
     
     const filteredOptions = props.field.searchable
-        ? props.field.options.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()))
+        ? props.field.options.filter(option => option?.label?.toLowerCase().includes(searchTerm?.toLowerCase()))
         : props.field.options;
 
     const hasError = props.errors && props.errors[props.field.field];
 
     const handleClear = () => {
         props.handleChange({ target: { value: '' } }, props.field); // Clear the selected value
-        setSelectedLabel(props.field.Placeholder || 'Select an option'); // Reset the label
+        setSelectedLabel(props.field.Placeholder); // Reset the label
         setSearchTerm('');
         setIsDropdownOpen(false);
     };
@@ -56,7 +56,7 @@ const SelectField = (props) => {
                 >
                     <span>{selectedLabel}</span>
                     <div className="flex gap-2">
-                        {props.field.clearable && selectedLabel !== (props.field.Placeholder || 'Select an option') && (
+                        {props.field.clearable && selectedLabel !== (props.field.Placeholder) && (
                             <FaX
                                 className="text-gray-500 cursor-pointer hover:text-red-500"
                                 onClick={(e) => {
@@ -92,6 +92,8 @@ const SelectField = (props) => {
                                             setSelectedLabel(option.label);
                                             setSearchTerm('');
                                             setIsDropdownOpen(false);
+                                            
+                                            props.handleFieldChange({ target: { value: option } }, props.field)
                                         }}
                                     >
                                         {option.label}

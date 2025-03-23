@@ -21,7 +21,7 @@ const FormField = (props) => {
 
     useEffect(() => {
         console.log("formData:", props.formData); // Debugging purpose
-    
+
         if (!props.formData[props.field.field] && props.field.defaultValue) {
             props.handleChange(
                 { target: { name: props.field.field, value: props.field.defaultValue } },
@@ -29,7 +29,7 @@ const FormField = (props) => {
             );
         }
     }, []);
-    
+
 
     return shouldShow(props.field) ? (
         <div key={props.field.field} className="mb-3">
@@ -87,6 +87,7 @@ const FormField = (props) => {
                             formData={props.formData}
                             handleChange={props.handleChange}
                             errors={props.errors}
+                            handleFieldChange={props.handleFieldChange}
                         />
                     ) : props.field.type === "radio" ? (
                         <>
@@ -115,22 +116,47 @@ const FormField = (props) => {
                                 {props.field.required && <span className="text-red-500 ml-1">*</span>}
                             </label>
                             {props.field.options.filter(shouldShow).map((option) => (
-                                <div key={option.value} className="flex items-center space-x-2 mb-1">
-                                    <input
-                                        type="checkbox"
-                                        id={`${props.field.field}-${option.value}`}
-                                        name={props.field.field}
-                                        value={option.value}
-                                        checked={(props.formData[props.field.field] || []).includes(option.value)}
-                                        onChange={(e) => {
-                                            let newValue = props.formData[props.field.field] || [];
-                                            newValue = e.target.checked ? [...newValue, option.value] : newValue.filter(v => v !== option.value);
-                                            props.handleChange({ target: { name: props.field.field, value: newValue } }, props.field);
-                                        }}
-                                    />
-                                    <label htmlFor={`${props.field.field}-${option.value}`} className="text-gray-700 cursor-pointer">{option.label}</label>
-                                </div>
-                            ))}
+    <div key={option.value} className="flex items-center space-x-2 mb-1">
+        <input
+            type="checkbox"
+            id={`${props.field.field}-${option.value}`}
+            name={props.field.field}
+            value={option.value}
+            checked={
+                option.labelfield
+                    ? props.formData[props.field.field]?.[option.labelfield] === 1
+                    : props.formData[props.field.field] === 1
+            }
+            onChange={(e) => {
+                const newValue = e.target.checked ? 1 : 0;
+                let updatedValue;
+
+                if (option.labelfield) {
+                    updatedValue = {
+                        ...(typeof props.formData[props.field.field] === "object"
+                            ? props.formData[props.field.field]
+                            : {}),
+                        [option.labelfield]: newValue,
+                    };
+                } else {
+                    updatedValue = newValue;
+                }
+
+                props.handleChange({
+                    target: {
+                        name: props.field.field,
+                        value: updatedValue
+                    }
+                }, props.field);
+            }}
+        />
+        <label htmlFor={`${props.field.field}-${option.value}`} className="text-gray-700 cursor-pointer">
+            {option.label}
+        </label>
+    </div>
+))}
+
+
                         </>
                     ) : props.field.type === "title" ? (
                         <h3 className={`text-lg font-medium mb-2 ${props.field.spacingtop} w-100 border-b border-gray-300 ${props.field.size}`}>{props.field.text}</h3>

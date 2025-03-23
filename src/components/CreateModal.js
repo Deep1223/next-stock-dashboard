@@ -1,31 +1,113 @@
+import { useEffect, useState } from "react";
 import Modal from "./modal";
 import Config from "@/config/config";
-import RightSidebarFormField from '@/components/RightSidebarFormField';
-import validateField from '@/components/Validation';
-import { toast } from 'react-toastify';
+import RightSidebarFormField from "@/components/RightSidebarFormField";
+import validateField from "@/components/Validation";
+import { toast } from "react-toastify";
 
 const CreateModal = (props) => {
     try {
-        const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // Check if any tabname exists
+        const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // Check if any tab exists
+        const [dynamicOptions, setDynamicOptions] = useState({});
+        const [data, setData] = useState({});
+
+        useEffect(() => {
+            const fetchData = async () => {
+                let updatedOptions = {};
+
+                await Promise.all(
+                    props.rightSidebarData.flatMap(tab =>
+                        tab.fields
+                            .filter(field => field.masterdata) // Only process fields with masterdata
+                            .map(async (field) => {
+                                try {
+                                    const response = await fetch(`https://dev.crmbackend.finnovationz.com/api/${field.masterdata}`, {
+                                        method: "GET",
+                                        headers: {
+                                            "Authorization": `Bearer ${props.token}`,
+                                            "Content-Type": "application/json"
+                                        }
+                                    });
+
+                                    const data = await response.json();
+
+                                    const dataArray = field.masterdataarray && Array.isArray(data[field.masterdataarray])
+                                        ? data[field.masterdataarray]
+                                        : [];
+
+                                    setData(dataArray);
+
+                                    if (dataArray.length > 0 && Array.isArray(field.masterdatafields) && field.masterdatafields.length === 2) {
+                                        const [labelField, valueField] = field.masterdatafields;
+
+                                        updatedOptions[field.field] = dataArray.map(item => ({
+                                            label: item[labelField],
+                                            value: item[valueField]
+                                        }));
+                                    }
+
+                                } catch (error) {
+                                    console.error(`Error fetching data for ${field.masterdata}:`, error);
+                                    toast.error(`Failed to load ${field.text}`);
+                                }
+                            })
+                    )
+                );
+
+                setDynamicOptions(updatedOptions);
+            };
+
+            if (props.modalOpen) {
+                fetchData();
+            }
+        }, [props.modalOpen, props.rightSidebarData]); // Runs when modal opens & `rightSidebarData` changes
+
+        const handleFieldChange = (e, field) => {
+            const { name, value } = e.target;
+            props.handleChange(e, field); 
+        
+            const dependentField = props.rightSidebarData
+                .flatMap(tab => tab.fields)
+                .find(f => f.field === field.onchange);
+        
+            if (dependentField) {
+                const selectedItem = data?.find(item => item._id === value.value);
+
+                if (selectedItem) {
+                    const dependentValue = selectedItem[dependentField.onchangevalue];
+                    if (dependentValue) {
+                        props.handleChange(
+                            { target: { name: dependentField.field, value: dependentValue } },
+                            { field: dependentField.field }
+                        );
+                    }
+                }
+            }
+        };
+
+        const updatedRightSidebarData = props.rightSidebarData.map(tab => ({
+            ...tab,
+            fields: tab.fields.map(field => ({
+                ...field,
+                options: field.masterdata ? (dynamicOptions[field.field] || []) : field.options
+            }))
+        }));
 
         const handleNextButtonClick = async (tabfield, activeIndex) => {
             let newErrors = {};
             let emptyFields = false;
-        
+
             tabfield.forEach((field) => {
                 const fieldValue = props.formData[field.field] || '';
-        
-                // Checkbox field validation
+
                 if (field.type === "checkbox" && field.required) {
                     if (!props.formData[field.field] || props.formData[field.field].length === 0) {
                         emptyFields = true;
                         newErrors[field.field] = Config.thisfieldrequirederror;
                     }
-                }
-                // Other field validations
-                else {
+                } else {
                     const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
-        
+
                     if (field.required && !fieldValue) {
                         emptyFields = true;
                         newErrors[field.field] = Config.thisfieldrequirederror;
@@ -34,25 +116,21 @@ const CreateModal = (props) => {
                     }
                 }
             });
-        
-            // Show error toast if fields are empty
+
             if (emptyFields) {
                 props.setErrors(newErrors);
                 toast.error(Config.fillallfieldserror);
                 return;
             }
-        
-            // Show first validation error (if any)
+
             if (Object.keys(newErrors).length > 0) {
                 props.setErrors(newErrors);
                 toast.error(Object.values(newErrors)[0]);
                 return;
             }
-        
-            // Clear errors before moving to next tab
+
             props.setErrors({});
-        
-            // Move to next tab
+
             if (activeIndex + 1 < props.rightSidebarData.length) {
                 props.setActiveTab(props.rightSidebarData[activeIndex + 1].tabname);
             }
@@ -66,7 +144,6 @@ const CreateModal = (props) => {
                 header={<h2 className="text-lg font-semibold">{props.title}</h2>}
                 body={
                     <form>
-                        {/* Show Tabs Only if Any Tab Exists */}
                         {hasTabs && (
                             <div className="w-full border-b border-border">
                                 <div className="flex space-x-5">
@@ -91,13 +168,12 @@ const CreateModal = (props) => {
                             </div>
                         )}
 
-                        {/* Display Fields (Filter by Active Tab if Tabs Exist) */}
                         <div className="pt-2">
                             {(hasTabs
-                                ? props.rightSidebarData
+                                ? updatedRightSidebarData
                                     .filter((tab) => tab.tabname === props.activeTab)
                                     .flatMap((tab) => tab.fields)
-                                : props.rightSidebarData.flatMap((tab) => tab.fields)
+                                : updatedRightSidebarData.flatMap((tab) => tab.fields)
                             ).map((field, index) => (
                                 <RightSidebarFormField
                                     key={index}
@@ -106,10 +182,10 @@ const CreateModal = (props) => {
                                     handleChange={props.handleChange}
                                     formData={props.formData}
                                     setErrors={props.setErrors}
+                                    handleFieldChange={handleFieldChange}
                                 />
                             ))}
                         </div>
-
                     </form>
                 }
                 footer={
@@ -158,7 +234,6 @@ const CreateModal = (props) => {
                             </button>
                         )}
 
-                        {/* Close Button */}
                         <button
                             onClick={() => props.setModalOpen(false)}
                             className="px-4 py-2 bg-gray-200 text-gray-700 cursor-pointer rounded hover:bg-gray-300"

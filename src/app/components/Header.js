@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,14 +20,14 @@ const Header = () => {
 
         {/* Centered Manage Leads Link */}
         <nav className="hidden md:flex justify-center flex-1">
-          <a href="/manageleads" className="text-gray-700 font-semibold hover:text-blue-500">
+          <Link href="/manageleads" className="text-gray-700 font-semibold hover:text-blue-500">
             Manage Leads
-          </a>
+          </Link>
         </nav>
         <nav className="hidden md:flex justify-center flex-1">
-          <a href="/createuser" className="text-gray-700 font-semibold hover:text-blue-500">
+          <Link href="/createuser" className="text-gray-700 font-semibold hover:text-blue-500">
             Create User
-          </a>
+          </Link>
         </nav>
 
         {/* Logout Button (Right Side) */}
@@ -51,9 +52,9 @@ const Header = () => {
       {/* Mobile Navigation */}
       {isOpen && (
         <nav className="md:hidden bg-blue-100 text-center py-4 space-y-4 shadow-md">
-          <a href="/manageleads" className="block text-gray-700 font-semibold hover:text-blue-500">
+          <Link href="/manageleads" className="block text-gray-700 font-semibold hover:text-blue-500">
             Manage Leads
-          </a>
+          </Link>
           <button 
             onClick={handleLogout} 
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"

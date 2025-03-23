@@ -41,9 +41,9 @@ const Users = () => {
     { label: 'Email', field: 'userEmail', type: 'text', size: 'min-w-[200px]', sorting: true },
     { label: 'Phone Number', field: 'userPhoneNumber', type: 'text', size: 'min-w-[150px]', sorting: true },
     { label: 'Role', field: 'userRole', type: 'text', size: 'min-w-[150px]', sorting: true },
-    { label: 'Actions', field: 'actions', type: 'custom', size: 'min-w-[100px]', render: (row) => (
-      <button onClick={() => handleEditClick(row)} className="p-2 bg-blue-500 text-white rounded">Edit</button>
-    )}
+    // { label: 'Actions', field: 'actions', type: 'custom', size: 'min-w-[100px]', render: (row) => (
+    //   <button onClick={() => handleEditClick(row)} className="p-2 bg-blue-500 text-white rounded">Edit</button>
+    // )}
   ];
  
  
@@ -267,6 +267,7 @@ const Users = () => {
         {/* Table Component */}
         <Table
           invisibleEdit={true}
+          invisibleDelete={true}
           setViewDetails={setViewDetails}
           setModalViewOpen={setModalViewOpen}
           filtereddata={filtereddata}
