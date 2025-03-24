@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useCallback } from 'react';
 import Table from '@/components/Table';
 import Config from '@/config/config';
 import { toast } from 'react-toastify';
@@ -79,35 +79,33 @@ const Users = () => {
     }));
 };
 
-  
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
+const fetchUsers = useCallback(async () => {
+  try {
+    const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       }
-  
-      const data = await response.json();
-      setUsers(data.users || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-  
-  // Fetch users when token changes
-  useEffect(() => {
-    if (token) {
-      fetchUsers();
-    }
-  }, [token]); 
+    });
 
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const data = await response.json();
+    setUsers(data.users || []);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+}, [token]); // ✅ Memoized function to prevent re-renders
+
+// ✅ Fetch users when token changes
+useEffect(() => {
+  if (token) {
+    fetchUsers();
+  }
+}, [token, fetchUsers]);
   // Handle form submission
   const handleAddButtonClick = async () => {
     let newErrors = {};
@@ -271,7 +269,6 @@ const Users = () => {
           setViewDetails={setViewDetails}
           setModalViewOpen={setModalViewOpen}
           filtereddata={filtereddata}
-          sampleData={users}
           setModalDeleteOpen={setModalDeleteOpen}
           setDeleteDetails={setDeleteDetails}
           fieldOrder={fieldOrder}

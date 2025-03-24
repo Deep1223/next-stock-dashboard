@@ -6,15 +6,15 @@ import validateField from "@/components/Validation";
 import { toast } from "react-toastify";
 
 const CreateModal = (props) => {
-    try {
-        const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // Check if any tab exists
-        const [dynamicOptions, setDynamicOptions] = useState({});
-        const [data, setData] = useState({});
+    const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // ✅ Move outside try block
+    const [dynamicOptions, setDynamicOptions] = useState({});
+    const [data, setData] = useState([]);
 
-        useEffect(() => {
-            const fetchData = async () => {
-                let updatedOptions = {};
+    useEffect(() => {
+        const fetchData = async () => {
+            let updatedOptions = {};
 
+            try {
                 await Promise.all(
                     props.rightSidebarData.flatMap(tab =>
                         tab.fields
@@ -29,10 +29,10 @@ const CreateModal = (props) => {
                                         }
                                     });
 
-                                    const data = await response.json();
+                                    const result = await response.json();
 
-                                    const dataArray = field.masterdataarray && Array.isArray(data[field.masterdataarray])
-                                        ? data[field.masterdataarray]
+                                    const dataArray = field.masterdataarray && Array.isArray(result[field.masterdataarray])
+                                        ? result[field.masterdataarray]
                                         : [];
 
                                     setData(dataArray);
@@ -55,12 +55,15 @@ const CreateModal = (props) => {
                 );
 
                 setDynamicOptions(updatedOptions);
-            };
-
-            if (props.modalOpen) {
-                fetchData();
+            } catch (error) {
+                console.error("Error in fetchData:", error);
             }
-        }, [props.modalOpen, props.rightSidebarData]); // Runs when modal opens & `rightSidebarData` changes
+        };
+
+        if (props.modalOpen) {
+            fetchData();
+        }
+    }, [props.modalOpen, props.rightSidebarData, props.token]); // ✅ Add `props.token` dependency
 
         const handleFieldChange = (e, field) => {
             const { name, value } = e.target;
@@ -244,10 +247,7 @@ const CreateModal = (props) => {
                 }
             />
         );
-    } catch (e) {
-        console.log(e);
-        return <></>;
-    }
-};
+    } 
+
 
 export default CreateModal;

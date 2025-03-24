@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useCallback  } from 'react';
 import Table from '@/components/Table';
 import Config from '@/config/config';
 import { toast } from 'react-toastify';
@@ -57,77 +57,79 @@ const Home = () => {
     { value: "Bose", label: "Bose" },
     { value: "Canon", label: "Canon" }
   ];
-console.log(email)
-const fetchCsvList = async () => {
-  try {
-    const response = await fetch(
-      "https://dev.crmbackend.finnovationz.com/api/leads/getCsvlist",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+  const fetchCsvList = useCallback(async () => {
+    try {
+      const response = await fetch(
+        "https://dev.crmbackend.finnovationz.com/api/leads/getCsvlist",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch CSV list");
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch CSV list");
-    }
-
-    const data = await response.json();
-    
-    // Ensure that we correctly extract csvLists
-    if (data && Array.isArray(data.csvLists)) {
-      setCsvList(data.csvLists);
-    } else {
-      console.error("Invalid response format:", data);
+  
+      const data = await response.json();
+      
+      if (data && Array.isArray(data.csvLists)) {
+        setCsvList(data.csvLists);
+      } else {
+        console.error("Invalid response format:", data);
+        setCsvList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching CSV list:", error);
       setCsvList([]);
     }
-  } catch (error) {
-    console.error("Error fetching CSV list:", error);
-    setCsvList([]);
-  }
-};
-
-
-// ✅ Fetch All Leads
-const fetchAllLeads = async () => {
-  try {
-    const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/fetchAllLeads", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch leads");
+  }, [token]); // ✅ Memoized to prevent re-renders
+  
+  const fetchAllLeads = useCallback(async () => {
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/fetchAllLeads", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch leads");
+      }
+  
+      const result = await response.json();
+  
+      if (!result.data || !Array.isArray(result.data)) {
+        throw new Error("Invalid data format received from API");
+      }
+  
+      const leadsArray = result.data;
+  
+      if (userRole === "Administrator") {
+        setLeads(leadsArray);
+        setFilteredData(leadsArray);
+      } else if (userRole === "sales user" && email) {
+        const filteredLeads = leadsArray.filter((lead) => lead.ownerEmail === email);
+        setLeads(filteredLeads);
+        setFilteredData(filteredLeads);
+      }
+    } catch (error) {
+      console.error("Error fetching leads:", error);
     }
-
-    const result = await response.json();
-
-    if (!result.data || !Array.isArray(result.data)) {
-      throw new Error("Invalid data format received from API");
+  }, [token, userRole, email]); // ✅ Memoized to prevent infinite re-renders
+  
+  // ✅ Fetch data when token is available
+  useEffect(() => {
+    if (token) {
+      fetchCsvList();
+      fetchAllLeads();
     }
-
-    const leadsArray = result.data; // Extract leads data
-
-    if (userRole === "Administrator") {
-      setLeads(leadsArray);
-      setFilteredData(leadsArray);
-    } else if (userRole === "sales user" && email) {
-      console.log("User Email:", email);
-      const filteredLeads = leadsArray.filter((lead) => lead.ownerEmail === email);
-      setLeads(filteredLeads);
-      setFilteredData(filteredLeads);
-    }
-  } catch (error) {
-    console.error("Error fetching leads:", error);
-  }
-};
-
+  }, [token, fetchCsvList, fetchAllLeads]);
 // ✅ Handle Select Change
 const handleCsvChange = (e) => {
   const selectedName = e.target.value;
@@ -142,13 +144,6 @@ const handleCsvChange = (e) => {
 };
 
 // ✅ Fetch data when token is available
-useEffect(() => {
-  if (token) {
-    fetchCsvList(); // Fetch CSV names
-    fetchAllLeads(); // Fetch Leads
-  }
-}, [token, userRole, email]);
-
 
 const fieldOrder = [
   { label: "Name", field: "name", type: "text", size: "min-w-[150px]", sorting: true },

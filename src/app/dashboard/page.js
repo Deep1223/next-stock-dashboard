@@ -29,10 +29,6 @@ const Dashboard = () => {
     localStorage.setItem("dashboardComponents", JSON.stringify(addedComponents));
   }, [addedComponents]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) router.replace("/login");
-  }, []);
 
   const handleAddComponent = (componentId) => {
     if (!addedComponents.includes(componentId)) {
