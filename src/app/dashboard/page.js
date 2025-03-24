@@ -19,8 +19,11 @@ const availableComponents = [
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addedComponents, setAddedComponents] = useState(() => {
-    const savedComponents = localStorage.getItem("dashboardComponents");
-    return savedComponents ? JSON.parse(savedComponents) : [];
+    let savedComponents = null;
+    if (typeof window !== "undefined") {
+      savedComponents = localStorage.getItem("dashboardComponents");
+    }
+        return savedComponents ? JSON.parse(savedComponents) : [];
   });
   const [fullscreenComponent, setFullscreenComponent] = useState(null);
   const router = useRouter();
