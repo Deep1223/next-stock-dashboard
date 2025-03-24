@@ -39,6 +39,8 @@ export default function LoginPage() {
                 localStorage.setItem("userrole", result.user.userRole);
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("userId", result.user.userid);
+                localStorage.setItem("userEmail", result.user.userEmail);
+
                 localStorage.setItem("lastActivity", Date.now().toString()); // Start session timer
     
                 // Store credentials only if "Remember Me" is checked

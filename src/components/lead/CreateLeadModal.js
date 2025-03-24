@@ -164,7 +164,7 @@ const CreateModal = ({ modalOpen, setModalOpen, title, handleAddButtonClick }) =
                                     className={`block text-sm font-medium text-gray-700 mb-1 ${formErrors.lead ? "text-red-500" : ""
                                         }`}
                                 >
-                                    Leads<span className="text-red-500 ml-1">*</span>
+                                    Lead<span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <input
                                     type="file"

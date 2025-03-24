@@ -28,15 +28,20 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState(rightSidebarData[0].tabname);
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
+  const[email,setEmail]=useState(null)
   const [userRole, setUserRole] = useState(null);
   const [leadsData, setLeadsData] = useState([]);
   const [csvType, setCsvType] = useState("");
-
+  const [leads, setLeads] = useState([]);
+  const [csvList, setCsvList] = useState([]); // Stores CSV names from API
+  const [selectedCsvName, setSelectedCsvName] = useState(""); // Stores selected option
   useEffect(() => {
     if (typeof window !== "undefined") { // Ensure it's running on the client
       setToken(localStorage.getItem('token'));
       setUserId(localStorage.getItem('userid'));
       setUserRole(localStorage.getItem('userrole'));
+      setEmail(localStorage.getItem('userEmail'));
+
     }
   }, []);
 
@@ -52,98 +57,110 @@ const Home = () => {
     { value: "Bose", label: "Bose" },
     { value: "Canon", label: "Canon" }
   ];
-
-  const fieldOrder = [
-    {
-      label: 'Product Name',
-      field: 'productName',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Category',
-      field: 'category',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Brand',
-      field: 'brand',
-      type: 'select',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Description',
-      field: 'description',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    },
-    {
-      label: 'Price',
-      field: 'price',
-      type: 'text',
-      size: 'min-w-[150px]',
-      sorting: true,
-    }
-  ]
-
-  const sampleData = [
-    { "id": 1, "productName": "Apple iPhone 14", "category": "Electronics", "brand": "Apple", "description": "Latest iPhone model", "price": 999 },
-    { "id": 2, "productName": "Samsung Galaxy S23", "category": "Electronics", "brand": "Samsung", "description": "High-end Android phone", "price": 899 },
-    { "id": 3, "productName": "Sony WH-1000XM5", "category": "Accessories", "brand": "Sony", "description": "Noise-canceling headphones", "price": 350 },
-    { "id": 4, "productName": "Dell XPS 13", "category": "Computers", "brand": "Dell", "description": "Premium ultrabook", "price": 1299 },
-    { "id": 5, "productName": "Nike Air Max 90", "category": "Footwear", "brand": "Nike", "description": "Classic running shoes", "price": 150 },
-    { "id": 6, "productName": "Adidas Ultraboost", "category": "Footwear", "brand": "Adidas", "description": "Comfortable running shoes", "price": 180 },
-    { "id": 7, "productName": "MacBook Pro 16", "category": "Computers", "brand": "Apple", "description": "Powerful laptop for professionals", "price": 2399 },
-    { "id": 8, "productName": "Logitech MX Master 3", "category": "Accessories", "brand": "Apple", "description": "Ergonomic wireless mouse", "price": 99 },
-    { "id": 9, "productName": "Bose QuietComfort 45", "category": "Accessories", "brand": "Bose", "description": "Premium noise-canceling headphones", "price": 329 },
-    { "id": 10, "productName": "Google Pixel 7", "category": "Electronics", "brand": "Apple", "description": "Pure Android experience", "price": 799 },
-    { "id": 11, "productName": "HP Spectre x360", "category": "Computers", "brand": "HP", "description": "2-in-1 convertible laptop", "price": 1499 },
-    { "id": 12, "productName": "PlayStation 5", "category": "Gaming", "brand": "Sony", "description": "Next-gen gaming console", "price": 499 },
-    { "id": 13, "productName": "Xbox Series X", "category": "Gaming", "brand": "Microsoft", "description": "High-performance gaming console", "price": 499 },
-    { "id": 14, "productName": "Samsung 4K Smart TV", "category": "Electronics", "brand": "Samsung", "description": "Crystal clear UHD display", "price": 1200 },
-    { "id": 15, "productName": "Canon EOS R6", "category": "Cameras", "brand": "Canon", "description": "Mirrorless camera for professionals", "price": 2500 }
-  ];
-
-
-
-  const fetchLeads = async () => {
-    try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/getCsvlist", {
+console.log(email)
+const fetchCsvList = async () => {
+  try {
+    const response = await fetch(
+      "https://dev.crmbackend.finnovationz.com/api/leads/getCsvlist",
+      {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch Leads");
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-      console.log(response);
+    );
 
-
-      const data = await response.json();
-      setLeadsData(data);
-      console.log('data', data);
-    } catch (error) {
-      console.error("Error fetching leads:", error);
+    if (!response.ok) {
+      throw new Error("Failed to fetch CSV list");
     }
-  };
 
-  // Fetch users when token changes
-  useEffect(() => {
-    if (token) {
-      fetchLeads();
+    const data = await response.json();
+    
+    // Ensure that we correctly extract csvLists
+    if (data && Array.isArray(data.csvLists)) {
+      setCsvList(data.csvLists);
+    } else {
+      console.error("Invalid response format:", data);
+      setCsvList([]);
     }
-  }, [token]);
+  } catch (error) {
+    console.error("Error fetching CSV list:", error);
+    setCsvList([]);
+  }
+};
 
-  // Reset form data and errors when modal opens/closes
+
+// ✅ Fetch All Leads
+const fetchAllLeads = async () => {
+  try {
+    const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/fetchAllLeads", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leads");
+    }
+
+    const result = await response.json();
+
+    if (!result.data || !Array.isArray(result.data)) {
+      throw new Error("Invalid data format received from API");
+    }
+
+    const leadsArray = result.data; // Extract leads data
+
+    if (userRole === "Administrator") {
+      setLeads(leadsArray);
+      setFilteredData(leadsArray);
+    } else if (userRole === "sales user" && email) {
+      console.log("User Email:", email);
+      const filteredLeads = leadsArray.filter((lead) => lead.ownerEmail === email);
+      setLeads(filteredLeads);
+      setFilteredData(filteredLeads);
+    }
+  } catch (error) {
+    console.error("Error fetching leads:", error);
+  }
+};
+
+// ✅ Handle Select Change
+const handleCsvChange = (e) => {
+  const selectedName = e.target.value;
+  setSelectedCsvName(selectedName);
+
+  if (selectedName === "") {
+    setFilteredData(leads); // Show all data if no selection
+  } else {
+    const filteredLeads = leads.filter((lead) => lead.leadSource === selectedName);
+    setFilteredData(filteredLeads);
+  }
+};
+
+// ✅ Fetch data when token is available
+useEffect(() => {
+  if (token) {
+    fetchCsvList(); // Fetch CSV names
+    fetchAllLeads(); // Fetch Leads
+  }
+}, [token, userRole, email]);
+
+
+const fieldOrder = [
+  { label: "Name", field: "name", type: "text", size: "min-w-[150px]", sorting: true },
+  { label: "Email", field: "email", type: "text", size: "min-w-[200px]", sorting: true },
+  { label: "Phone", field: "phone", type: "text", size: "min-w-[150px]", sorting: true },
+  { label: "Owner Email", field: "ownerEmail", type: "text", size: "min-w-[200px]", sorting: true },
+  { label: "Lead Status", field: "leadStatus", type: "text", size: "min-w-[200px]", sorting: true },
+  { label: "Lead File", field: "leadSource", type: "text", size: "min-w-[200px]", sorting: true }, // ✅ Added Lead Source
+];
+
+
+
   useEffect(() => {
     setFormData({});
     setErrors({});
@@ -266,6 +283,7 @@ const Home = () => {
       if (response.ok) {
         toast.success(Config.fileuploadsuccessfullyerror);
         setModalOpen(false);
+        fetchAllLeads()
       } else {
         toast.error(result.message || Config.fileuploadfailederror);
       }
@@ -275,25 +293,26 @@ const Home = () => {
     }
   };
 
-  // useEffect(() => {
-  //   setFilteredData(sampleData);
-  // }, []);
+  useEffect(() => {
+    setFilteredData(leads);
+  }, [leads]);
 
   const handleSearch = (searchText) => {
     if (!searchText.trim()) {
-      setFilteredData(sampleData);
+      setFilteredData(leads);
       return;
     }
 
     const lowerCaseSearch = searchText.toLowerCase();
 
-    const filtered = sampleData.filter(item =>
-      item.productName.toLowerCase().includes(lowerCaseSearch) ||
-      item.category.toLowerCase().includes(lowerCaseSearch) ||
-      item.brand.toLowerCase().includes(lowerCaseSearch) ||
-      item.description.toLowerCase().includes(lowerCaseSearch) ||
-      item.price.toString().includes(lowerCaseSearch)
+    const filtered = leads.filter(item =>
+      item.name.toLowerCase().includes(lowerCaseSearch) ||
+      item.email.toLowerCase().includes(lowerCaseSearch) ||
+      item.phone.toLowerCase().includes(lowerCaseSearch) ||
+      item.ownerEmail.toLowerCase().includes(lowerCaseSearch) ||
+      item.leadStatus.toLowerCase().includes(lowerCaseSearch)
     );
+    
 
     setFilteredData(filtered);
   };
@@ -317,30 +336,41 @@ const Home = () => {
           <div className="flex items-center gap-2">
             {/* CSV Type Select */}
             <select
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring focus:ring-blue-300"
-              value={csvType}
-              onChange={(e) => setCsvType(e.target.value)}
-            >
-              <option value="">Select CSV Type</option>
-              <option value="detailed">Detailed CSV</option>
-              <option value="summary">Summary CSV</option>
-            </select>
+        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring focus:ring-blue-300"
+        value={selectedCsvName}
+        onChange={handleCsvChange}
+      >
+        <option value="">Select CSV Type</option>
+        {csvList.length > 0 ? (
+          csvList.map((item) => (
+            <option key={item._id} value={item.name}>
+              {item.name}
+            </option>
+          ))
+        ) : (
+          <option disabled>No CSVs available</option>
+        )}
+      </select>
             <SearchBar
               setSearchTerm={setSearchTerm}
               searchTerm={searchTerm}
               handleSearch={handleSearch}
             />
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-              onClick={() => setModalOpen(true)}
-            >
-              {Config.createbtn}
-            </button>
+            {userRole === "Administrator" && (
+  <button
+    className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+    onClick={() => setModalOpen(true)}
+  >
+    {Config.createbtn}
+  </button>
+)}
+
           </div>
         </div>
 
         {/* Table Component */}
         <Table
+        
           invisibleEdit={true}
           showleads={true}
           setViewDetails={setViewDetails}
@@ -349,6 +379,7 @@ const Home = () => {
           setModalDeleteOpen={setModalDeleteOpen}
           setDeleteDetails={setDeleteDetails}
           fieldOrder={fieldOrder}
+         
           brandOptions={brandOptions}
           handleleadstatusChange={handleleadstatusChange}
           handleleads={handleleads}

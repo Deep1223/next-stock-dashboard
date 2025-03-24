@@ -26,12 +26,25 @@ const Table = (props) => {
             setDropdownOpen(null);
         }
     };
-
     // Initialize sortedData from filtereddata
+    console.log("Props Filtered Data:", props.filtereddata);
     useEffect(() => {
-        setSortedData(props.filtereddata || []);
+        let updatedData = [];
+    
+        if (Array.isArray(props.filtereddata)) {
+            // Case 1: filtereddata is already an array
+            updatedData = [...props.filtereddata];
+        } else if (props.filtereddata && Array.isArray(props.filtereddata.data)) {
+            // Case 2: filtereddata is an object with a 'data' array inside
+            updatedData = [...props.filtereddata.data];
+        } else {
+            console.error("Filtered data is not in a valid format:", props.filtereddata);
+        }
+    
+        setSortedData(updatedData);
     }, [props.filtereddata]);
-
+    
+    
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
@@ -159,7 +172,7 @@ const Table = (props) => {
                                                                     <li
                                                                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
                                                                         onClick={async () => {
-                                                                            props.handleleads(formData.id);
+                                                                            props.handleleads(formData.leadId);
                                                                             setDropdownOpen(null);
                                                                         }}
                                                                     >
