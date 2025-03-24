@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from "react";
 import Modal from "./modal";
 import Config from "@/config/config";
@@ -6,19 +7,20 @@ import validateField from "@/components/Validation";
 import { toast } from "react-toastify";
 
 const CreateModal = (props) => {
-    const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // ✅ Move outside try block
     const [dynamicOptions, setDynamicOptions] = useState({});
     const [data, setData] = useState([]);
 
     useEffect(() => {
+        if (!props.modalOpen) return; // ✅ Move condition inside the effect
+
         const fetchData = async () => {
             let updatedOptions = {};
 
             try {
                 await Promise.all(
-                    props.rightSidebarData.flatMap(tab =>
-                        tab.fields
-                            .filter(field => field.masterdata) // Only process fields with masterdata
+                    (props.rightSidebarData || []).flatMap(tab =>
+                        (tab.fields || [])
+                            .filter(field => field.masterdata)
                             .map(async (field) => {
                                 try {
                                     const response = await fetch(`https://dev.crmbackend.finnovationz.com/api/${field.masterdata}`, {
@@ -35,8 +37,6 @@ const CreateModal = (props) => {
                                         ? result[field.masterdataarray]
                                         : [];
 
-                                    setData(dataArray);
-
                                     if (dataArray.length > 0 && Array.isArray(field.masterdatafields) && field.masterdatafields.length === 2) {
                                         const [labelField, valueField] = field.masterdatafields;
 
@@ -45,7 +45,6 @@ const CreateModal = (props) => {
                                             value: item[valueField]
                                         }));
                                     }
-
                                 } catch (error) {
                                     console.error(`Error fetching data for ${field.masterdata}:`, error);
                                     toast.error(`Failed to load ${field.text}`);
@@ -60,10 +59,8 @@ const CreateModal = (props) => {
             }
         };
 
-        if (props.modalOpen) {
-            fetchData();
-        }
-    }, [props.modalOpen, props.rightSidebarData, props.token]); // ✅ Add `props.token` dependency
+        fetchData();
+    }, [props.modalOpen, props.rightSidebarData, props.token]); // ✅ `useEffect` always runs correctly
 
         const handleFieldChange = (e, field) => {
             const { name, value } = e.target;
