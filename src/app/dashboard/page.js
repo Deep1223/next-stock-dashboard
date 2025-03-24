@@ -26,9 +26,11 @@ const Dashboard = () => {
   const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("dashboardComponents", JSON.stringify(addedComponents));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dashboardComponents", JSON.stringify(addedComponents));
+    }
   }, [addedComponents]);
-
+  
 
   const handleAddComponent = (componentId) => {
     if (!addedComponents.includes(componentId)) {
