@@ -23,7 +23,7 @@ const Dashboard = () => {
     if (typeof window !== "undefined") {
       savedComponents = localStorage.getItem("dashboardComponents");
     }
-        return savedComponents ? JSON.parse(savedComponents) : [];
+    return savedComponents ? JSON.parse(savedComponents) : [];
   });
   const [fullscreenComponent, setFullscreenComponent] = useState(null);
   const router = useRouter();
@@ -33,7 +33,7 @@ const Dashboard = () => {
       localStorage.setItem("dashboardComponents", JSON.stringify(addedComponents));
     }
   }, [addedComponents]);
-  
+
 
   const handleAddComponent = (componentId) => {
     if (!addedComponents.includes(componentId)) {
@@ -57,25 +57,22 @@ const Dashboard = () => {
     return (
       <div
         key={comp.id}
-        className={`bg-white rounded-xl shadow-lg transition-all duration-300 ${
-          isFullscreen ? "fixed inset-0 z-50 m-[50px] p-6" : "p-1"
-        } ${comp.width === 2 ? "col-span-2" : "col-span-1"}`}
+        className={`bg-white rounded-xl shadow-lg transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-50 m-[50px] p-6" : "p-1"
+          } ${comp.width === 2 ? "col-span-2" : "col-span-1"}`}
       >
         <div className="flex justify-between items-center mb-4 border-b pb-2">
           <h2 className="text-lg font-semibold text-gray-800">{comp.name}</h2>
           <div className="flex space-x-2">
             <button
               onClick={() => toggleFullscreen(comp.id)}
-              className="p-2  rounded-full transition-colors"
+              className="p-2 rounded-full transition-colors"
             >
               {isFullscreen ? (
-                <svg className="w-5 h-5 text-gray-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                
               ) : (
-                <div className="flex items-center gap-4">
-                                  <svg className="w-5 h-5   text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -83,20 +80,21 @@ const Dashboard = () => {
                     d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"
                   />
                 </svg>
-                <button
-              onClick={() => handleRemoveComponent(comp.id)}
-              className="p-2 hover:bg-red-100 rounded-full transition-colors"
-            >
-              <svg className="w-5 h-5 text-red-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-                </div>
-                
               )}
             </button>
-            
+
+            {!isFullscreen && (
+              <button
+                onClick={() => handleRemoveComponent(comp.id)}
+                className="p-2 hover:bg-red-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-red-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
+
         </div>
         <div className={isFullscreen ? "h-[calc(100%-4rem)] overflow-auto" : ""}>
           <Component />

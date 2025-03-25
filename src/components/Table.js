@@ -6,7 +6,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { TbGridDots } from "react-icons/tb";
 import { FaSortAmountDown, FaSortAmountDownAlt } from "react-icons/fa";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaAngleDown, FaAngleUp, FaX } from 'react-icons/fa6';
+import { FaAngleDown, FaAngleUp, FaX, FaRegRectangleList } from 'react-icons/fa6';
 
 const Table = (props) => {
     const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -27,7 +27,6 @@ const Table = (props) => {
         }
     };
     // Initialize sortedData from filtereddata
-    console.log("Props Filtered Data:", props.filtereddata);
     useEffect(() => {
         let updatedData = [];
     
@@ -177,6 +176,17 @@ const Table = (props) => {
                                                                         }}
                                                                     >
                                                                         <AiOutlineFileAdd /> Show Leads
+                                                                    </li>
+                                                                )}
+                                                                {props.showdetails && (
+                                                                    <li
+                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        onClick={async () => {
+                                                                            await props.handleUserDetails(formData);
+                                                                            setDropdownOpen(null);
+                                                                        }}
+                                                                    >
+                                                                        <FaRegRectangleList /> User Details
                                                                     </li>
                                                                 )}
                                                             </ul>

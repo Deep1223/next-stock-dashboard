@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect,useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Table from '@/components/Table';
 import Config from '@/config/config';
 import { toast } from 'react-toastify';
@@ -10,6 +10,8 @@ import DeleteModal from '@/components/DeleteModal';
 import MasterJson from '@/config/masterJSON';
 import ViewModal from '@/components/ViewModal';
 import CreateModal from '@/components/CreateModal';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import Modal from '@/components/modal';
 
 const Users = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,6 +31,11 @@ const Users = () => {
   const [userRole, setUserRole] = useState(null);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [userLeads, setUserLeads] = useState('');
+  const [modalUserDetailsOpen, setModalUserDetailsOpen] = useState(false);
+  const [userLeadDetails, setUserLeadDetails] = useState('');
+  const [userDetails, setUserDetails] = useState('');
+
   useEffect(() => {
     if (typeof window !== "undefined") { // Ensure it's running on the client
       setToken(localStorage.getItem('token'));
@@ -45,8 +52,8 @@ const Users = () => {
     //   <button onClick={() => handleEditClick(row)} className="p-2 bg-blue-500 text-white rounded">Edit</button>
     // )}
   ];
- 
- 
+
+
   // Reset form data and errors when modal opens/closes
   useEffect(() => {
     setFormData({});
@@ -62,8 +69,8 @@ const Users = () => {
   const handleChange = (e, field) => {
     const { files, value } = e.target;
     const fieldValue = files ? files[0] : value;
-  
-  
+
+
     setFormData((prev) => ({
       ...prev,
       [field.field]: fieldValue,
@@ -74,90 +81,111 @@ const Users = () => {
     const fieldValue = files ? files[0] : value;
 
     setFormData((prev) => ({
-        ...prev,
-        [name]: fieldValue,  // ✅ Use `name` instead of `field.field`
+      ...prev,
+      [name]: fieldValue,  // ✅ Use `name` instead of `field.field`
     }));
-};
+  };
 
-const fetchUsers = useCallback(async () => {
-  try {
-    const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
       }
-    });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
+  }, [token]);
 
-    const data = await response.json();
-    setUsers(data.users || []);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
-}, [token]); // ✅ Memoized function to prevent re-renders
+  const fetchLeads = useCallback(async () => {
+    try {
+      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/fetchAllLeads", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
 
-// ✅ Fetch users when token changes
-useEffect(() => {
-  if (token) {
-    fetchUsers();
-  }
-}, [token, fetchUsers]);
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const data = await response.json();
+      setUserLeads(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchUsers();
+      fetchLeads();
+    }
+  }, [token, fetchUsers]);
   // Handle form submission
   const handleAddButtonClick = async () => {
     let newErrors = {};
     let emptyFields = false;
     let tempData = { ...formData }; // Copy existing form data
-  
+
     rightSidebarData.forEach((tab) => {
       tab.fields.forEach((field) => {
         const fieldValue = formData[field.field] || "";
         const errorMessage = validateField(field.text, fieldValue, { required: field.required, type: field.regextype });
-  
+
         if (field.required && !fieldValue) {
           emptyFields = true;
           newErrors[field.field] = "This field is required";
         } else if (errorMessage) {
           newErrors[field.field] = errorMessage;
         }
-  
+
         tempData[field.field] = fieldValue;
       });
     });
-  
+
     if (emptyFields) {
       setErrors(newErrors);
       toast.error("Please fill in all required fields.");
       return;
     }
-  
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error(Object.values(newErrors)[0]);
       return;
     }
-  
+
     // **Convert data to match backend field names**
     const getMappedRole = (roleLabel) => {
-        const roleMap = {
-          "Admin": "Administrator",
-          "Sales Person": "sales user"
-        };
-        return roleMap[roleLabel] || roleLabel; // Default to the same label if not found
+      const roleMap = {
+        "Admin": "Administrator",
+        "Sales Person": "sales user"
       };
-      
-      const formattedData = {
-        userName: tempData.fullname,
-        userEmail: tempData.email,
-        userPassword: tempData.password,
-        userPhoneNumber: tempData.phone,
-        userRole: getMappedRole(tempData.role.label), // Convert role label using the mapping function
-      };
-  
-  
+      return roleMap[roleLabel] || roleLabel; // Default to the same label if not found
+    };
+
+    const formattedData = {
+      userName: tempData.fullname,
+      userEmail: tempData.email,
+      userPassword: tempData.password,
+      userPhoneNumber: tempData.phone,
+      userRole: getMappedRole(tempData.role.label), // Convert role label using the mapping function
+    };
+
+
     try {
       const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/signup", {
         method: "POST",
@@ -167,7 +195,7 @@ useEffect(() => {
         },
         body: JSON.stringify(formattedData),
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         toast.success("User registered successfully!");
@@ -181,13 +209,11 @@ useEffect(() => {
       console.error(error);
     }
   };
-  
-  
 
   useEffect(() => {
     setFilteredData(users);
-  }, [users]);  // ✅ Ensure filtered data updates when users change
-  
+  }, [users]);
+
   const handleUpdate = async () => {
     if (!formData.userRole || !formData.password) {
       toast.error("Role and Password are required!");
@@ -237,9 +263,27 @@ useEffect(() => {
       item.userPhoneNumber.toString().includes(lowerCaseSearch) ||
       item.userRole.toLowerCase().includes(lowerCaseSearch)
     );
-    
+
     setFilteredData(filtered);
   };
+  const handleUserDetails = (data) => {
+    setUserDetails(data);
+
+    if (data.userEmail) {
+      const userLeadsData = userLeads.filter(lead => lead.ownerEmail === data.userEmail);
+      setUserLeadDetails(userLeadsData);
+      setModalUserDetailsOpen(true);
+    }
+  };
+
+  const tableFields = [
+    { label: "Name", field: "name", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+    { label: "Email", field: "email", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+    { label: "Phone", field: "phone", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+    { label: "Owner Email", field: "ownerEmail", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+    { label: "Lead Status", field: "leadStatus", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+    { label: "Lead Source", field: "leadSource", size: "min-w-[150px]", maxWidth: "max-w-[350px]" },
+  ]
 
   try {
     return (
@@ -266,34 +310,37 @@ useEffect(() => {
         <Table
           invisibleEdit={true}
           invisibleDelete={true}
+          showdetails={true}
           setViewDetails={setViewDetails}
           setModalViewOpen={setModalViewOpen}
           filtereddata={filtereddata}
           setModalDeleteOpen={setModalDeleteOpen}
           setDeleteDetails={setDeleteDetails}
           fieldOrder={fieldOrder}
+          setUserDetails={setUserDetails}
+          handleUserDetails={handleUserDetails}
         />
-{editModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-md w-96">
-            <h2 className="text-xl font-bold mb-4">Edit User</h2>
-            <label className="block mb-2">Role</label>
-            <select name="userRole" value={formData.userRole} onChange={handleChangeedit} className="w-full p-2 border rounded">
-              <option value="Administrator">Administrator</option>
-              <option value="sales user">Sales User</option>
-              <option value="User">User</option>
-            </select>
+        {editModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-md w-96">
+              <h2 className="text-xl font-bold mb-4">Edit User</h2>
+              <label className="block mb-2">Role</label>
+              <select name="userRole" value={formData.userRole} onChange={handleChangeedit} className="w-full p-2 border rounded">
+                <option value="Administrator">Administrator</option>
+                <option value="sales user">Sales User</option>
+                <option value="User">User</option>
+              </select>
 
-            <label className="block mt-4 mb-2">New Password</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChangeedit} className="w-full p-2 border rounded" />
+              <label className="block mt-4 mb-2">New Password</label>
+              <input type="password" name="password" value={formData.password} onChange={handleChangeedit} className="w-full p-2 border rounded" />
 
-            <div className="flex justify-end mt-4 space-x-2">
-              <button onClick={() => setEditModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-              <button onClick={handleUpdate} className="px-4 py-2 bg-green-500 text-white rounded">Update</button>
+              <div className="flex justify-end mt-4 space-x-2">
+                <button onClick={() => setEditModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                <button onClick={handleUpdate} className="px-4 py-2 bg-green-500 text-white rounded">Update</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
         <CreateModal
           title={`Create ${rightSidebarData[0].pagename}`}
           modalOpen={modalOpen}
@@ -319,6 +366,63 @@ useEffect(() => {
         <DeleteModal
           setModalDeleteOpen={setModalDeleteOpen}
           modalDeleteOpen={modalDeleteOpen}
+        />
+
+        <Modal
+          open={modalUserDetailsOpen}
+          onClose={() => setModalUserDetailsOpen(false)}
+          header={<h2 className="text-lg font-semibold">{`Leads (${userDetails.userName}) [${userLeadDetails.length}]`}</h2>}
+          width="w-4/5"
+          body={
+            <div className="bg-white relative shadow-md sm:rounded-sm overflow-hidden">
+              <div className="overflow-x-auto flex-grow">
+                <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow-lg sm:rounded-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <table className="text-sm text-left text-gray-700 w-full">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-200 border-b">
+                      <tr>
+                        {tableFields.map((field, index) => (
+                          <th key={index} className={`px-4 py-3 ${field.size}`}>
+                            <div className="flex justify-between items-center w-full">
+                              <span>{field.label}</span>
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {userLeadDetails.length > 0 ? (
+                        userLeadDetails.map((formData, index) => (
+                          <tr key={index} className="border-b even:bg-gray-50 hover:bg-gray-100 transition relative">
+                            {tableFields.map((field, index) => (
+                              <td key={index} className={`p-3 ${field.maxWidth} overflow-hidden whitespace-nowrap text-ellipsis`}>
+                              {formData[field.field] ? formData[field.field] : '-'}
+                            </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={tableFields.length} className="text-center p-5">
+                            <img src={"/No_Data_Found.svg"} alt={"No Data Found"} className="mx-auto h-[300px]" />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          }
+          footer={
+            <button
+              onClick={() => setModalUserDetailsOpen(false)}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            >
+              Close
+            </button>
+          }
         />
       </>
     );
