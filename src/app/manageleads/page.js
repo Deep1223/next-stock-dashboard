@@ -313,12 +313,10 @@ const fieldOrder = [
   };
 
   const handleleadstatusChange = (value) => {
-    console.log('handleleadstatus', event.target.value);
+    // console.log('handleleadstatus', event.target.value);
   }
 
   const handleleads = (id) => {
-    console.log('handleleads', id);
-
     router.push(`/manageleads/${id}`);
   }
 
