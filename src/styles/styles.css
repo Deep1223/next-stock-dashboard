@@ -52,6 +52,21 @@
     overflow: auto;
 }
 
+.lead-status-history {
+    height: calc(100vh - 215px);
+    overflow: auto;
+}
+
+.lead-detail-height {
+    height: calc(100vh - 159px);
+}
+
+.lead-detail-profile {
+    height: calc(100vh - 157px);
+    overflow: auto;
+    scrollbar-width: none;
+}
+
 /* Width of the scrollbar */
 ::-webkit-scrollbar {
     width: 4px;
@@ -74,4 +89,21 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #9ca3af, #6b7280); /* Medium-light gray */
+}
+
+@media screen and (max-width: 1024px) {
+    .lead-status-history {
+        height: calc(100vh - 215px);
+        overflow: auto;
+    }
+    
+    .lead-detail-height {
+        height: 100%;
+    }
+    
+    .lead-detail-profile {
+        height: 100%;
+        overflow: none;
+        scrollbar-width: auto;
+    }
 }
