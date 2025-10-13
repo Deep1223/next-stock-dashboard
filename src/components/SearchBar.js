@@ -15,24 +15,24 @@ const SearchBar = (props) => {
 
     try {
         return (
-            <div className="relative w-full max-w-xs">
+            <div className="position-relative w-100" style={{maxWidth: '300px'}}>
                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && triggerSearch()}
                     placeholder="Search..."
-                    className="border w-full pl-10 pr-10 py-2 rounded-md text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    className="form-control form-control-custom ps-5 pe-5"
                 />
 
                 <BiSearch
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg cursor-pointer"
+                    className="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary fs-5 cursor-pointer"
                     onClick={triggerSearch}
                 />
 
                 {inputValue && (
                     <IoClose
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg cursor-pointer"
+                        className="position-absolute top-50 end-0 translate-middle-y me-3 text-secondary fs-5 cursor-pointer"
                         onClick={() => {
                             setInputValue("");
                             props.setSearchTerm("");

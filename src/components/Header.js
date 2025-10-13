@@ -15,22 +15,26 @@ const Header = () => {
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    // Only add event listener on client side
+    if (typeof window !== 'undefined') {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
   }, []);
 
   try {
     return (
-      <header className="bg-white shadow p-4 flex justify-between items-center">
-        <h1 className="text-lg font-semibold">CRM</h1>
-        <div className="relative" ref={dropdownRef}>
+      <header className="bg-white shadow p-3 d-flex justify-content-between align-items-center">
+        <h1 className="h5 fw-semibold">DEMO</h1>
+        <div className="position-relative" ref={dropdownRef}>
           {/* Click only on the user icon to open dropdown */}
-          <div className="flex items-center gap-1 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-            <FaUserCircle className="text-3xl text-gray-600" />
-            <span className="text-gray-700 font-medium">Account</span>
+          <div className="d-flex align-items-center gap-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <FaUserCircle className="text-secondary" style={{fontSize: '28px'}} />
+            <span className="text-secondary fw-medium">Account</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 text-gray-600 transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+              className={`text-secondary transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+              style={{width: '16px', height: '16px'}}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -40,44 +44,47 @@ const Header = () => {
           </div>
 
           {isOpen && (
-            <div className="absolute right-0 mt-3 w-56 bg-white shadow-xl rounded-lg border border-gray-200 z-[999]">
+            <div className="position-absolute end-0 mt-2 account-dropdown">
               {/* Arrow Indicator */}
-              <div className="absolute -top-2 right-5 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-200"></div>
+              <div className="dropdown-arrow"></div>
 
               {/* User Info */}
-              <div className="p-4 border-b text-center">
-                <p className="font-semibold text-gray-800">Hi, Guest</p>
-                <p className="text-sm text-gray-500">User</p>
+              <div className="dropdown-user-info">
+                <p className="user-name">Hi, Guest</p>
+                <p className="user-role">User</p>
               </div>
 
               {/* Menu Items */}
-              <ul className="py-2">
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <FaUser className="mr-2 text-gray-600" />
-                  My Profile
+              <ul className="py-2 list-unstyled mb-0">
+                <li className="dropdown-menu-item">
+                  <FaUser className="icon" />
+                  <span className="text">My Profile</span>
                 </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <FaCog className="mr-2 text-gray-600" />
-                  Account Settings
+                <li className="dropdown-menu-item">
+                  <FaCog className="icon" />
+                  <span className="text">Account Settings</span>
                 </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <FaQuestionCircle className="mr-2 text-gray-600" />
-                  Need Help?
+                <li className="dropdown-menu-item">
+                  <FaQuestionCircle className="icon" />
+                  <span className="text">Need Help?</span>
                 </li>
-                <li 
-  onClick={() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userid");
-    localStorage.removeItem("userrole");
-    router.push("/login");
-  }} 
-  className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 border-t"
->
-  <FaSignOutAlt className="mr-2 text-red-500" />
-  <span className="text-red-500">Sign Out</span>
-</li>
-
               </ul>
+
+              {/* Sign Out Section */}
+              <div className="dropdown-signout">
+                <div 
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userid");
+                    localStorage.removeItem("userrole");
+                    router.push("/login");
+                  }} 
+                  className="dropdown-menu-item"
+                >
+                  <FaSignOutAlt className="icon" />
+                  <span className="text">Sign Out</span>
+                </div>
+              </div>
             </div>
           )}
         </div>

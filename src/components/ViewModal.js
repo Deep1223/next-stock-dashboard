@@ -6,13 +6,13 @@ const ViewModal = (props) => {
             <Modal
                 open={props.modalViewOpen}
                 onClose={() => props.setModalViewOpen(false)}
-                header={<h2 className="text-lg font-semibold">{props.title}</h2>}
+                header={<h2 className="h5 fw-semibold">{props.title}</h2>}
                 body={
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="row g-3">
                         {props.fieldOrder.map((field) => (
-                            <div key={field.field} className={`w-full ${field.size || ''}`}>
-                                <label className="block text-gray-600 font-medium">{field.label}</label>
-                                <span className="text-gray-500">{props.viewDetails?.[field.field] ?? "N/A"}</span>
+                            <div key={field.field} className="col-md-6">
+                                <label className="form-label fw-medium text-secondary">{field.label}</label>
+                                <div className="text-secondary">{props.viewDetails?.[field.field] ?? "N/A"}</div>
                             </div>
                         ))}
                     </div>
@@ -20,7 +20,7 @@ const ViewModal = (props) => {
                 footer={
                     <button
                         onClick={() => props.setModalViewOpen(false)}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        className="btn btn-secondary"
                     >
                         Close
                     </button>

@@ -23,30 +23,32 @@ const Modal = (props) => {
                     <>
                         {/* Background Overlay */}
                         <motion.div
-                            className="fixed inset-0 bg-black z-40"
+                            className="position-fixed top-0 start-0 w-100 h-100 bg-dark z-3"
+                            style={{opacity: 0.6}}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 0.6 }}
                             exit={{ opacity: 0 }}
                         />
 
                         {/* Modal Container */}
-                        <div className="fixed inset-0 flex justify-center items-start z-50">
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-start z-3">
                             <motion.div
-                                className={`bg-white p-[20px] rounded-lg shadow-lg relative z-50 ${props.width ? props.width : 'w-120'} modal-content`}
+                                className={`bg-white p-4 rounded shadow-custom-lg position-relative z-3 modal-custom ${props.width ? props.width : ''}`}
+                                style={{width: props.width ? props.width : '480px'}}
                                 initial={{ y: -50, opacity: 0 }}
                                 animate={{ y: 30, opacity: 1 }}
                                 exit={{ y: -50, opacity: 0 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
                                 {/* Header */}
-                                <div className="flex justify-between items-center pb-2">
+                                <div className="d-flex justify-content-between align-items-center pb-2">
                                     {
                                         props.header ?
                                             props.header
                                             :
                                             <></>
                                     }
-                                    <button onClick={props.onClose} className="text-red-500 hover:text-red-700 text-3xl cursor-pointer">
+                                    <button onClick={props.onClose} className="btn btn-link text-danger p-0 fs-3">
                                         <IoIosCloseCircleOutline />
                                     </button>
                                 </div>
@@ -62,7 +64,7 @@ const Modal = (props) => {
                                 </div>
 
                                 {/* Footer */}
-                                <div className="flex justify-end space-x-3 mt-3">
+                                <div className="d-flex justify-content-end gap-3 mt-3">
                                     {
                                         props.footer ?
                                             props.footer

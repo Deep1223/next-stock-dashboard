@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import 'react-toastify/dist/ReactToastify.css';
+// Bootstrap JS will be loaded dynamically on client side
 import "../styles/globals.css";
 import "../styles/styles.css";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ClientOnly from "../components/ClientOnly";
 import { ToastContainer, toast } from 'react-toastify';
 
 const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -19,12 +21,17 @@ const Layout = ({ children }) => {
   
   const isAuthPage = pathname === "/login" || pathname === "/";
 
-  const resetSession = () => {
-    localStorage.setItem("lastActivity", Date.now().toString());
-  };
+  useEffect(() => {
+    // Load Bootstrap JS dynamically on client side
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+  }, []);
 
   useEffect(() => {
-    if (isAuthPage) return; 
+    if (isAuthPage) return;
+
+    const resetSession = () => {
+      localStorage.setItem("lastActivity", Date.now().toString());
+    };
 
     const checkAutoLogout = () => {
       const lastActivity = parseInt(localStorage.getItem("lastActivity") || "0", 10);
@@ -58,16 +65,18 @@ const Layout = ({ children }) => {
 
   return (
     <html lang="en">
-      <body className="flex h-screen">
-        <ToastContainer />
+      <body className="d-flex vh-100">
+        <ClientOnly>
+          <ToastContainer />
+        </ClientOnly>
 
         {/* Show Sidebar and Header for all modules except login & landing page */}
         {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
 
-        <div className={`flex flex-col transition-all ${!isAuthPage && isFixed ? "ml-[240px]" : "ml-16"} flex-1 w-full`}>
+        <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"}`}>
           {!isAuthPage && <Header />}
 
-          <main className="p-4 flex-grow">
+          <main className="p-4 flex-grow-1">
             {children}
           </main>
 

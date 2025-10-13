@@ -75,54 +75,54 @@ export default function LoginPage() {
     
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
-            <div className="md:w-[400px] w-[300px] -ml-16 bg-white rounded-2xl shadow-2xl md:p-8 p-3 space-y-8 border border-gray-100">
+        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-white py-5 px-4">
+            <div className="col-md-4 col-12 bg-white rounded-custom-xl shadow-custom-xl p-5 border border-light">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    <h2 className="h2 fw-bold text-dark text-gradient">
                         Sign in to your account
                     </h2>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="space-y-6">
-                        <div>
-                            <label htmlFor="email" className="block text-md font-medium text-gray-700">Email address</label>
+                <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <div className="mb-4">
+                            <label htmlFor="email" className="form-label fw-medium text-secondary">Email address</label>
                             <input 
                                 id="email" 
                                 type="email" 
                                 {...register("userEmail", { required: "Email is required" })} 
-                                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition duration-200 placeholder-gray-400 text-gray-900" 
+                                className="form-control form-control-custom" 
                                 placeholder="Enter your email" 
                             />
-                            {errors.userEmail && <p className="mt-2 text-sm text-red-600">{errors.userEmail.message}</p>}
+                            {errors.userEmail && <p className="mt-2 small text-danger">{errors.userEmail.message}</p>}
                         </div>
-                        <div>
-                            <label htmlFor="password" className="block text-md font-medium text-gray-700">Password</label>
+                        <div className="mb-4">
+                            <label htmlFor="password" className="form-label fw-medium text-secondary">Password</label>
                             <input 
                                 id="password" 
                                 type="password" 
                                 {...register("userPassword", { required: "Password is required", minLength: { value: 8, message: "Password must be at least 8 characters" } })} 
-                                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition duration-200 placeholder-gray-400 text-gray-900" 
+                                className="form-control form-control-custom" 
                                 placeholder="Enter your password" 
                             />
-                            {errors.userPassword && <p className="mt-2 text-sm text-red-600">{errors.userPassword.message}</p>}
+                            {errors.userPassword && <p className="mt-2 small text-danger">{errors.userPassword.message}</p>}
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
+                    <div className="d-flex align-items-center justify-content-between mb-4">
+                        <div className="d-flex align-items-center">
                             <input 
                                 id="remember-me" 
                                 name="remember-me" 
                                 type="checkbox" 
                                 checked={rememberMe} 
                                 onChange={(e) => setRememberMe(e.target.checked)} 
-                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 transition duration-200" 
+                                className="form-check-input me-2" 
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 cursor-pointer">Remember me</label>
+                            <label htmlFor="remember-me" className="form-check-label small text-secondary cursor-pointer">Remember me</label>
                         </div>
-                        <div className="text-sm">
-                            <a href="#" className="font-medium text-indigo-600 hover:text-indigo-800 transition duration-200 underline">Forgot your password?</a>
+                        <div className="small">
+                            <a href="#" className="fw-medium text-primary text-decoration-underline">Forgot your password?</a>
                         </div>
                     </div>
 
@@ -130,13 +130,12 @@ export default function LoginPage() {
                         <button 
                             type="submit" 
                             disabled={isSubmitting} 
-                            className={`w-full flex justify-center py-3 px-6 border border-transparent rounded-lg shadow-md text-sm font-medium text-white 
-                                ${isSubmitting ? "bg-indigo-400 cursor-not-allowed" : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"} 
-                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105`}
+                            className={`w-100 d-flex justify-content-center py-3 px-4 border-0 rounded btn-gradient text-white fw-medium hover-scale
+                                ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                             {isSubmitting ? (
-                                <span className="flex items-center">
-                                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <span className="d-flex align-items-center">
+                                    <svg className="spinner-border spinner-border-sm me-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                     </svg>

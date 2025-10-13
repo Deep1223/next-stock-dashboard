@@ -1,8 +1,12 @@
 const Footer = () => {
     try {
         return (
-            <footer className="bg-white text-gray-700 text-center py-3 text-sm w-full shadow-[0_-2px_6px_rgba(0,0,0,0.05)] border-t border-gray-300">
-                © Copyright <span className="font-bold">CRM</span>. All Rights Reserved
+            <footer className="text-center py-3 small w-100 border-top" style={{
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                color: '#64748b',
+                borderTop: '1px solid #cbd5e1'
+            }}>
+                © Copyright <span className="fw-bold" style={{color: '#1e293b'}}>DEMO</span>. All Rights Reserved
             </footer>
         );
     } catch (e) {

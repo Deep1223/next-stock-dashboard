@@ -17,8 +17,11 @@ const Table = (props) => {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        // Only add event listener on client side
+        if (typeof window !== 'undefined') {
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => document.removeEventListener("mousedown", handleClickOutside);
+        }
     }, []);
 
     const handleClickOutside = (event) => {
@@ -76,34 +79,37 @@ const Table = (props) => {
                 setDropdownOpen(null);
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        // Only add event listener on client side
+        if (typeof window !== 'undefined') {
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }
     }, []);
 
     try {
         return (
             <section>
-                <div className="bg-white relative shadow-md sm:rounded-sm overflow-hidden">
-                    <div className="overflow-x-auto flex-grow">
-                        <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow-lg sm:rounded-sm border border-gray-200 hover:shadow-md transition-shadow">
-                            <table className="text-sm text-left text-gray-700 w-full">
-                                <thead className="text-xs text-gray-700 uppercase bg-gray-200 border-b">
+                <div className="bg-white position-relative shadow table-custom overflow-hidden">
+                    <div className="overflow-x-auto flex-grow-1">
+                        <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow table-custom border" style={{maxHeight: '600px'}}>
+                            <table className="table table-hover w-100">
+                                <thead className="table-light border-bottom position-sticky" style={{top: '0', zIndex: '10'}}>
                                     <tr>
-                                        <th className="px-4 py-3 w-[30px] text-center">
-                                            <div className="flex justify-center items-center">
-                                                <TbGridDots className="text-gray-600 text-lg" />
+                                        <th className="px-3 py-2">
+                                            <div className="d-flex justify-content-center align-items-center">
+                                                <TbGridDots className="text-secondary fs-5" />
                                             </div>
                                         </th>
                                         {props.fieldOrder.map((field, index) => (
                                             <th
                                                 key={index}
-                                                className={`px-4 py-3 ${field.size} cursor-pointer`}
+                                                className={`px-4 pt-12p pb-12p ${field.size} cursor-pointer`}
                                                 onClick={field.sorting ? () => toggleSort(field.field) : undefined}
                                             >
-                                                <div className="flex justify-between items-center w-full">
-                                                    <span>{field.label}</span>
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <span className="text-14p">{field.label}</span>
                                                     {field.sorting && (
                                                         <>
                                                             {sortState[field.field] === "asc" ? (
@@ -123,29 +129,30 @@ const Table = (props) => {
                                         sortedData.map((formData, index) => (
                                             <tr
                                                 key={index}
-                                                className="border-b even:bg-gray-50 hover:bg-gray-100 transition relative"
+                                                className="border-bottom position-relative"
                                             >
-                                                <td className="p-3 w-[30px] text-center relative">
+                                                <td className="px-3 py-2 text-center position-relative" style={{width: '30px'}}>
                                                     <button
                                                         onClick={() => toggleDropdown(index)}
-                                                        className="px-3 py-1 text-gray-600 hover:text-gray-800 focus:outline-none cursor-pointer"
+                                                        className="btn btn-outline-secondary btn-sm p-1"
                                                     >
-                                                        <BsThreeDotsVertical />
+                                                        <BsThreeDotsVertical className="d-flex align-items-center justify-content-center" />
                                                     </button>
                                                     {dropdownOpen === index && (
                                                         <div
                                                             ref={dropdownRef}
-                                                            className="absolute right-[-120px] top-8 bg-white shadow-lg rounded-lg border w-37 z-10"
+                                                            className="position-absolute end-0 top-0 bg-white shadow-custom-lg rounded dropdown-custom z-3"
+                                                            style={{right: '-120px', top: '32px', width: '150px'}}
                                                         >
-                                                            <ul className="py-2 text-sm text-gray-700">
+                                                            <ul className="py-2 small text-secondary list-unstyled">
                                                                 {!props.invisibleEdit && (
-                                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                                                                    <li className="px-4 py-2 hover-bg-light cursor-pointer d-flex align-items-center gap-2">
                                                                         <FaRegEdit /> Edit
                                                                     </li>
                                                                 )}
                                                                 {!props.invisibleDelete && (
                                                                     <li
-                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        className="px-4 py-2 hover-bg-light cursor-pointer d-flex align-items-center gap-2"
                                                                         onClick={async () => {
                                                                             await props.setDeleteDetails(formData.id);
                                                                             setDropdownOpen(null);
@@ -157,7 +164,7 @@ const Table = (props) => {
                                                                 )}
                                                                 {!props.invisibleView && (
                                                                     <li
-                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        className="px-4 py-2 hover-bg-light cursor-pointer d-flex align-items-center gap-2"
                                                                         onClick={async () => {
                                                                             await props.setViewDetails(formData);
                                                                             setDropdownOpen(null);
@@ -169,7 +176,7 @@ const Table = (props) => {
                                                                 )}
                                                                 {props.showleads && (
                                                                     <li
-                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        className="px-4 py-2 hover-bg-light cursor-pointer d-flex align-items-center gap-2"
                                                                         onClick={async () => {
                                                                             props.handleleads(formData.leadId);
                                                                             setDropdownOpen(null);
@@ -180,7 +187,7 @@ const Table = (props) => {
                                                                 )}
                                                                 {props.showdetails && (
                                                                     <li
-                                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                                                                        className="px-4 py-2 hover-bg-light cursor-pointer d-flex align-items-center gap-2"
                                                                         onClick={async () => {
                                                                             await props.handleUserDetails(formData);
                                                                             setDropdownOpen(null);
@@ -194,21 +201,21 @@ const Table = (props) => {
                                                     )}
                                                 </td>
                                                 {props.fieldOrder.map((field, index) => (
-                                                    <td key={index} className={`p-3 ${field.size}`}>
+                                                    <td key={index} className={`px-3 py-2 ${field.size}`}>
                                                         {
                                                             field.type === "text" ? (
                                                                 field.field === "price" ? (
-                                                                    <span>{formData[field.field] ? `$${formData[field.field]}` : '-'}</span>
+                                                                    <span className="text-14p">{formData[field.field] ? `$${formData[field.field]}` : '-'}</span>
                                                                 ) : (
-                                                                    <span>{formData[field.field] ? formData[field.field] : '-'}</span>
+                                                                    <span className="text-14p">{formData[field.field] ? formData[field.field] : '-'}</span>
                                                                 )
                                                             )
                                                                 : field.type === "select" ? (
-                                                                    <div className="relative w-full">
+                                                                    <div className="position-relative w-100">
                                                                         <select
                                                                             value={formData[field.field] || ""}
                                                                             onChange={(e) => props.handleleadstatusChange(e, field.field)}
-                                                                            className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white cursor-pointer"
+                                                                            className="form-select w-100"
                                                                             onFocus={() => setIsOpen(true)}
                                                                             onBlur={() => setIsOpen(false)}
                                                                         >
@@ -219,7 +226,7 @@ const Table = (props) => {
                                                                                 </option>
                                                                             ))}
                                                                         </select>
-                                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                                        <span className="position-absolute top-50 end-0 translate-middle-y me-3">
                                                                             {isOpen ? <FaAngleUp /> : <FaAngleDown />}
                                                                         </span>
                                                                     </div>
@@ -237,7 +244,8 @@ const Table = (props) => {
                                                 <img
                                                     src={"/No_Data_Found.svg"}
                                                     alt={"No Data Found"}
-                                                    className="mx-auto h-[300px]"
+                                                    className="mx-auto"
+                                                    style={{height: '300px'}}
                                                 />
                                             </td>
                                         </tr>
@@ -248,12 +256,12 @@ const Table = (props) => {
                     </div>
                 </div>
                 <nav
-                    className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 pt-4"
+                    className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pt-4"
                     aria-label="Table navigation"
                 >
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-500">
+                    <span className="small text-secondary">
                         Showing
-                        <span className="font-semibold text-gray-900 dark:text-gray-600"> {sortedData.length} </span>
+                        <span className="fw-semibold text-dark"> {sortedData.length} </span>
                         Entries
                     </span>
                 </nav>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Table from '@/components/Table';
 import Config from '@/config/config';
 import { toast } from 'react-toastify';
@@ -29,7 +29,101 @@ const Users = () => {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const [users, setUsers] = useState([]);
+  // Static user data - 10 users
+  const staticUsers = [
+    {
+      _id: "1",
+      userName: "John Doe",
+      userEmail: "john.doe@example.com",
+      userPhoneNumber: "+1-555-0123",
+      userRole: "Administrator",
+      userStatus: "Active",
+      createdAt: "2024-01-15T10:30:00Z"
+    },
+    {
+      _id: "2",
+      userName: "Jane Smith",
+      userEmail: "jane.smith@example.com",
+      userPhoneNumber: "+1-555-0124",
+      userRole: "Manager",
+      userStatus: "Active",
+      createdAt: "2024-01-16T09:15:00Z"
+    },
+    {
+      _id: "3",
+      userName: "Mike Johnson",
+      userEmail: "mike.johnson@example.com",
+      userPhoneNumber: "+1-555-0125",
+      userRole: "User",
+      userStatus: "Active",
+      createdAt: "2024-01-17T14:20:00Z"
+    },
+    {
+      _id: "4",
+      userName: "Sarah Wilson",
+      userEmail: "sarah.wilson@example.com",
+      userPhoneNumber: "+1-555-0126",
+      userRole: "Manager",
+      userStatus: "Inactive",
+      createdAt: "2024-01-18T11:45:00Z"
+    },
+    {
+      _id: "5",
+      userName: "David Brown",
+      userEmail: "david.brown@example.com",
+      userPhoneNumber: "+1-555-0127",
+      userRole: "User",
+      userStatus: "Active",
+      createdAt: "2024-01-19T16:30:00Z"
+    },
+    {
+      _id: "6",
+      userName: "Emily Davis",
+      userEmail: "emily.davis@example.com",
+      userPhoneNumber: "+1-555-0128",
+      userRole: "Administrator",
+      userStatus: "Active",
+      createdAt: "2024-01-20T08:15:00Z"
+    },
+    {
+      _id: "7",
+      userName: "Robert Miller",
+      userEmail: "robert.miller@example.com",
+      userPhoneNumber: "+1-555-0129",
+      userRole: "User",
+      userStatus: "Active",
+      createdAt: "2024-01-21T13:25:00Z"
+    },
+    {
+      _id: "8",
+      userName: "Lisa Garcia",
+      userEmail: "lisa.garcia@example.com",
+      userPhoneNumber: "+1-555-0130",
+      userRole: "Manager",
+      userStatus: "Active",
+      createdAt: "2024-01-22T10:10:00Z"
+    },
+    {
+      _id: "9",
+      userName: "James Martinez",
+      userEmail: "james.martinez@example.com",
+      userPhoneNumber: "+1-555-0131",
+      userRole: "User",
+      userStatus: "Inactive",
+      createdAt: "2024-01-23T15:40:00Z"
+    },
+    {
+      _id: "10",
+      userName: "Jennifer Anderson",
+      userEmail: "jennifer.anderson@example.com",
+      userPhoneNumber: "+1-555-0132",
+      userRole: "Administrator",
+      userStatus: "Active",
+      createdAt: "2024-01-24T12:05:00Z"
+    }
+  ];
+
+  const [users, setUsers] = useState(staticUsers);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userLeads, setUserLeads] = useState('');
   const [modalUserDetailsOpen, setModalUserDetailsOpen] = useState(false);
@@ -44,12 +138,12 @@ const Users = () => {
     }
   }, []);
   const fieldOrder = [
-    { label: 'User Name', field: 'userName', type: 'text', size: 'min-w-[150px]', sorting: true },
-    { label: 'Email', field: 'userEmail', type: 'text', size: 'min-w-[200px]', sorting: true },
-    { label: 'Phone Number', field: 'userPhoneNumber', type: 'text', size: 'min-w-[150px]', sorting: true },
-    { label: 'Role', field: 'userRole', type: 'text', size: 'min-w-[150px]', sorting: true },
-    // { label: 'Actions', field: 'actions', type: 'custom', size: 'min-w-[100px]', render: (row) => (
-    //   <button onClick={() => handleEditClick(row)} className="p-2 bg-blue-500 text-white rounded">Edit</button>
+    { label: 'User Name', field: 'userName', type: 'text', size: '', sorting: true },
+    { label: 'Email', field: 'userEmail', type: 'text', size: '', sorting: true },
+    { label: 'Phone Number', field: 'userPhoneNumber', type: 'text', size: '', sorting: true },
+    { label: 'Role', field: 'userRole', type: 'text', size: '', sorting: true },
+    // { label: 'Actions', field: 'actions', type: 'custom', size: '', render: (row) => (
+    //   <button onClick={() => handleEditClick(row)} className="btn btn-primary">Edit</button>
     // )}
   ];
 
@@ -86,54 +180,11 @@ const Users = () => {
     }));
   };
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/getAllUsers", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const data = await response.json();
-      setUsers(data.users || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  }, [token]);
-
-  const fetchLeads = useCallback(async () => {
-    try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/fetchAllLeads", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const data = await response.json();
-      setUserLeads(data.data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
-
+  // Initialize with static data
   useEffect(() => {
-    if (token) {
-      fetchUsers();
-      fetchLeads();
-    }
-  }, [token, fetchUsers]);
+    setUsers(staticUsers);
+    setFilteredData(staticUsers);
+  }, []);
   // Handle form submission
   const handleAddButtonClick = async () => {
     let newErrors = {};
@@ -186,28 +237,20 @@ const Users = () => {
     };
 
 
-    try {
-      const response = await fetch("https://dev.crmbackend.finnovationz.com/api/users/signup", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formattedData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        toast.success("User registered successfully!");
-        setModalOpen(false);
-        fetchUsers();
-      } else {
-        toast.error(result.message || "Failed to register user.");
-      }
-    } catch (error) {
-      toast.error("Error uploading data.");
-      console.error(error);
-    }
+    // Add new user to static data
+    const newUser = {
+      _id: (users.length + 1).toString(),
+      ...formattedData,
+      userStatus: "Active",
+      createdAt: new Date().toISOString()
+    };
+    
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    setFilteredData(updatedUsers);
+    
+    toast.success("User registered successfully!");
+    setModalOpen(false);
   };
 
   useEffect(() => {
@@ -225,28 +268,18 @@ const Users = () => {
       userPassword: formData.password
     };
 
-    try {
-      const response = await fetch(`https://dev.crmbackend.finnovationz.com/api/users/signup`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updateData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        toast.success("User updated successfully!");
-        setEditModalOpen(false);
-        fetchUsers();
-      } else {
-        toast.error(result.message || "Failed to update user.");
-      }
-    } catch (error) {
-      toast.error("Error updating user.");
-      console.error(error);
-    }
+    // Update user in static data
+    const updatedUsers = users.map(user => 
+      user._id === selectedUser._id 
+        ? { ...user, ...updateData }
+        : user
+    );
+    
+    setUsers(updatedUsers);
+    setFilteredData(updatedUsers);
+    
+    toast.success("User updated successfully!");
+    setEditModalOpen(false);
   };
 
   const handleSearch = (searchText) => {
@@ -289,16 +322,16 @@ const Users = () => {
     return (
       <>
         {/* Page Header */}
-        <div className="flex items-center justify-between pb-4">
-          <h1 className="text-[22px] font-medium text-gray-800 tracking-wider">{rightSidebarData[0].pagename}</h1>
-          <div className="flex items-center gap-2">
+        <div className="d-flex align-items-center justify-content-between pb-4">
+          <h1 className="h4 fw-medium text-dark">{rightSidebarData[0].pagename}</h1>
+          <div className="d-flex align-items-center gap-2">
             <SearchBar
               setSearchTerm={setSearchTerm}
               searchTerm={searchTerm}
               handleSearch={handleSearch}
             />
             <button
-              className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+              className="btn btn-primary"
               onClick={() => setModalOpen(true)}
             >
               {Config.createbtn}
