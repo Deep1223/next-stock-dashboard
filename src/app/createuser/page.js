@@ -67,30 +67,38 @@ const CreateUser = () => {
     setIsLoading(true);
   
     try {
-      const response = await fetch("YOUR_API_ENDPOINT", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      const data = await response.json();
-  
-      if (data.ok) {
-        setShowSuccess(true);
-        setFormData({
-          fullName: "",
-          email: "",
-          phone: "",
-          role: "admin",
-          password: "",
-        });
-
-        setTimeout(() => {
-          setShowSuccess(false);
-        }, 3000);
+      // Import localStorage utilities
+      const { userStorage, initializeStorage } = await import('@/utils/localStorage');
+      
+      // Initialize storage if needed
+      initializeStorage();
+      
+      // Check if user already exists
+      if (userStorage.userExists(formData.email)) {
+        alert("User with this email already exists. Please use a different email.");
+        return;
       }
+      
+      // Create new user
+      const newUser = userStorage.addUser({
+        userName: formData.fullName,
+        userEmail: formData.email,
+        userPassword: formData.password,
+        userPhoneNumber: formData.phone,
+        userRole: formData.role === "admin" ? "Administrator" : "sales user"
+      });
+      
+      console.log("User created:", newUser);
+      setShowSuccess(true);
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        role: "admin",
+        password: "",
+      });
+
+      setShowSuccess(false);
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {

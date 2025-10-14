@@ -4,14 +4,12 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import SignupModal from "../../components/SignupModal";
 
 export default function LoginPage() {
     const router = useRouter();
     const { register, handleSubmit, setValue, formState: { errors } } = useForm();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
-    const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -75,8 +73,31 @@ export default function LoginPage() {
         <div className="login-container">
             {/* Left Side - Image Section */}
             <div className="login-image-section">
+                <div className="image-overlay">
+                    <div className="image-content">
+                        <h1 className="image-title">Welcome to Our Platform</h1>
+                        <p className="image-subtitle">
+                            Discover the power of our comprehensive solution designed to streamline your workflow and boost productivity.
+                        </p>
+                        <div className="image-features">
+                            <div className="feature-item">
+                                <div className="feature-icon">🔒</div>
+                                <span>Secure & Reliable</span>
+                            </div>
+                            <div className="feature-item">
+                                <div className="feature-icon">⚡</div>
+                                <span>Fast Performance</span>
+                            </div>
+                            <div className="feature-item">
+                                <div className="feature-icon">📊</div>
+                                <span>Advanced Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Replace 'your-image.jpg' with your actual image filename */}
                 <Image
-                    src="/thelancet_dashboard.png"
+                    src="/your-image.jpg"
                     alt="Login Background"
                     fill
                     className="login-background-image"
@@ -96,6 +117,7 @@ export default function LoginPage() {
 
                     <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
                         <div className="form-group">
+                            <label htmlFor="email" className="form-label">Email address</label>
                             <input 
                                 id="email" 
                                 type="email" 
@@ -107,6 +129,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="form-group">
+                            <label htmlFor="password" className="form-label">Password</label>
                             <input 
                                 id="password" 
                                 type="password" 
@@ -169,23 +192,11 @@ export default function LoginPage() {
 
                         <div className="signup-link">
                             <span>Don't have an account?</span>
-                            <button 
-                                type="button" 
-                                className="signup-button" 
-                                onClick={() => setIsSignupModalOpen(true)}
-                            >
-                                Sign up
-                            </button>
+                            <a href="#" className="signup-button">Sign up</a>
                         </div>
                     </form>
                 </div>
             </div>
-            
-            {/* Signup Modal */}
-            <SignupModal 
-                isOpen={isSignupModalOpen} 
-                onClose={() => setIsSignupModalOpen(false)} 
-            />
         </div>
     );
 }

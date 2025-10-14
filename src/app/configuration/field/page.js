@@ -135,19 +135,37 @@ const Field = () => {
         formDataToSend.append("file", formData.lead);
 
         try {
-            const response = await fetch("https://dev.crmbackend.finnovationz.com/api/leads/uploadleads", {
-                method: "POST",
-                body: formDataToSend,
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                toast.success(Config.fileuploadsuccessfullyerror);
-                setModalOpen(false);
-            } else {
-                toast.error(result.message || Config.fileuploadfailederror);
-            }
+            // Import localStorage utilities
+            const { leadsStorage, initializeStorage } = await import('@/utils/localStorage');
+            
+            // Initialize storage if needed
+            initializeStorage();
+            
+            // Simulate file processing and create sample leads data
+            const sampleLeads = [
+                {
+                    name: "Sample Lead 1",
+                    email: "lead1@example.com",
+                    phone: "+1-555-0001",
+                    ownerEmail: localStorage.getItem("userEmail") || "admin@example.com",
+                    leadStatus: "New",
+                    leadSource: "Website"
+                },
+                {
+                    name: "Sample Lead 2", 
+                    email: "lead2@example.com",
+                    phone: "+1-555-0002",
+                    ownerEmail: localStorage.getItem("userEmail") || "admin@example.com",
+                    leadStatus: "New",
+                    leadSource: "Referral"
+                }
+            ];
+            
+            // Add leads to localStorage
+            leadsStorage.addLeads(sampleLeads);
+            
+            toast.success(Config.fileuploadsuccessfullyerror);
+            setModalOpen(false);
         } catch (error) {
             toast.error(Config.errouploadingfileerror);
             console.error(error);

@@ -58,6 +58,10 @@ aside nav ul li a.active span svg {
     color: #ffffff;
 }
 
+.main-content-transition {
+    transition: all 0.3s ease;
+}
+
 .main-content-collapsed {
     margin-left: 64px !important;
     width: calc(100% - 64px) !important;
@@ -66,10 +70,6 @@ aside nav ul li a.active span svg {
 .main-content-expanded {
     margin-left: 240px !important;
     width: calc(100% - 240px) !important;
-}
-
-.main-content-transition {
-    transition: all 0.3s ease;
 }
 
 /* Ensure main content is positioned correctly */

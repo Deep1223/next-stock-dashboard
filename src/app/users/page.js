@@ -180,10 +180,30 @@ const Users = () => {
     }));
   };
 
-  // Initialize with static data
+  // Initialize with localStorage data
   useEffect(() => {
-    setUsers(staticUsers);
-    setFilteredData(staticUsers);
+    const initializeUsers = async () => {
+      try {
+        const { userStorage, initializeStorage } = await import('@/utils/localStorage');
+        initializeStorage();
+        
+        const storedUsers = userStorage.getUsers();
+        if (storedUsers.length > 0) {
+          setUsers(storedUsers);
+          setFilteredData(storedUsers);
+        } else {
+          // Fallback to static data if no stored users
+          setUsers(staticUsers);
+          setFilteredData(staticUsers);
+        }
+      } catch (error) {
+        console.error("Error initializing users:", error);
+        setUsers(staticUsers);
+        setFilteredData(staticUsers);
+      }
+    };
+    
+    initializeUsers();
   }, []);
   // Handle form submission
   const handleAddButtonClick = async () => {
@@ -237,20 +257,23 @@ const Users = () => {
     };
 
 
-    // Add new user to static data
-    const newUser = {
-      _id: (users.length + 1).toString(),
-      ...formattedData,
-      userStatus: "Active",
-      createdAt: new Date().toISOString()
-    };
-    
-    const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    setFilteredData(updatedUsers);
-    
-    toast.success("User registered successfully!");
-    setModalOpen(false);
+    // Add new user using localStorage
+    try {
+      const { userStorage } = await import('@/utils/localStorage');
+      
+      const newUser = userStorage.addUser(formattedData);
+      
+      // Update local state
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      setFilteredData(updatedUsers);
+      
+      toast.success("User registered successfully!");
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error adding user:", error);
+      toast.error("Failed to add user. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -268,18 +291,32 @@ const Users = () => {
       userPassword: formData.password
     };
 
-    // Update user in static data
-    const updatedUsers = users.map(user => 
-      user._id === selectedUser._id 
-        ? { ...user, ...updateData }
-        : user
-    );
-    
-    setUsers(updatedUsers);
-    setFilteredData(updatedUsers);
-    
-    toast.success("User updated successfully!");
-    setEditModalOpen(false);
+    try {
+      const { userStorage } = await import('@/utils/localStorage');
+      
+      // Update user in localStorage
+      const updatedUser = userStorage.updateUser(selectedUser._id, updateData);
+      
+      if (updatedUser) {
+        // Update local state
+        const updatedUsers = users.map(user => 
+          user._id === selectedUser._id 
+            ? { ...user, ...updateData }
+            : user
+        );
+        
+        setUsers(updatedUsers);
+        setFilteredData(updatedUsers);
+        
+        toast.success("User updated successfully!");
+        setEditModalOpen(false);
+      } else {
+        toast.error("Failed to update user. User not found.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Failed to update user. Please try again.");
+    }
   };
 
   const handleSearch = (searchText) => {
@@ -299,13 +336,21 @@ const Users = () => {
 
     setFilteredData(filtered);
   };
-  const handleUserDetails = (data) => {
+  const handleUserDetails = async (data) => {
     setUserDetails(data);
 
     if (data.userEmail) {
-      const userLeadsData = userLeads.filter(lead => lead.ownerEmail === data.userEmail);
-      setUserLeadDetails(userLeadsData);
-      setModalUserDetailsOpen(true);
+      try {
+        const { leadsStorage } = await import('@/utils/localStorage');
+        
+        const userLeadsData = leadsStorage.getLeadsByOwner(data.userEmail);
+        setUserLeadDetails(userLeadsData);
+        setModalUserDetailsOpen(true);
+      } catch (error) {
+        console.error("Error fetching user leads:", error);
+        setUserLeadDetails([]);
+        setModalUserDetailsOpen(true);
+      }
     }
   };
 

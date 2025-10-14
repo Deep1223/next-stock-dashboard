@@ -15,43 +15,37 @@ const CreateModal = (props) => {
             let updatedOptions = {};
 
             try {
-                await Promise.all(
-                    props.rightSidebarData.flatMap(tab =>
-                        tab.fields
-                            .filter(field => field.masterdata) // Only process fields with masterdata
-                            .map(async (field) => {
-                                try {
-                                    const response = await fetch(`https://dev.crmbackend.finnovationz.com/api/${field.masterdata}`, {
-                                        method: "GET",
-                                        headers: {
-                                            "Authorization": `Bearer ${props.token}`,
-                                            "Content-Type": "application/json"
-                                        }
-                                    });
+                // Import localStorage utilities
+                const { masterDataStorage, initializeStorage } = await import('@/utils/localStorage');
+                
+                // Initialize storage if needed
+                initializeStorage();
 
-                                    const result = await response.json();
+                // Process all fields with masterdata
+                props.rightSidebarData.flatMap(tab =>
+                    tab.fields
+                        .filter(field => field.masterdata) // Only process fields with masterdata
+                        .forEach((field) => {
+                            try {
+                                // Get data from localStorage instead of API
+                                const dataArray = masterDataStorage.getMasterData(field.masterdata);
 
-                                    const dataArray = field.masterdataarray && Array.isArray(result[field.masterdataarray])
-                                        ? result[field.masterdataarray]
-                                        : [];
+                                setData(dataArray);
 
-                                    setData(dataArray);
+                                if (dataArray.length > 0 && Array.isArray(field.masterdatafields) && field.masterdatafields.length === 2) {
+                                    const [labelField, valueField] = field.masterdatafields;
 
-                                    if (dataArray.length > 0 && Array.isArray(field.masterdatafields) && field.masterdatafields.length === 2) {
-                                        const [labelField, valueField] = field.masterdatafields;
-
-                                        updatedOptions[field.field] = dataArray.map(item => ({
-                                            label: item[labelField],
-                                            value: item[valueField]
-                                        }));
-                                    }
-
-                                } catch (error) {
-                                    console.error(`Error fetching data for ${field.masterdata}:`, error);
-                                    toast.error(`Failed to load ${field.text}`);
+                                    updatedOptions[field.field] = dataArray.map(item => ({
+                                        label: item[labelField],
+                                        value: item[valueField]
+                                    }));
                                 }
-                            })
-                    )
+
+                            } catch (error) {
+                                console.error(`Error fetching data for ${field.masterdata}:`, error);
+                                toast.error(`Failed to load ${field.text}`);
+                            }
+                        })
                 );
 
                 setDynamicOptions(updatedOptions);

@@ -34,12 +34,9 @@ const DeleteModal = (props) => {
 
         setIsDeleting(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
             setShowSuccess(true);
-            setTimeout(() => {
-                handleDeleteClose();
-                setShowSuccess(false);
-            }, 2000);
+            handleDeleteClose();
+            setShowSuccess(false);
         } finally {
             setIsDeleting(false);
         }

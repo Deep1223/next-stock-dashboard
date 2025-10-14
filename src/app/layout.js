@@ -73,10 +73,10 @@ const Layout = ({ children }) => {
         {/* Show Sidebar and Header for all modules except login & landing page */}
         {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
 
-        <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"}`}>
+        <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"} ${isAuthPage ? "ml-unset" : ""}`}>
           {!isAuthPage && <Header />}
 
-          <main className="p-4 flex-grow-1">
+          <main className={`flex-grow-1 ${isAuthPage ? "" : "p-4"}`}>
             {children}
           </main>
 
