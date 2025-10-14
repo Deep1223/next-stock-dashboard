@@ -67,7 +67,19 @@ const Layout = ({ children }) => {
     <html lang="en">
       <body className="d-flex vh-100">
         <ClientOnly>
-          <ToastContainer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            limit={5}
+          />
         </ClientOnly>
 
         {/* Show Sidebar and Header for all modules except login & landing page */}

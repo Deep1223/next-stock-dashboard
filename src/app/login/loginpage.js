@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SignupModal from "../../components/SignupModal";
+import IISMethods from "@/utils/IISMethods";
+import Config from "@/config/config";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -53,19 +55,19 @@ export default function LoginPage() {
                     localStorage.removeItem("rememberMe");
                 }
     
-                if (user.userRole === "Administrator") {
+                if (user.userRole === Config.administrator) {
                     router.push("/dashboard");
-                } else if (user.userRole === "sales user") {
+                } else if (user.userRole === Config.salesuser) {
                     router.push("/sales-dashboard");
                 } else {
-                    alert("Unauthorized role");
+                    IISMethods.errormsg(Config.unauthorizederror, 1);
                 }
             } else {
-                alert("Invalid email or password. Please try again.");
+                IISMethods.errormsg(Config.invalidCredentialserror, 1);
             }
         } catch (error) {
             console.error("Login error:", error);
-            alert("Login failed. Please try again.");
+            IISMethods.errormsg(Config.loginFailederror, 1);
         } finally {
             setIsSubmitting(false);
         }

@@ -3,7 +3,7 @@ import Modal from "./modal";
 import Config from "@/config/config";
 import RightSidebarFormField from "@/components/RightSidebarFormField";
 import validateField from "@/components/Validation";
-import { toast } from "react-toastify";
+import IISMethods from '@/utils/IISMethods';
 
 const CreateModal = (props) => {
     const hasTabs = props.rightSidebarData.some(tab => tab.tabname); // ✅ Move outside try block
@@ -43,7 +43,7 @@ const CreateModal = (props) => {
 
                             } catch (error) {
                                 console.error(`Error fetching data for ${field.masterdata}:`, error);
-                                toast.error(`Failed to load ${field.text}`);
+                                IISMethods.errormsg(`Failed to load ${field.text}`, 1);
                             }
                         })
                 );
@@ -116,13 +116,13 @@ const CreateModal = (props) => {
 
             if (emptyFields) {
                 props.setErrors(newErrors);
-                toast.error(Config.fillallfieldserror);
+                IISMethods.errormsg(Config.fillallfieldserror, 1);
                 return;
             }
 
             if (Object.keys(newErrors).length > 0) {
                 props.setErrors(newErrors);
-                toast.error(Object.values(newErrors)[0]);
+                IISMethods.errormsg(IISMethods.getFirstError(newErrors), 1);
                 return;
             }
 

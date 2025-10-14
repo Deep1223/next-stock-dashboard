@@ -1,5 +1,7 @@
 'use client'
 import { useState } from "react";
+import IISMethods from "@/utils/IISMethods";
+import Config from "@/config/config";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -14,32 +16,30 @@ const CreateUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    // Validate field on change
-    validateField(name, value);
+    const validationRules = {
+      email: { type: 'email', label: 'Email' },
+      phone: { type: 'phone', label: 'Phone' },
+      password: { type: 'password', label: 'Password' }
+    };
+    
+    IISMethods.handleFieldChange(e, formData, setFormData, errors, setErrors, validationRules);
   };
 
   const validateField = (name, value) => {
     let errorMsg = "";
 
-    if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        errorMsg = "Invalid email format.";
-      }
+    if (name === "email" && value && !IISMethods.validateEmail(value)) {
+      errorMsg = Config.invalidEmailerror;
     }
 
-    if (name === "phone") {
-      if (!/^\d{10}$/.test(value)) {
-        errorMsg = "Phone must be exactly 10 digits.";
-      }
+    if (name === "phone" && value && !IISMethods.validatePhone(value)) {
+      errorMsg = Config.invalidPhoneerror;
     }
 
-    if (name === "password") {
-      if (value.length < 8) {
-        errorMsg = "Password must be at least 8 characters.";
+    if (name === "password" && value) {
+      const passwordValidation = IISMethods.validatePassword(value);
+      if (!passwordValidation.isValid) {
+        errorMsg = passwordValidation.message;
       }
     }
 
@@ -50,17 +50,18 @@ const CreateUser = () => {
     e.preventDefault();
   
     // Validate all fields before submitting
-    let newErrors = {};
-    Object.keys(formData).forEach((key) => {
-      validateField(key, formData[key]);
-      if (!formData[key]) {
-        newErrors[key] = "This field is required.";
-      }
-    });
-  
+    const validationRules = {
+      fullName: { required: true, label: 'Full Name' },
+      email: { required: true, type: 'email', label: 'Email' },
+      phone: { required: true, type: 'phone', label: 'Phone' },
+      password: { required: true, type: 'password', label: 'Password' }
+    };
+
+    const newErrors = IISMethods.validateForm(formData, validationRules);
     setErrors(newErrors);
   
-    if (Object.values(newErrors).some((error) => error !== "")) {
+    if (IISMethods.hasFormErrors(newErrors)) {
+      IISMethods.errormsg(Config.fillallrequiredfild, 1);
       return;
     }
   
@@ -75,7 +76,7 @@ const CreateUser = () => {
       
       // Check if user already exists
       if (userStorage.userExists(formData.email)) {
-        alert("User with this email already exists. Please use a different email.");
+        IISMethods.errormsg(Config.userAlreadyExistserror, 1);
         return;
       }
       
@@ -85,22 +86,24 @@ const CreateUser = () => {
         userEmail: formData.email,
         userPassword: formData.password,
         userPhoneNumber: formData.phone,
-        userRole: formData.role === "admin" ? "Administrator" : "sales user"
+        userRole: formData.role === "admin" ? Config.administrator : Config.salesuser
       });
       
       console.log("User created:", newUser);
-      setShowSuccess(true);
-      setFormData({
+      IISMethods.successmsg(Config.usercreated, 2);
+      
+      // Reset form
+      const initialFormData = {
         fullName: "",
         email: "",
         phone: "",
         role: "admin",
         password: "",
-      });
-
-      setShowSuccess(false);
+      };
+      IISMethods.resetForm(initialFormData, setFormData, setErrors);
+      
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      IISMethods.handleApiError(error, Config.usercreated);
     } finally {
       setIsLoading(false);
     }
@@ -112,13 +115,13 @@ const CreateUser = () => {
       {/* Form Container */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-          Create User
+          {Config.createusertitle}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
       {/* Full Name */}
       <div>
-        <label className="block text-gray-600 text-sm font-semibold mb-1">Full Name</label>
+        <label className="block text-gray-600 text-sm font-semibold mb-1">{Config.fullnamelabel}</label>
         <input
           type="text"
           name="fullName"
@@ -132,7 +135,7 @@ const CreateUser = () => {
 
       {/* Email */}
       <div>
-        <label className="block text-gray-600 text-sm font-semibold mb-1">Email</label>
+        <label className="block text-gray-600 text-sm font-semibold mb-1">{Config.emaillabel}</label>
         <input
           type="email"
           name="email"
@@ -146,7 +149,7 @@ const CreateUser = () => {
 
       {/* Phone */}
       <div>
-        <label className="block text-gray-600 text-sm font-semibold mb-1">Phone</label>
+        <label className="block text-gray-600 text-sm font-semibold mb-1">{Config.phonelabel}</label>
         <input
           type="tel"
           name="phone"
@@ -162,21 +165,21 @@ const CreateUser = () => {
 
       {/* Role (Dropdown) */}
       <div>
-        <label className="block text-gray-600 text-sm font-semibold mb-1">User Role</label>
+        <label className="block text-gray-600 text-sm font-semibold mb-1">{Config.rolelabel}</label>
         <select
           name="role"
           value={formData.role}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
-          <option value="admin">Admin</option>
-          <option value="salesperson">Salesperson</option>
+          <option value="admin">{Config.admin}</option>
+          <option value="salesperson">{Config.salesperson}</option>
         </select>
       </div>
 
       {/* Password */}
       <div>
-        <label className="block text-gray-600 text-sm font-semibold mb-1">Password</label>
+        <label className="block text-gray-600 text-sm font-semibold mb-1">{Config.passwordlabel}</label>
         <input
           type="password"
           name="password"
@@ -214,7 +217,7 @@ const CreateUser = () => {
               ></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
             </svg>
-            Submitting...
+            {Config.saving}
           </>
         ) : (
           "Create User"

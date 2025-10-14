@@ -95,7 +95,7 @@ const Table = (props) => {
                     <div className="overflow-x-auto flex-grow-1">
                         <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow table-custom border" style={{maxHeight: '600px'}}>
                             <table className="table table-hover w-100">
-                                <thead className="table-light border-bottom position-sticky" style={{top: '0', zIndex: '10'}}>
+                                <thead className="table-light border-bottom position-sticky top-0 z-index-1">
                                     <tr>
                                         <th className="px-3 py-2">
                                             <div className="d-flex justify-content-center align-items-center">

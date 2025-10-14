@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
 import Modal from "@/components/modal";
-import Config from "@/config/config";
+import IISMethods from '@/utils/IISMethods';
+import Config from '@/config/config';
 
 const DeleteModal = (props) => {
     const [stage, setStage] = useState(1);
@@ -23,6 +24,11 @@ const DeleteModal = (props) => {
         setStage(1);
         setConfirmText("");
         setIsButtonEnabled(false);
+        
+        // Show info toast when deletion is cancelled
+        if (stage === 2) {
+            IISMethods.errormsg(Config.cancelling, 4);
+        }
     };
 
     const handleNextStage = () => {
@@ -34,9 +40,18 @@ const DeleteModal = (props) => {
 
         setIsDeleting(true);
         try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Show success toast
+            IISMethods.errormsg(Config.datadeleted, 2);
+            
             setShowSuccess(true);
             handleDeleteClose();
             setShowSuccess(false);
+        } catch (error) {
+            // Show error toast
+            IISMethods.errormsg(Config.datadeleted, 1);
         } finally {
             setIsDeleting(false);
         }
