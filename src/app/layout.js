@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
 import 'react-toastify/dist/ReactToastify.css';
 // Bootstrap JS will be loaded dynamically on client side
 import "../styles/globals.css";
@@ -66,35 +68,37 @@ const Layout = ({ children }) => {
   return (
     <html lang="en">
       <body className="d-flex vh-100">
-        <ClientOnly>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            limit={5}
-          />
-        </ClientOnly>
+        <Provider store={store}>
+          <ClientOnly>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              limit={5}
+            />
+          </ClientOnly>
 
-        {/* Show Sidebar and Header for all modules except login & landing page */}
-        {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
+          {/* Show Sidebar and Header for all modules except login & landing page */}
+          {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
 
-        <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"} ${isAuthPage ? "ml-unset" : ""}`}>
-          {!isAuthPage && <Header />}
+          <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"} ${isAuthPage ? "ml-unset" : ""}`}>
+            {!isAuthPage && <Header />}
 
-          <main className={`flex-grow-1 ${isAuthPage ? "" : "p-4"}`}>
-            {children}
-          </main>
+            <main className={`flex-grow-1 ${isAuthPage ? "" : "p-4"}`}>
+              {children}
+            </main>
 
-          {/* Hide Footer for login and landing page */}
-          {!isAuthPage && <Footer />}
-        </div>
+            {/* Hide Footer for login and landing page */}
+            {!isAuthPage && <Footer />}
+          </div>
+        </Provider>
       </body>
     </html>
   );

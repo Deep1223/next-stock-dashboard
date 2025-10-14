@@ -1,9 +1,12 @@
 'use client'
 import { useState } from "react";
+import { useUsers } from '@/store/hooks';
+import { createUser } from '@/store/reducer';
 import IISMethods from "@/utils/IISMethods";
 import Config from "@/config/config";
 
 const CreateUser = () => {
+  const { dispatch, loading } = useUsers();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -13,8 +16,6 @@ const CreateUser = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const handleChange = (e) => {
     const validationRules = {
       email: { type: 'email', label: 'Email' },
@@ -65,31 +66,17 @@ const CreateUser = () => {
       return;
     }
   
-    setIsLoading(true);
-  
     try {
-      // Import localStorage utilities
-      const { userStorage, initializeStorage } = await import('@/utils/localStorage');
-      
-      // Initialize storage if needed
-      initializeStorage();
-      
-      // Check if user already exists
-      if (userStorage.userExists(formData.email)) {
-        IISMethods.errormsg(Config.userAlreadyExistserror, 1);
-        return;
-      }
-      
-      // Create new user
-      const newUser = userStorage.addUser({
+      // Create user using Redux
+      const userData = {
         userName: formData.fullName,
         userEmail: formData.email,
         userPassword: formData.password,
         userPhoneNumber: formData.phone,
         userRole: formData.role === "admin" ? Config.administrator : Config.salesuser
-      });
-      
-      console.log("User created:", newUser);
+      };
+
+      await dispatch(createUser(userData)).unwrap();
       IISMethods.successmsg(Config.usercreated, 2);
       
       // Reset form
@@ -103,9 +90,7 @@ const CreateUser = () => {
       IISMethods.resetForm(initialFormData, setFormData, setErrors);
       
     } catch (error) {
-      IISMethods.handleApiError(error, Config.usercreated);
-    } finally {
-      setIsLoading(false);
+      IISMethods.errormsg(error, 1);
     }
   };
   
@@ -195,11 +180,11 @@ const CreateUser = () => {
       <button
         type="submit"
         className={`w-full flex items-center justify-center px-4 py-2 font-bold text-white rounded-lg transition ${
-          isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+          loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
         }`}
-        disabled={isLoading}
+        disabled={loading}
       >
-        {isLoading ? (
+        {loading ? (
           <>
             <svg
               className="animate-spin h-5 w-5 mr-2 text-white"
