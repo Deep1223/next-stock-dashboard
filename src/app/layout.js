@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import 'react-toastify/dist/ReactToastify.css';
+import 'rsuite/dist/rsuite.min.css';
 // Bootstrap JS will be loaded dynamically on client side
 import "../styles/globals.css";
 import "../styles/styles.css";

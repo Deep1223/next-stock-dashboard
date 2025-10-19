@@ -1,362 +1,323 @@
-const getCurrentDateTime = () => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+import Config from "./config";
 
-    return `Leads Imported On ${day}/${month}/${year} ${hours}:${minutes}`;
-};
-
-const MasterJson = {
-    // leads management
-    leads: [
-        {
-            pagename: "Lead",
-            tabname: "Import Csv File",
-            fields: [
+const MasterJson = (type) => {
+    switch (type) {
+        case 'category':
+            return [
                 {
-                    field: "lead",
-                    text: "Leads",
-                    type: "file",
-                    size: "w-full",
-                    required: true,
-                    accept: ".csv,.xlsx",
-                },
-            ],
-        },
-        // {
-        //     tabname: "Map Fields",
-        //     fields: [
-        //         {
-        //             field: "email_id",
-        //             text: "Email Id",
-        //             type: "select",
-        //             options: [
-        //                 { label: "Email Id", value: "550e8400e29b41" },
-        //                 { label: "Work Email", value: "a71644665544" },
-        //                 { label: "Personal Email", value: "0000e29b41d4a7" }
-        //             ],
-        //             required: true,
-        //             searchable: true,
-        //             Placeholder: "Select Email Id",
-        //             clearable: true,
-        //         },
-        //         {
-        //             field: "lead_source",
-        //             text: "Lead Source",
-        //             type: "select",
-        //             options: [
-        //                 { label: "Lead Source", value: "b29f87a1cde45" },
-        //                 { label: "Referral", value: "cde45761b29f8" },
-        //                 { label: "Advertisement", value: "761b29f87a1cd" },
-        //                 { label: "Social Media", value: "a1cde45761b29" }
-        //             ],
-        //             required: true,
-        //             searchable: true,
-        //             Placeholder: "Select Lead Source",
-        //             clearable: true,
-        //         },
-        //         {
-        //             field: "name",
-        //             text: "Name",
-        //             type: "select",
-        //             options: [
-        //                 { label: "First Name", value: "5f87b1cde45a7" },
-        //                 { label: "Full Name", value: "a76cde45f87b1c" },
-        //                 { label: "Last Name", value: "de45f87b1a76cd" }
-        //             ],
-        //             required: true,
-        //             searchable: true,
-        //             Placeholder: "Select Name",
-        //             clearable: true,
-        //         },
-        //         {
-        //             field: "owner",
-        //             text: "Owner",
-        //             type: "select",
-        //             options: [
-        //                 { label: "Owner", value: "6b1cde457f87a1" },
-        //                 { label: "Manager", value: "cde45f876b1a7f" },
-        //                 { label: "Admin", value: "a1cde457f87b6b" }
-        //             ],
-        //             required: true,
-        //             searchable: true,
-        //             Placeholder: "Select Owner",
-        //             clearable: true,
-        //         },
-        //         {
-        //             field: "phone_number",
-        //             text: "Phone Number",
-        //             type: "select",
-        //             options: [
-        //                 { label: "Phone Number", value: "b1cde457f87a1c" },
-        //                 { label: "Mobile Number", value: "de45f87a1cde45" },
-        //                 { label: "Work Number", value: "7f87b1cde45a76" }
-        //             ],
-        //             required: true,
-        //             searchable: true,
-        //             Placeholder: "Select Phone Number",
-        //             clearable: true,
-        //         }
-        //     ]
-        // },
-        {
-            tabname: "Actions",
-            fields: [
-                {
-                    field: "leadimportrules",
-                    text: 'Lead import rules',
-                    type: "title",
-                    size: "w-full",
-                },
-                {
-                    field: "handlingduplicateleadrecords",
-                    text: "Handling Duplicate Lead Records",
-                    type: "radio",
-                    size: "w-full",
-                    options: [
-                        { label: "Ignore duplicates", value: "1" },
-                        { label: "Overwrite duplicates", value: "2" },
-                        { label: "Update empty fields of duplicates", value: "3" },
-                    ],
-                    required: true,
-                },
-                {
-                    field: "mandatory",
-                    text: "Mandatory",
-                    type: "checkbox",
-                    size: "w-full",
-                    required: true,
-                    showIf: { field: "handlingduplicateleadrecords", values: ["1", "3", "2"] },
-                    options: [
+                    tabname: 'Category Master',
+                    pagename: 'Category',
+                    aliasname: 'category',
+                    rightsidebarsize: 'sm',
+                    fields: [
                         {
-                            label: "Import Only if Valid Phone Number exists in CSV",
-                            value: "5f6w79qnl2zbxa",
-                            labelfield: "importonlyifvalidphonenumberexistsinCSV",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["1", "3", "2"] }
+                            field: 'categoryname',
+                            text: 'Category Name',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Category Name',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Category Name',
+                            label: 'Category Name',
                         },
                         {
-                            label: "Do not update owner of existing leads",
-                            value: "4tqwiuxkgvcod9",
-                            labelfield: "donotupdateownerofexistingleads",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["2"] }
+                            field: 'description',
+                            text: 'Description',
+                            type: 'textarea',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Description',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
                         },
                         {
-                            label: "Do not create new leads",
-                            value: "5c3t8vqrxemnbg",
-                            labelfield: "donotcreatenewleads",
-                            showIf: { field: "handlingduplicateleadrecords", values: ["2"] }
+                            field: 'status',
+                            text: 'Status',
+                            type: 'checkbox',
+                            disabled: false,
+                            required: false,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Select Status',
+                            defaultvalue: 1,
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
                         }
                     ]
-                },
-
-                // {
-                //     field: "selectlistandowner",
-                //     text: 'Select List and Owner',
-                //     type: "title",
-                //     size: "w-full",
-                //     spacingtop: 'mt-5',
-                // },
-                // {
-                //     field: "leadowner",
-                //     text: "Lead Owner",
-                //     size: "w-full",
-                //     type: "select",
-                //     masterdata: "users/getAllUsers",
-                //     masterdataarray: "users",
-                //     masterdatafields: ["userName", "_id"],
-                //     required: true,
-                //     searchable: true,
-                //     Placeholder: "Select Lead Owner",
-                //     clearable: true,
-                //     onchange: 'ownerEmail',
-                // },
-                // {
-                //     field: "ownerEmail",
-                //     text: "Owner Email",
-                //     type: "text",
-                //     size: "w-full",
-                //     required: true,
-                //     placeholder: "Enter Owner Email",
-                //     regextype: "email",
-                //     onchangevalue: 'userEmail',
-                //     disabled: true,
-                // },
-                // {
-                //     field: "addtolist",
-                //     text: "Add To List",
-                //     type: "radio",
-                //     size: "w-full",
-                //     options: [
-                //         { label: "New List", value: "0" },
-                //         { label: "Existing List", value: "1" },
-                //         // { label: "None", value: "3" },
-                //     ],
-                //     required: true,
-                // },
-                // {
-                //     field: 'listname',
-                //     text: "List Name",
-                //     type: "text",
-                //     size: "w-full",
-                //     required: true,
-                //     showIf: { field: "addtolist", values: ["0"] },
-                //     placeholder: "Enter List Name",
-                // },
-                // {
-                //     field: 'listdescription',
-                //     text: "List Description",
-                //     type: "textarea",
-                //     size: "w-full",
-                //     required: true,
-                //     showIf: { field: "addtolist", values: ["0"] },
-                //     placeholder: "Enter List Description",
-                // },
-                // {
-                //     field: 'listname',
-                //     text: "List Name",
-                //     type: "select",
-                //     size: "w-full",
-                //     required: true,
-                //     masterdata: "users/getAllUsers",
-                //     masterdataarray: "users",
-                //     masterdatafields: ["userName", "_id"],
-                //     // options: [
-                //     //     { label: "The complete course on Fundamental Analysis (Analyse any stock in less than 3 hrs)", value: "m07yosiahnxw8f" },
-                //     //     { label: "The complete course on Indian stock market: The most practical guide 2023", value: "7hjpt8sergzyoc" },
-                //     //     { label: "The Complete Course On Options Trading By Convey", value: "4vd65qjwkem0hi" },
-                //     //     { label: "The Complete Fundamental Analysis Course in Hindi", value: "374bfp2ruteaz8" },
-                //     //     { label: "The Foundation Course on Indian Stock Market For Beginners", value: "8ym3sj6xc1ol7i" }
-                //     // ],
-                //     showIf: { field: "addtolist", values: ["1"] },
-                //     placeholder: "Select List Name",
-                //     searchable: true,
-                // },
-
-                // {
-                //     field: "selectsource",
-                //     text: 'Select Source',
-                //     type: "title",
-                //     size: "w-full",
-                //     spacingtop: 'mt-5',
-                // },
-                // {
-                //     field: "leadsource",
-                //     text: "Lead Source",
-                //     size: "w-full",
-                //     type: "text",
-                //     required: false,
-                //     defaultValue: "Already selected in mapped fields",
-                //     disabled: true,
-                //     Placeholder: 'Enter Lead Source',
-                // },
-                // {
-                //     field: "importsummarynote",
-                //     text: "Import Summary Note",
-                //     type: "text",
-                //     size: "w-full",
-                //     defaultValue: getCurrentDateTime(),
-                //     required: true,
-                //     Placeholder: 'Enter Import Summary Note',
-                // },
-            ],
-        },
-        // {
-        //     tabname: "Summary",
-        //     fields: [
-        //         {
-        //             field: "sendmail",
-        //             text: "",
-        //             type: "checkbox",
-        //             size: "w-full",
-        //             required: false,
-        //             options: [
-        //                 {
-        //                     label: "Send Mail",
-        //                     value: "18edbf4d-dd76-4ce8-98a5-ec694196d5a0",
-        //                 },
-        //             ]
-        //         },
-        //     ],
-        // },
-    ],
-
-    // Fields Management
-    field: [
-        {
-            pagename: "Field",
-            fields: [
-                {
-                    field: "displayname",
-                    text: "Display Name",
-                    type: "text",
-                    size: "w-full",
-                    required: true,
-                    placeholder: "Enter Display Name",
                 }
-            ]
-        }
-    ],
+            ];
+            break;
 
-    // users list
-    users: [
-        {
-            pagename: "Users",
-            fields: [
+        case 'researchstudy':
+            return [
                 {
-                    field: "fullname",
-                    text: "Full Name",
-                    type: "text",
-                    size: "w-full",
-                    required: true,
-                    placeholder: "Enter Full Name",
-                },
-                {
-                    field: "email",
-                    text: "Email",
-                    type: "text",
-                    size: "w-full",
-                    required: true,
-                    placeholder: "Enter Email",
-                    regextype: 'email',
-                },
-                {
-                    field: "phone",
-                    text: "Phone",
-                    type: "text",
-                    size: "w-full",
-                    required: true,
-                    placeholder: "Enter Phone Number",
-                    regextype: 'number',
-                },
-                {
-                    field: "role",
-                    text: "Role",
-                    type: "select",
-                    size: "w-full",
-                    required: true,
-                    options: [
-                        { label: "Admin", value: "9a64550e-3f34-467b-872d-a05ccf00bdca" },
-                        { label: "Sales Person", value: "18bfa287-ba71-4bfe-ae2f-4f6e7b6586e5" },
-                    ],
-                    placeholder: "Select Role",
-                    searchable: true,
-                    clearable: true,
-                },
-                {
-                    field: "password",
-                    text: "Password",
-                    type: "password",
-                    size: "w-full",
-                    required: true,
-                    placeholder: "Enter Password",
-                    regextype: 'password',
+                    tabname: 'Research Study Master',
+                    pagename: 'Research Study',
+                    aliasname: 'researchstudy',
+                    rightsidebarsize: 'md',
+                    fields: [
+                        {
+                            field: 'title',
+                            text: 'Title',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Enter Title',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Title',
+                            label: 'Title',
+                        },
+                        {
+                            field: 'ayushcategoryid',
+                            text: 'AYUSH Category',
+                            type: 'dropdown',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Select AYUSH Category',
+                            defaultvalue: '',
+                            masterdata: 'category',
+                            masterdatafield: 'categoryname',
+                            formdatafield: 'ayushcategory',
+                            cleanable: true,
+                            searchable: true,
+                            staticfilter: {
+                                status: 1
+                            },
+                            projection: {
+                                _id: 1,
+                                categoryname: 1,
+                            },
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                        {
+                            field: 'researchtypeid',
+                            text: 'Research Type',
+                            type: 'dropdown',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Select Research Type',
+                            defaultvalue: '',
+                            masterdata: 'researchtype',
+                            masterdatafield: 'researchtypename',
+                            formdatafield: 'researchtype',
+                            cleanable: true,
+                            searchable: true,
+                            staticfilter: {
+                                status: 1
+                            },
+                            projection: {
+                                _id: 1,
+                                researchtypename: 1,
+                            },
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                        {
+                            field: 'abstract',
+                            text: 'Abstract',
+                            type: 'textarea',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Abstract',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                        {
+                            field: 'detailedsummary',
+                            text: 'Detailed Summary',
+                            type: 'html-editor',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Detailed Summary',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                        {
+                            field: 'institution',
+                            text: 'Institution',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Enter Institution',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Institution',
+                            label: 'Institution',
+                        },
+                        {
+                            field: 'publicationdate',
+                            text: 'Publication Date',
+                            type: 'datepicker',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Select Publication Date',
+                            defaultvalue: '',
+                            cleanable: true,
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'datepicker',
+                            filterplaceholder: 'Select Publication Date',
+                            label: 'Publication Date',
+                        },
+                        {
+                            field: 'languageid',
+                            text: 'Language',
+                            type: 'dropdown',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-6',
+                            placeholder: 'Select Language',
+                            defaultvalue: '',
+                            masterdata: 'language',
+                            masterdataarray: Config.language,
+                            formdatafield: 'language',
+                            cleanable: true,
+                            searchable: true,
+                            staticfilter: {
+                                status: 1
+                            },
+                            projection: {
+                                _id: 1,
+                                languagename: 1,
+                            },
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                    
+                    ]
                 }
-            ]
-        }
-    ]
+            ];
+            break;
+
+        case 'researchtype':
+            return [
+                {
+                    tabname: 'Research Type Master',
+                    pagename: 'Research Type',
+                    aliasname: 'researchtype',
+                    rightsidebarsize: 'sm',
+                    fields: [
+                        {
+                            field: 'researchtypename',
+                            text: 'Research Type Name',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Research Type Name',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Research Type Name',
+                            label: 'Research Type Name',
+                        },
+                        {
+                            field: 'status',
+                            text: 'Status',
+                            type: 'checkbox',
+                            disabled: false,
+                            required: false,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Select Status',
+                            defaultvalue: 1,
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        }
+                    ]
+                }
+            ];
+            break;
+
+        default:
+            return [];
+    }
 };
 
 export default MasterJson;

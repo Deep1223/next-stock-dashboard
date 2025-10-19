@@ -12,7 +12,7 @@ The Redux Data Slice provides centralized state management for your application 
   formdata: {},               // Set rightsidebar fields value in formdata
   filterdata: {},             // Set filter rightsidebar value same as formdata
   masterdata: {},             // Store API data in label and value array of object
-  masterdatalisting: [],      // Store API data
+  masterdatalist: [],      // Store API data
   pageno: 1,                  // Set current page no
   pagename: '',               // Set current page name
   nextpage: 0                 // (1 and 0) if more data available so 1 else 0
@@ -27,7 +27,7 @@ The Redux Data Slice provides centralized state management for your application 
 - `setDataFormData(formData)` - Set form data object
 - `setFilterData(filterData)` - Set filter data object
 - `setMasterData(masterData)` - Set master data with label/value pairs
-- `setMasterDataListing(listing)` - Set master data listing array
+- `setMasterDataList(listing)` - Set master data listing array
 - `setPageNo(pageNo)` - Set current page number
 - `setPageName(pageName)` - Set current page name
 - `setNextPage(nextPage)` - Set next page availability (1 or 0)
@@ -51,7 +51,7 @@ selectRightSidebarFormData(state)    // Get right sidebar form data
 selectFormData(state)                // Get form data object
 selectFilterData(state)              // Get filter data object
 selectMasterData(state)              // Get master data object
-selectMasterDataListing(state)       // Get master data listing array
+selectMasterDataList(state)       // Get master data listing array
 selectPageNo(state)                  // Get current page number
 selectPageName(state)                // Get current page name
 selectNextPage(state)                // Get next page availability
@@ -73,7 +73,7 @@ const MyComponent = () => {
     formdata, 
     filterdata, 
     masterdata, 
-    masterdatalisting, 
+    masterdatalist, 
     pageno, 
     pagename, 
     nextpage, 
@@ -101,7 +101,7 @@ import {
   setDataFormData,
   setFilterData,
   setMasterData,
-  setMasterDataListing,
+  setMasterDataList,
   setPageNo,
   setPageName,
   setNextPage
@@ -144,7 +144,7 @@ dispatch(setMasterData({
 }));
 
 // Set master data listing
-dispatch(setMasterDataListing([
+dispatch(setMasterDataList([
   { _id: '1', name: 'Admin Role', type: 'role' },
   { _id: '2', name: 'Sales Role', type: 'role' }
 ]));
@@ -267,8 +267,8 @@ const handleSetMasterData = (apiResponse) => {
 };
 
 // Set master data listing
-const handleSetMasterDataListing = (apiResponse) => {
-  dispatch(setMasterDataListing(apiResponse.data));
+const handleSetMasterDataList = (apiResponse) => {
+  dispatch(setMasterDataList(apiResponse.data));
 };
 ```
 

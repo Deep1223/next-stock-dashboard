@@ -11,7 +11,90 @@
     --primary-700: #1d4ed8;
     --primary-800: #1e40af;
     --primary-900: #1e3a8a;
-    --primary: var(--primary-500); 
+    --primary: var(--primary-500);
+
+    /* Form validation colors */
+    --common-danger: #dc2626;
+    --gray-700: #374151;
+    --gray-300: #d1d5db;
+    --gray-200: #e5e7eb;
+    --gray: #6b7280;
+    --white: #ffffff;
+}
+
+/* Toast Container Styling */
+.Toastify__toast-container {
+    z-index: 9999 !important;
+}
+
+.Toastify__toast {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 12px 16px !important;
+    margin-bottom: 8px !important;
+}
+
+.Toastify__toast--error {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+}
+
+.Toastify__toast--success {
+    background: #f0fdf4 !important;
+    color: #16a34a !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.Toastify__toast--warning {
+    background: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid #fed7aa !important;
+}
+
+.Toastify__toast--info {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #bfdbfe !important;
+}
+
+.Toastify__toast-body {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.Toastify__close-button {
+    color: inherit !important;
+    opacity: 0.7 !important;
+    font-size: 16px !important;
+}
+
+.Toastify__close-button:hover {
+    opacity: 1 !important;
+}
+
+.Toastify__progress-bar {
+    background: rgba(255, 255, 255, 0.3) !important;
+    height: 3px !important;
+}
+
+.Toastify__progress-bar--error {
+    background: #dc2626 !important;
+}
+
+.Toastify__progress-bar--success {
+    background: #16a34a !important;
+}
+
+.Toastify__progress-bar--warning {
+    background: #d97706 !important;
+}
+
+.Toastify__progress-bar--info {
+    background: #2563eb !important;
 }
 
 /* Custom CSS for maintaining original design */
@@ -98,9 +181,9 @@ aside nav ul li a.active span svg {
 
 /* Custom input styles */
 .form-control-custom {
-    border-radius: 8px;
+    border-radius: 4px;
     border: 1px solid #d1d5db;
-    padding: 12px 16px;
+    padding: 4px 16px;
     transition: all 0.2s ease;
 }
 
@@ -143,19 +226,53 @@ aside nav ul li a.active span svg {
 }
 
 /* Custom spacing utilities */
-.p-custom-1 { padding: 0.25rem; }
-.p-custom-2 { padding: 0.5rem; }
-.p-custom-3 { padding: 0.75rem; }
-.p-custom-4 { padding: 1rem; }
-.p-custom-5 { padding: 1.25rem; }
-.p-custom-6 { padding: 1.5rem; }
+.p-custom-1 {
+    padding: 0.25rem;
+}
 
-.m-custom-1 { margin: 0.25rem; }
-.m-custom-2 { margin: 0.5rem; }
-.m-custom-3 { margin: 0.75rem; }
-.m-custom-4 { margin: 1rem; }
-.m-custom-5 { margin: 1.25rem; }
-.m-custom-6 { margin: 1.5rem; }
+.p-custom-2 {
+    padding: 0.5rem;
+}
+
+.p-custom-3 {
+    padding: 0.75rem;
+}
+
+.p-custom-4 {
+    padding: 1rem;
+}
+
+.p-custom-5 {
+    padding: 1.25rem;
+}
+
+.p-custom-6 {
+    padding: 1.5rem;
+}
+
+.m-custom-1 {
+    margin: 0.25rem;
+}
+
+.m-custom-2 {
+    margin: 0.5rem;
+}
+
+.m-custom-3 {
+    margin: 0.75rem;
+}
+
+.m-custom-4 {
+    margin: 1rem;
+}
+
+.m-custom-5 {
+    margin: 1.25rem;
+}
+
+.m-custom-6 {
+    margin: 1.5rem;
+}
 
 /* Custom text utilities */
 .text-gradient {
@@ -172,82 +289,176 @@ aside nav ul li a.active span svg {
 }
 
 /* Custom border radius utilities */
-.rounded-custom { border-radius: 8px; }
-.rounded-custom-lg { border-radius: 12px; }
-.rounded-custom-xl { border-radius: 16px; }
+.rounded-custom {
+    border-radius: 8px;
+}
+
+.rounded-custom-lg {
+    border-radius: 12px;
+}
+
+.rounded-custom-xl {
+    border-radius: 16px;
+}
 
 /* Custom hover utilities */
-.hover-bg-light:hover { background-color: #f8f9fa !important; }
-.hover-bg-primary-subtle:hover { background-color: #e7f3ff !important; }
+.hover-bg-light:hover {
+    background-color: #f8f9fa !important;
+}
+
+.hover-bg-primary-subtle:hover {
+    background-color: #e7f3ff !important;
+}
 
 /* Custom positioning utilities */
-.top-n2 { top: -0.5rem; }
-.end-5 { right: 3rem; }
-.translate-x-n5 { transform: translateX(-1.25rem); }
+.top-n2 {
+    top: -0.5rem;
+}
+
+.end-5 {
+    right: 3rem;
+}
+
+.translate-x-n5 {
+    transform: translateX(-1.25rem);
+}
 
 /* Custom z-index utilities */
-.z-3 { z-index: 3; }
+.z-3 {
+    z-index: 3;
+}
 
 /* Custom width utilities */
-.w-6 { width: 1.5rem; }
+.w-6 {
+    width: 1.5rem;
+}
 
 /* Custom gap utilities */
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 0.75rem; }
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
 
 /* Custom transition utilities */
-.transition { transition: all 0.3s ease; }
-.transition-all { transition: all 0.3s ease; }
-.transition-colors { transition: color 0.3s ease, background-color 0.3s ease; }
+.transition {
+    transition: all 0.3s ease;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.transition-colors {
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
 
 /* Custom cursor utilities */
-.cursor-pointer { cursor: pointer; }
-.cursor-not-allowed { cursor: not-allowed; }
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
 
 /* Custom opacity utilities */
-.opacity-50 { opacity: 0.5; }
+.opacity-50 {
+    opacity: 0.5;
+}
 
 /* Custom transform utilities */
-.rotate-45 { transform: rotate(45deg); }
-.rotate-180 { transform: rotate(180deg); }
+.rotate-45 {
+    transform: rotate(45deg);
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
 
 /* Custom spinner animation */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
+
 .spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.125em;
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.125em;
 }
 
 /* Table column widths to match original design */
-.table th:nth-child(2), .table td:nth-child(2) { min-width: 150px; } /* Name */
-.table th:nth-child(3), .table td:nth-child(3) { min-width: 200px; } /* Email */
-.table th:nth-child(4), .table td:nth-child(4) { min-width: 150px; } /* Phone */
-.table th:nth-child(5), .table td:nth-child(5) { min-width: 200px; } /* Owner Email */
-.table th:nth-child(6), .table td:nth-child(6) { min-width: 200px; } /* Lead Status */
-.table th:nth-child(7), .table td:nth-child(7) { min-width: 200px; } /* Lead File */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+}
+
+/* TbGridDots */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    min-width: 150px;
+}
+
+/* Name */
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    min-width: 200px;
+}
+
+/* Email */
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    min-width: 150px;
+}
+
+/* Phone */
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    min-width: 200px;
+}
+
+/* Owner Email */
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    min-width: 200px;
+}
+
+/* Lead Status */
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    min-width: 200px;
+}
+
+/* Lead File */
 
 /* Ensure table headers match improved styling */
 .table th {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  color: #1e293b;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  border-bottom: 2px solid #cbd5e1;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #1e293b;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #cbd5e1;
 }
 
 /* Table row hover effect */
-.table tbody tr:hover {
+/* .table tbody tr:hover {
   background-color: #f1f5f9;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-}
+} */
 
 /* Table alternating row colors */
 .table tbody tr:nth-child(even) {
@@ -319,7 +530,8 @@ body {
 
 /* Ensure proper spacing for main content */
 .main-content-wrapper main {
-    min-height: calc(100vh - 120px); /* Adjust based on header height */
+    min-height: calc(100vh - 120px);
+    /* Adjust based on header height */
 }
 
 /* Header styling with improved colors */
@@ -461,6 +673,116 @@ aside .border-bottom.border-dark {
     border-bottom: 2px solid #cbd5e1 !important;
 }
 
+/* RSuite Modal Styles */
+.rs-modal {
+    z-index: 1050 !important;
+}
+
+.rs-modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.rs-modal-dialog {
+    margin: 1.75rem auto !important;
+    max-width: 90% !important;
+}
+
+.rs-modal-content {
+    border-radius: 12px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.rs-modal-header {
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 0px 0px 12px 0px !important;
+}
+
+.rs-modal-title {
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    line-height: 1.25 !important;
+}
+
+.rs-modal-body {
+    /* padding: 1.5rem !important; */
+    overflow-x: hidden !important;
+    padding-bottom: 15px !important;
+    margin-top: 15px !important;
+}
+
+.rs-modal-footer {
+    border-top: 1px solid #e5e7eb !important;
+    padding: 12px 0px 0px 0px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+/* RSuite Button Styles */
+.rs-btn {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.rs-btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.rs-btn-primary:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+.rs-btn-subtle {
+    background-color: transparent !important;
+    border-color: #d1d5db !important;
+    color: #374151 !important;
+}
+
+.rs-drawer-header {
+    padding: 4px 0px 4px 60px !important;
+}
+
+.rs-drawer-header .rs-drawer-header-close {
+    top: 7px !important;
+}
+
+.rs-drawer-body {
+    padding: 16px !important;
+}
+
+.rs-drawer-header+.rs-drawer-body {
+    height: calc(100vh - 55px) !important;
+}
+
+/* Move close icon to right side */
+.rs-drawer-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    /* push title left, close right */
+    padding: 10px 16px !important;
+    position: relative;
+}
+
+/* Remove the default absolute positioning of close button */
+.rs-drawer-header .rs-drawer-header-close {
+    position: static !important;
+    margin-left: auto !important;
+    order: 2;
+    /* ensures close button goes to the right */
+}
+
+/* Title on the left */
+.rs-drawer-header .rs-drawer-title {
+    order: 1;
+    margin: 0 !important;
+    font-size: 16px;
+    font-weight: 600;
+}
+
 /* Custom Toast Styles */
 .Toastify__toast-container {
     z-index: 9999;
@@ -541,4 +863,318 @@ aside .border-bottom.border-dark {
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
+}
+
+/* Form Validation Styles */
+.validate-input.error .label-form-control {
+    color: var(--common-danger);
+}
+
+.validate-input .label-form-control {
+    align-items: center;
+    color: var(--gray-700);
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    gap: 2px;
+    line-height: 145%;
+    margin-bottom: 5px;
+    width: auto;
+    z-index: 2;
+}
+
+.form-group,
+.form-group.validate-input,
+.validate-input {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.validate-html-editor.error .quill .ql-snow,
+.validate-input.error .form-control.rs-auto-complete .rs-input,
+.validate-input.error .form-control.rs-picker,
+.validate-input.error .rs-picker-toggle,
+.validate-input.error input.form-control,
+.validate-input.error textarea.form-control {
+    border-color: var(--common-danger) !important;
+}
+
+.validate-input .dragable-list,
+.validate-input input.form-control {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 4px 4px 4px 4px !important;
+    box-shadow: none;
+    color: var(--gray);
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 145%;
+    max-height: 35px;
+    min-height: 35px;
+    overflow: hidden;
+    padding: 8px 10px;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.validate-input textarea.form-control {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 4px 4px 4px 4px !important;
+    box-shadow: none;
+    color: var(--gray);
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 145%;
+    min-height: 35px;
+    padding: 8px 10px;
+    resize: vertical;
+    width: 100%;
+}
+
+.rs-picker-toggle-value {
+    color: var(--gray-700) !important;
+}
+
+/* 🔹 Main picker height and vertical alignment */
+.rs-picker-toggle {
+    height: 35px !important;
+    min-height: 35px !important;
+    border-radius: 4px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* 🔹 Placeholder and selected value center */
+.rs-picker-toggle .rs-picker-toggle-placeholder,
+.rs-picker-toggle .rs-picker-toggle-value {
+    line-height: 35px !important;
+    height: 35px !important;
+    position: absolute !important;
+    top: 0 !important;
+}
+
+.rs-picker-toggle:focus,
+.rs-picker-toggle.rs-btn:focus,
+.rs-picker-toggle.rs-btn:active,
+.rs-picker-toggle.rs-btn:focus-visible {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.rs-picker-select .rs-picker-toggle {
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.rs-picker-select-menu-item,
+.rs-picker-select-menu-item .rs-picker-select-menu-item-label {
+    color: #000 !important;
+}
+
+.rs-picker-select-menu-item:hover,
+.rs-picker-select-menu-item:focus {
+    color: #000 !important;
+    background-color: #f5f5f5 !important;
+}
+
+.rs-picker-select-menu-item.rs-picker-select-menu-item-active,
+.rs-picker-select-menu-item.rs-picker-select-menu-item-focus,
+.rs-picker-select-menu-item.rs-picker-select-menu-item-selected {
+    font-weight: normal !important;
+    color: #000 !important;
+}
+
+/* Button Styles */
+.btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-500);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-600);
+}
+
+.btn-secondary {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.btn-secondary:hover {
+    background-color: var(--gray-300);
+}
+
+/* Jodit Editor Styles */
+.jodit-editor-wrapper {
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+}
+
+.jodit-editor-wrapper .jodit-container {
+    border: none !important;
+    border-radius: 4px !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    border-radius: 4px 4px 0 0 !important;
+    min-height: 48px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar-editor-collection {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    margin-right: 12px !important;
+    padding: 2px 0 !important;
+}
+
+.jodit-editor-wrapper .jodit-workplace {
+    border-radius: 0 0 4px 4px !important;
+}
+
+.jodit-editor-wrapper .jodit-wysiwyg {
+    border: none !important;
+    border-radius: 0 0 4px 4px !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    color: var(--gray-700) !important;
+    padding: 12px !important;
+}
+
+.jodit-editor-wrapper .jodit-wysiwyg:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+}
+
+/* Jodit toolbar button styles */
+.jodit-editor-wrapper .jodit-toolbar-button {
+    border-radius: 6px !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar-button:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+    color: #1f2937 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar-button.jodit-toolbar-button_active {
+    background-color: var(--primary-500) !important;
+    color: white !important;
+    border-color: var(--primary-600) !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+.jodit-editor-wrapper .jodit-toolbar-button .jodit-icon {
+    width: 18px !important;
+    height: 18px !important;
+    stroke-width: 1.5 !important;
+}
+
+/* Toolbar separator */
+.jodit-editor-wrapper .jodit-toolbar-button-separator {
+    width: 1px !important;
+    height: 28px !important;
+    background-color: #e5e7eb !important;
+    margin: 0 8px !important;
+    border-radius: 1px !important;
+}
+
+/* Dropdown buttons */
+.jodit-editor-wrapper .jodit-toolbar-button.jodit-toolbar-button_dropdown::after {
+    content: '▼' !important;
+    font-size: 10px !important;
+    margin-left: 4px !important;
+    opacity: 0.7 !important;
+}
+
+/* Jodit status bar */
+.jodit-editor-wrapper .jodit-status-bar {
+    background: #f9fafb !important;
+    border-top: 1px solid #e5e7eb !important;
+    border-radius: 0 0 4px 4px !important;
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    padding: 8px 12px !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* Error state for Jodit editor */
+.jodit-editor-wrapper.error {
+    border-color: var(--common-danger) !important;
+}
+
+.jodit-editor-wrapper.error .jodit-container {
+    border-color: var(--common-danger) !important;
+}
+
+/* Disabled state for Jodit editor */
+.jodit-editor-wrapper.disabled .jodit-container {
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+}
+
+/* Responsive adjustments for Jodit editor */
+@media (max-width: 768px) {
+    .jodit-editor-wrapper .jodit-toolbar {
+        flex-wrap: wrap !important;
+    }
+    
+    .jodit-editor-wrapper .jodit-toolbar-button {
+        margin: 1px !important;
+    }
+}
+
+/* Hide "Powered by Jodit" text completely */
+.jodit-status-bar__item[title="Powered by Jodit"],
+.jodit-status-bar__item a[href*="jodit"] {
+  display: none !important;
+}
+
+/* Error state for Jodit container */
+.jodit-container.error-field {
+    border: 2px solid var(--common-danger) !important;
+    border-radius: 4px !important;
 }

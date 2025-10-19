@@ -7,6 +7,7 @@ import { TbGridDots } from "react-icons/tb";
 import { FaSortAmountDown, FaSortAmountDownAlt } from "react-icons/fa";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaAngleDown, FaAngleUp, FaX, FaRegRectangleList } from 'react-icons/fa6';
+import NoDataFound from "@/components/NoDataFound";
 
 const Table = (props) => {
     const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -32,7 +33,7 @@ const Table = (props) => {
     // Initialize sortedData from filtereddata
     useEffect(() => {
         let updatedData = [];
-    
+
         if (Array.isArray(props.filtereddata)) {
             // Case 1: filtereddata is already an array
             updatedData = [...props.filtereddata];
@@ -42,11 +43,11 @@ const Table = (props) => {
         } else {
             console.error("Filtered data is not in a valid format:", props.filtereddata);
         }
-    
+
         setSortedData(updatedData);
     }, [props.filtereddata]);
-    
-    
+
+
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
@@ -93,9 +94,9 @@ const Table = (props) => {
             <section>
                 <div className="bg-white position-relative shadow table-custom overflow-hidden">
                     <div className="overflow-x-auto flex-grow-1">
-                        <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow table-custom border" style={{maxHeight: '600px'}}>
+                        <div className="overflow-x-auto overflow-y-auto table-content bg-white shadow table-custom border calc-h-235p">
                             <table className="table table-hover w-100">
-                                <thead className="table-light border-bottom position-sticky top-0 z-index-1">
+                                <thead className="table-light border-bottom position-sticky top-0 z-index-2">
                                     <tr>
                                         <th className="px-3 py-2">
                                             <div className="d-flex justify-content-center align-items-center">
@@ -124,14 +125,14 @@ const Table = (props) => {
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="position-relative z-index-1">
                                     {sortedData.length > 0 ? (
                                         sortedData.map((formData, index) => (
                                             <tr
                                                 key={index}
                                                 className="border-bottom position-relative"
                                             >
-                                                <td className="px-3 py-2 text-center position-relative" style={{width: '30px'}}>
+                                                <td className="px-3 py-2 text-center position-relative" style={{ width: '30px' }}>
                                                     <button
                                                         onClick={() => toggleDropdown(index)}
                                                         className="btn btn-outline-secondary btn-sm p-1"
@@ -142,7 +143,7 @@ const Table = (props) => {
                                                         <div
                                                             ref={dropdownRef}
                                                             className="position-absolute end-0 top-0 bg-white shadow-custom-lg rounded dropdown-custom z-3"
-                                                            style={{right: '-120px', top: '32px', width: '150px'}}
+                                                            style={{ right: '-120px', top: '32px', width: '150px' }}
                                                         >
                                                             <ul className="py-2 small text-secondary list-unstyled">
                                                                 {!props.invisibleEdit && (
@@ -240,13 +241,10 @@ const Table = (props) => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={50} className="text-center p-5">
-                                                <img
-                                                    src={"/No_Data_Found.svg"}
-                                                    alt={"No Data Found"}
-                                                    className="mx-auto"
-                                                    style={{height: '300px'}}
-                                                />
+                                            <td colSpan={50} className="text-center">
+                                                <div className="d-flex justify-content-center align-items-center w-100 h-100" style={{ minHeight: '300px' }}>
+                                                    <NoDataFound />
+                                                </div>
                                             </td>
                                         </tr>
                                     )}
@@ -256,7 +254,7 @@ const Table = (props) => {
                     </div>
                 </div>
                 <nav
-                    className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pt-4"
+                    className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pt-2"
                     aria-label="Table navigation"
                 >
                     <span className="small text-secondary">

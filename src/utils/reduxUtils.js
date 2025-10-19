@@ -1,6 +1,4 @@
 import { store } from '@/store/store';
-import IISMethods from '@/utils/IISMethods';
-import Config from '@/config/config';
 
 /**
  * Redux Utility Functions
@@ -28,39 +26,12 @@ export const getStateSlice = (sliceName) => {
 };
 
 /**
- * Get login info from state
- * @returns {Object} Login info object
+ * Get right sidebar form data from state
+ * @returns {Array} Right sidebar form data array
  */
-export const getLoginInfo = () => {
+export const getRightSidebarFormData = () => {
   const state = getCurrentState();
-  return state?.logininfo || {};
-};
-
-/**
- * Check if user is authenticated (from logininfo)
- * @returns {boolean} Authentication status
- */
-export const isUserAuthenticated = () => {
-  const loginInfo = getLoginInfo();
-  return loginInfo?.isAuthenticated || false;
-};
-
-/**
- * Get current user (from logininfo)
- * @returns {Object|null} Current user object
- */
-export const getCurrentUser = () => {
-  const loginInfo = getLoginInfo();
-  return loginInfo?.user || null;
-};
-
-/**
- * Get authentication token (from logininfo)
- * @returns {string|null} Authentication token
- */
-export const getAuthToken = () => {
-  const loginInfo = getLoginInfo();
-  return loginInfo?.token || null;
+  return state?.rightsidebarformdata || [];
 };
 
 /**
@@ -70,15 +41,6 @@ export const getAuthToken = () => {
 export const getData = () => {
   const state = getCurrentState();
   return state?.data || [];
-};
-
-/**
- * Get right sidebar form data from state
- * @returns {Array} Right sidebar form data array
- */
-export const getRightSidebarFormData = () => {
-  const state = getCurrentState();
-  return state?.rightsidebarformdata || [];
 };
 
 /**
@@ -100,6 +62,15 @@ export const getFilterData = () => {
 };
 
 /**
+ * Get old filter data from state
+ * @returns {Object} Old filter data object
+ */
+export const getOldFilterData = () => {
+  const state = getCurrentState();
+  return state?.oldfilterdata || {};
+};
+
+/**
  * Get master data from state
  * @returns {Array} Master data array
  */
@@ -112,9 +83,9 @@ export const getMasterData = () => {
  * Get master data listing from state
  * @returns {Array} Master data listing array
  */
-export const getMasterDataListing = () => {
+export const getMasterDataList = () => {
   const state = getCurrentState();
-  return state?.masterdatalisting || [];
+  return state?.masterdatalist || [];
 };
 
 /**
@@ -144,36 +115,14 @@ export const getNextPage = () => {
   return state?.nextpage || 0;
 };
 
-
 /**
- * Get filtered data based on current filters
- * @returns {Array} Filtered data array
+ * Get login info from state
+ * @returns {Object} Login info object
  */
-export const getFilteredData = () => {
+export const getLoginInfo = () => {
   const state = getCurrentState();
-  const { data, filterdata } = state;
-  let filteredData = data || [];
-
-  if (filterdata?.status) {
-    filteredData = filteredData.filter(item => item.status === filterdata.status);
-  }
-  if (filterdata?.role) {
-    filteredData = filteredData.filter(item => item.role === filterdata.role);
-  }
-  if (filterdata?.search) {
-    const searchTerm = filterdata.search.toLowerCase();
-    filteredData = filteredData.filter(item =>
-      item.name?.toLowerCase().includes(searchTerm) ||
-      item.email?.toLowerCase().includes(searchTerm) ||
-      item.phone?.toLowerCase().includes(searchTerm)
-    );
-  }
-
-  return filteredData;
+  return state?.logininfo || {};
 };
-
-
-// ==================== STATE CHECKERS ====================
 
 /**
  * Check if any loading is in progress
@@ -184,91 +133,45 @@ export const isLoading = () => {
   return state?.loading || false;
 };
 
-// ==================== DATA HELPERS ====================
-
 /**
- * Find item by ID in data array
- * @param {string} itemId - Item ID
- * @returns {Object|null} Item object
+ * Get modal state from state
+ * @returns {Object} Modal state object
  */
-export const findItemById = (itemId) => {
-  const data = getData();
-  return data.find(item => item._id === itemId || item.id === itemId) || null;
+export const getModal = () => {
+  const state = getCurrentState();
+  return state?.modal || {
+    isOpen: false,
+    type: '',
+    data: null,
+    title: ''
+  };
 };
 
 /**
- * Get items by status
- * @param {string} status - Item status
- * @returns {Array} Items with specific status
+ * Get total count from state
+ * @returns {number} Total count
  */
-export const getItemsByStatus = (status) => {
-  const data = getData();
-  return data.filter(item => item.status === status);
+export const getTotalCount = () => {
+  const state = getCurrentState();
+  return state?.totalcount || 0;
 };
 
 /**
- * Get items by role
- * @param {string} role - Item role
- * @returns {Array} Items with specific role
+ * Get page limit from state
+ * @returns {number} Page limit
  */
-export const getItemsByRole = (role) => {
-  const data = getData();
-  return data.filter(item => item.role === role);
-};
-
-// ==================== VALIDATION HELPERS ====================
-
-/**
- * Check if user has permission
- * @param {string} permission - Permission to check
- * @returns {boolean} Permission status
- */
-export const hasPermission = (permission) => {
-  const user = getCurrentUser();
-  if (!user) return false;
-  
-  // Add your permission logic here
-  const userRole = user.userRole;
-  
-  switch (permission) {
-    case 'admin':
-      return userRole === Config.administrator;
-    case 'create_user':
-      return userRole === Config.administrator;
-    case 'delete_user':
-      return userRole === Config.administrator;
-    case 'view_data':
-      return userRole === Config.administrator || userRole === Config.salesuser;
-    case 'create_data':
-      return userRole === Config.administrator || userRole === Config.salesuser;
-    default:
-      return false;
-  }
+export const getPageLimit = () => {
+  const state = getCurrentState();
+  return state?.pagelimit || 10;
 };
 
 /**
- * Check if user can access route
- * @param {string} route - Route to check
- * @returns {boolean} Access status
+ * Get sort data from state
+ * @returns {Object} Sort data object with field and order
  */
-export const canAccessRoute = (route) => {
-  const user = getCurrentUser();
-  if (!user) return false;
-  
-  const userRole = user.userRole;
-  
-  switch (route) {
-    case '/dashboard':
-      return userRole === Config.administrator;
-    case '/sales-dashboard':
-      return userRole === Config.salesuser;
-    case '/users':
-      return userRole === Config.administrator;
-    case '/data':
-      return userRole === Config.administrator || userRole === Config.salesuser;
-    default:
-      return true;
-  }
+export const getSortData = () => {
+  const state = getCurrentState();
+  return state?.sortdata || { field: 'createdAt', order: -1 };
 };
 
 // ==================== STATE UPDATERS ====================
@@ -318,6 +221,15 @@ export const setFilterData = (filterdata) => {
 };
 
 /**
+ * Set old filter data in state
+ * @param {Object} oldfilterdata - Old filter data object
+ */
+export const setOldFilterData = (oldfilterdata) => {
+  const { setOldFilterData: setOldFilterDataAction } = require('@/store/reducer');
+  dispatchAction(setOldFilterDataAction(oldfilterdata));
+};
+
+/**
  * Set master data in state
  * @param {Object} masterdata - Master data object
  */
@@ -328,11 +240,11 @@ export const setMasterData = (masterdata) => {
 
 /**
  * Set master data listing in state
- * @param {Array} masterdatalisting - Master data listing array
+ * @param {Array} masterdatalist - Master data listing array
  */
-export const setMasterDataListing = (masterdatalisting) => {
-  const { setMasterDataListing: setMasterDataListingAction } = require('@/store/reducer');
-  dispatchAction(setMasterDataListingAction(masterdatalisting));
+export const setMasterDataList = (masterdatalist) => {
+  const { setMasterDataList: setMasterDataListAction } = require('@/store/reducer');
+  dispatchAction(setMasterDataListAction(masterdatalist));
 };
 
 /**
@@ -372,25 +284,74 @@ export const setLoginInfo = (logininfo) => {
 };
 
 /**
- * Set authentication user (using logininfo)
- * @param {Object} user - User object
- * @param {string} token - Authentication token
+ * Set data loading state
+ * @param {boolean} loading - Loading state
  */
-export const setAuthUser = (user, token) => {
-  const logininfo = {
-    user,
-    token,
-    isAuthenticated: true,
-    loginTime: new Date().toISOString()
-  };
-  setLoginInfo(logininfo);
+export const setDataLoading = (loading) => {
+  const { setDataLoading: setDataLoadingAction } = require('@/store/reducer');
+  dispatchAction(setDataLoadingAction(loading));
 };
 
 /**
- * Clear authentication (using logininfo)
+ * Set data error state
+ * @param {string} error - Error message
  */
-export const clearAuth = () => {
-  setLoginInfo({});
+export const setDataError = (error) => {
+  const { setDataError: setDataErrorAction } = require('@/store/reducer');
+  dispatchAction(setDataErrorAction(error));
+};
+
+/**
+ * Set modal state
+ * @param {Object} modal - Modal state object
+ */
+export const setModal = (modal) => {
+  const { setModal: setModalAction } = require('@/store/reducer');
+  dispatchAction(setModalAction(modal));
+};
+
+/**
+ * Open modal with data
+ * @param {Object} modalData - Modal data {type, data, title}
+ */
+export const openModal = (modalData) => {
+  const { openModal: openModalAction } = require('@/store/reducer');
+  dispatchAction(openModalAction(modalData));
+};
+
+/**
+ * Close modal
+ */
+export const closeModal = () => {
+  const { closeModal: closeModalAction } = require('@/store/reducer');
+  dispatchAction(closeModalAction());
+};
+
+/**
+ * Set total count
+ * @param {number} totalcount - Total count
+ */
+export const setTotalCount = (totalcount) => {
+  const { setTotalCount: setTotalCountAction } = require('@/store/reducer');
+  dispatchAction(setTotalCountAction(totalcount));
+};
+
+/**
+ * Set page limit
+ * @param {number} pagelimit - Page limit
+ */
+export const setPageLimit = (pagelimit) => {
+  const { setPageLimit: setPageLimitAction } = require('@/store/reducer');
+  dispatchAction(setPageLimitAction(pagelimit));
+};
+
+/**
+ * Set sort data
+ * @param {Object} sortdata - Sort data object with field and order
+ */
+export const setSortData = (sortdata) => {
+  const { setSortData: setSortDataAction } = require('@/store/reducer');
+  dispatchAction(setSortDataAction(sortdata));
 };
 
 // ==================== PROPS SETTER FUNCTIONS ====================
@@ -407,16 +368,19 @@ export const setProps = (props) => {
     setRightSidebarFormData(props.rightsidebarformdata);
   }
   if (props.formdata !== undefined) {
-    setDataFormData(props.formdata);
+    setFormData(props.formdata);
   }
   if (props.filterdata !== undefined) {
     setFilterData(props.filterdata);
   }
+  if (props.oldfilterdata !== undefined) {
+    setOldFilterData(props.oldfilterdata);
+  }
   if (props.masterdata !== undefined) {
     setMasterData(props.masterdata);
   }
-  if (props.masterdatalisting !== undefined) {
-    setMasterDataListing(props.masterdatalisting);
+  if (props.masterdatalist !== undefined) {
+    setMasterDataList(props.masterdatalist);
   }
   if (props.pageno !== undefined) {
     setPageNo(props.pageno);
@@ -436,6 +400,18 @@ export const setProps = (props) => {
   if (props.error !== undefined) {
     setDataError(props.error);
   }
+  if (props.modal !== undefined) {
+    setModal(props.modal);
+  }
+  if (props.totalcount !== undefined) {
+    setTotalCount(props.totalcount);
+  }
+  if (props.pagelimit !== undefined) {
+    setPageLimit(props.pagelimit);
+  }
+  if (props.sortdata !== undefined) {
+    setSortData(props.sortdata);
+  }
 };
 
 /**
@@ -448,180 +424,18 @@ export const getProps = () => {
     rightsidebarformdata: getRightSidebarFormData(),
     formdata: getFormData(),
     filterdata: getFilterData(),
+    oldfilterdata: getOldFilterData(),
     masterdata: getMasterData(),
-    masterdatalisting: getMasterDataListing(),
+    masterdatalist: getMasterDataList(),
     pageno: getPageNo(),
     pagename: getPageName(),
     nextpage: getNextPage(),
     logininfo: getLoginInfo(),
     loading: isLoading(),
-    error: getCurrentState()?.error || null
-  };
-};
-
-/**
- * Update user in state
- * @param {string} userId - User ID
- * @param {Object} userData - Updated user data
- */
-export const updateUserInState = (userId, userData) => {
-  const { updateUser } = require('@/store/reducer');
-  dispatchAction(updateUser({ id: userId, userData }));
-};
-
-/**
- * Update lead in state
- * @param {string} leadId - Lead ID
- * @param {Object} leadData - Updated lead data
- */
-export const updateLeadInState = (leadId, leadData) => {
-  const { updateLead } = require('@/store/reducer');
-  dispatchAction(updateLead({ id: leadId, leadData }));
-};
-
-/**
- * Open modal
- * @param {string} modalName - Modal name
- */
-export const openModal = (modalName) => {
-  const { openModal: openModalAction } = require('@/store/reducer');
-  dispatchAction(openModalAction(modalName));
-};
-
-/**
- * Close modal
- * @param {string} modalName - Modal name
- */
-export const closeModal = (modalName) => {
-  const { closeModal: closeModalAction } = require('@/store/reducer');
-  dispatchAction(closeModalAction(modalName));
-};
-
-/**
- * Toggle sidebar
- */
-export const toggleSidebar = () => {
-  const { toggleSidebar: toggleSidebarAction } = require('@/store/reducer');
-  dispatchAction(toggleSidebarAction());
-};
-
-// ==================== ERROR HANDLERS ====================
-
-/**
- * Handle Redux errors with toast notifications
- * @param {string} error - Error message
- * @param {string} action - Action that failed
- */
-export const handleReduxError = (error, action = 'Operation') => {
-  console.error(`Redux Error in ${action}:`, error);
-  IISMethods.errormsg(`${action} failed: ${error}`, 1);
-};
-
-/**
- * Handle Redux success with toast notifications
- * @param {string} message - Success message
- * @param {string} action - Action that succeeded
- */
-export const handleReduxSuccess = (message, action = 'Operation') => {
-  IISMethods.successmsg(`${action} successful: ${message}`, 2);
-};
-
-// ==================== SUBSCRIPTION HELPERS ====================
-
-/**
- * Subscribe to state changes
- * @param {Function} callback - Callback function
- * @returns {Function} Unsubscribe function
- */
-export const subscribeToState = (callback) => {
-  return store.subscribe(callback);
-};
-
-/**
- * Subscribe to specific state slice changes
- * @param {string} sliceName - State slice name
- * @param {Function} callback - Callback function
- * @returns {Function} Unsubscribe function
- */
-export const subscribeToSlice = (sliceName, callback) => {
-  let previousState = getStateSlice(sliceName);
-  
-  return store.subscribe(() => {
-    const currentState = getStateSlice(sliceName);
-    if (currentState !== previousState) {
-      callback(currentState, previousState);
-      previousState = currentState;
-    }
-  });
-};
-
-// ==================== PERSISTENCE HELPERS ====================
-
-/**
- * Save state to localStorage
- * @param {string} key - Storage key
- * @param {Object} state - State to save
- */
-export const saveStateToStorage = (key, state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem(key, serializedState);
-  } catch (error) {
-    console.error('Error saving state to localStorage:', error);
-  }
-};
-
-/**
- * Load state from localStorage
- * @param {string} key - Storage key
- * @returns {Object|null} Loaded state
- */
-export const loadStateFromStorage = (key) => {
-  try {
-    const serializedState = localStorage.getItem(key);
-    if (serializedState === null) {
-      return null;
-    }
-    return JSON.parse(serializedState);
-  } catch (error) {
-    console.error('Error loading state from localStorage:', error);
-    return null;
-  }
-};
-
-// ==================== DEBUG HELPERS ====================
-
-/**
- * Log current state (for debugging)
- * @param {string} label - Log label
- */
-export const logCurrentState = (label = 'Current State') => {
-  if (process.env.NODE_ENV === 'development') {
-    console.group(label);
-    console.log('Full State:', getCurrentState());
-    console.log('Auth State:', getStateSlice('auth'));
-    console.log('Users State:', getStateSlice('users'));
-    console.log('Leads State:', getStateSlice('leads'));
-    console.log('UI State:', getStateSlice('ui'));
-    console.log('Forms State:', getStateSlice('forms'));
-    console.groupEnd();
-  }
-};
-
-/**
- * Get state summary (for debugging)
- * @returns {Object} State summary
- */
-export const getStateSummary = () => {
-  const state = getCurrentState();
-  return {
-    isAuthenticated: state.auth?.isAuthenticated || false,
-    userCount: state.users?.users?.length || 0,
-    leadCount: state.leads?.leads?.length || 0,
-    sidebarCollapsed: state.ui?.sidebarCollapsed || false,
-    openModals: Object.keys(state.ui?.modals || {}).filter(
-      key => state.ui.modals[key]
-    ),
-    loading: isLoading(),
+    error: getCurrentState()?.error || null,
+    modal: getModal(),
+    totalcount: getTotalCount(),
+    pagelimit: getPageLimit(),
+    sortdata: getSortData()
   };
 };

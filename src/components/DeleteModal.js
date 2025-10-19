@@ -4,8 +4,11 @@ import { FiAlertTriangle } from "react-icons/fi";
 import Modal from "@/components/modal";
 import IISMethods from '@/utils/IISMethods';
 import Config from '@/config/config';
+import { useAppSelector } from "@/store/hooks";
+import { getCurrentState } from "@/utils/reduxUtils";
 
 const DeleteModal = (props) => {
+    const modalData = useAppSelector(s => s.modal);
     const [stage, setStage] = useState(1);
     const [confirmText, setConfirmText] = useState("");
     const [isButtonEnabled, setIsButtonEnabled] = useState(false);
@@ -20,11 +23,11 @@ const DeleteModal = (props) => {
     }, [confirmText, stage]);
 
     const handleDeleteClose = () => {
-        props.setModalDeleteOpen(false);
+        IISMethods.handleGrid(false, 'deletemodal', 0);
         setStage(1);
         setConfirmText("");
         setIsButtonEnabled(false);
-        
+
         // Show info toast when deletion is cancelled
         if (stage === 2) {
             IISMethods.errormsg(Config.cancelling, 4);
@@ -42,10 +45,10 @@ const DeleteModal = (props) => {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             // Show success toast
             IISMethods.errormsg(Config.datadeleted, 2);
-            
+
             setShowSuccess(true);
             handleDeleteClose();
             setShowSuccess(false);
@@ -65,13 +68,13 @@ const DeleteModal = (props) => {
         return (
             <>
                 <Modal
-                    open={props.modalDeleteOpen}
+                    open={getCurrentState().modal.deletemodal}
                     onClose={handleDeleteClose}
-                    width="w-120"
+                    width="w-500p"
                     header={
-                        <div className="flex items-center">
-                            <FiAlertTriangle className="h-6 w-6 text-red-600 mr-2" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                        <div className="d-flex align-items-center">
+                            <FiAlertTriangle className="me-2 text-danger" size={22} />
+                            <h3 className="fs-5 fw-semibold text-dark mb-0">
                                 {stage === 1 ? "Confirm Deletion" : "Final Confirmation Required"}
                             </h3>
                         </div>
@@ -79,18 +82,19 @@ const DeleteModal = (props) => {
                     body={
                         <>
                             {stage === 1 ? (
-                                <p className="text-gray-600">Are you sure you want to delete this item? This action cannot be undone.</p>
+                                <p className="text-secondary mb-0">
+                                    Are you sure you want to delete this item? This action cannot be undone.
+                                </p>
                             ) : (
-                                <div className="space-y-4">
-                                    <p className="text-gray-600">
+                                <div className="mb-3">
+                                    <p className="text-secondary">
                                         To confirm, type <strong>{confirmPhrase}</strong> below:
                                     </p>
                                     <input
                                         type="text"
                                         value={confirmText}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500"
-                                        style={{ textTransform: 'uppercase' }}
+                                        className="form-control text-uppercase"
                                         placeholder="Type confirmation phrase"
                                         autoFocus
                                     />
@@ -99,25 +103,25 @@ const DeleteModal = (props) => {
                         </>
                     }
                     footer={
-                        <div className="flex justify-end space-x-3">
+                        <div className="d-flex justify-content-end gap-2">
                             <button
                                 onClick={handleDeleteClose}
-                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                                className="btn btn-light text-dark"
                             >
                                 {Config.cancelbtn}
                             </button>
                             {stage === 1 ? (
                                 <button
                                     onClick={handleNextStage}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
+                                    className="btn btn-danger text-white"
                                 >
                                     {Config.continuebtn}
                                 </button>
                             ) : (
                                 <button
-                                    onClick={handleDelete}
+                                    onClick={() => props.handleDeleteData(props.deleteDetails._id)}
                                     disabled={!isButtonEnabled || isDeleting}
-                                    className={`px-4 py-2 rounded-lg ${isButtonEnabled ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                                    className={`btn ${isButtonEnabled ? 'btn-danger text-white' : 'btn-secondary text-light disabled'}`}
                                 >
                                     {isDeleting ? "Deleting..." : Config.deletebtn}
                                 </button>
@@ -125,6 +129,7 @@ const DeleteModal = (props) => {
                         </div>
                     }
                 />
+
             </>
         );
     }

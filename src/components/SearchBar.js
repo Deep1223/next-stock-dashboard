@@ -3,15 +3,22 @@ import { BiSearch } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 
 const SearchBar = (props) => {
-    const [inputValue, setInputValue] = useState(props.searchTerm);
+    const [inputValue, setInputValue] = useState(props.searchTerm || "");
 
     const triggerSearch = () => {
         props.handleSearch(inputValue.trim());
     };
 
     useEffect(() => {
-        props.handleSearch("")
-    }, [inputValue === '']);
+        if(inputValue === '') {
+            triggerSearch();
+        }
+    }, [inputValue])
+
+    // Update local state when searchTerm prop changes
+    useEffect(() => {
+        setInputValue(props.searchTerm || "");
+    }, [props.searchTerm]);
 
     try {
         return (
@@ -22,7 +29,8 @@ const SearchBar = (props) => {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && triggerSearch()}
                     placeholder="Search..."
-                    className="form-control form-control-custom ps-5 pe-5"
+                    className="form-control form-control-custom ps-5 pe-5 h-38p"
+                    id="searchbar"
                 />
 
                 <BiSearch
@@ -35,7 +43,9 @@ const SearchBar = (props) => {
                         className="position-absolute top-50 end-0 translate-middle-y me-3 text-secondary fs-5 cursor-pointer"
                         onClick={() => {
                             setInputValue("");
-                            props.setSearchTerm("");
+                            if (props.setSearchTerm) {
+                                props.setSearchTerm("");
+                            }
                             props.handleSearch("");
                         }}
                     />

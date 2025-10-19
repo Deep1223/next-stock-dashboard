@@ -77,3 +77,69 @@
 .w-100 {
     width: 100%;
 }
+
+
+.tbl-w-100p {
+    width: 100px;
+}
+
+.tbl-w-150p {
+    width: 150px;
+}
+
+.tbl-w-200p {
+    width: 200px;
+}
+
+.tbl-w-250p {
+    width: 250px;
+}
+
+.tbl-w-300p {
+    width: 300px;
+}
+
+.tbl-w-350p {
+    width: 350px;
+}
+
+.tbl-w-400p {
+    width: 400px;
+}
+
+.tbl-w-450p {
+    width: 450px;
+}
+
+.tbl-w-500p {
+    width: 500px;
+}
+
+.tbl-w-550p {
+    width: 550px;
+}
+
+.tbl-w-600p {
+    width: 600px;
+}
+
+
+.min-w-0 {  
+    min-width: 0px !important;
+}
+
+
+
+
+
+.w-30p {
+    width: 30px !important;
+}
+
+.w-200p {
+    width: 200px !important;
+}
+
+.w-500p {
+    width: 500px !important;
+}

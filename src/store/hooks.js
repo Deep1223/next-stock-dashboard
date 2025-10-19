@@ -12,7 +12,7 @@ export const useData = () => {
   const formdata = useAppSelector(state => state.formdata);
   const filterdata = useAppSelector(state => state.filterdata);
   const masterdata = useAppSelector(state => state.masterdata);
-  const masterdatalisting = useAppSelector(state => state.masterdatalisting);
+  const masterdatalist = useAppSelector(state => state.masterdatalist);
   const pageno = useAppSelector(state => state.pageno);
   const pagename = useAppSelector(state => state.pagename);
   const nextpage = useAppSelector(state => state.nextpage);
@@ -26,7 +26,7 @@ export const useData = () => {
     formdata,
     filterdata,
     masterdata,
-    masterdatalisting,
+    masterdatalist,
     pageno,
     pagename,
     nextpage,

@@ -25,11 +25,11 @@ export const createUser = createAsyncThunk(
     try {
       const { userStorage, initializeStorage } = await import('@/utils/localStorage');
       initializeStorage();
-      
+
       if (userStorage.userExists(userData.email)) {
         throw new Error(Config.userAlreadyExistserror);
       }
-      
+
       const newUser = userStorage.addUser(userData);
       return newUser;
     } catch (error) {
@@ -130,15 +130,15 @@ export const loginUser = createAsyncThunk(
     try {
       const { userStorage, sessionStorage, initializeStorage } = await import('@/utils/localStorage');
       initializeStorage();
-      
+
       const user = userStorage.authenticateUser(email, password);
       if (!user) {
         throw new Error(Config.invalidCredentialserror);
       }
-      
+
       const token = "local_token_" + Date.now();
       sessionStorage.setSession(user, token);
-      
+
       if (rememberMe) {
         IISMethods.setLocalStorage("rememberedEmail", email);
         IISMethods.setLocalStorage("rememberedPassword", password);
@@ -148,7 +148,7 @@ export const loginUser = createAsyncThunk(
         IISMethods.removeLocalStorage("rememberedPassword");
         IISMethods.removeLocalStorage("rememberMe");
       }
-      
+
       return { user, token };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -179,15 +179,21 @@ const dataSlice = createSlice({
     rightsidebarformdata: [], // Set rightsidebarformdata for rightsidebar field set from masterjson
     formdata: {}, // Set rightsidebar fields value in formdata
     filterdata: {}, // Set filter rightsidebar value same as formdata
+    oldfilterdata: {}, // Set old filter rightsidebar value same as formdata
     masterdata: [], // Store API data in label and value array of object
-    masterdatalisting: [], // Store API data
+    masterdatalist: [], // Store API data
     pageno: 1, // Set current page no
     pagename: '', // Set current page name
     nextpage: 0, // (1 and 0) if more data available so 1 else 0
     logininfo: {}, // Login information
     loading: false,
     error: null,
+    modal: {},
+    totalcount: 0, // Total number of records
+    pagelimit: 10, // Number of records per page
+    sortdata: { field: 'createdAt', order: -1 }, // Sort data: field and order (1, -1, 0)
   },
+
   reducers: {
     setData: (state, action) => {
       state.data = action.payload;
@@ -201,11 +207,14 @@ const dataSlice = createSlice({
     setFilterData: (state, action) => {
       state.filterdata = { ...state.filterdata, ...action.payload };
     },
+    setOldFilterData: (state, action) => {
+      state.oldfilterdata = { ...state.oldfilterdata, ...action.payload };
+    },
     setMasterData: (state, action) => {
       state.masterdata = { ...state.masterdata, ...action.payload };
     },
-    setMasterDataListing: (state, action) => {
-      state.masterdatalisting = action.payload;
+    setMasterDataList: (state, action) => {
+      state.masterdatalist = { ...state.masterdatalist, ...action.payload };
     },
     setPageNo: (state, action) => {
       state.pageno = action.payload;
@@ -223,14 +232,23 @@ const dataSlice = createSlice({
       state.data = [];
       state.formdata = {};
       state.filterdata = {};
+      state.oldfilterdata = {};
       state.pageno = 1;
       state.nextpage = 0;
+      state.masterdata = [];
+      state.masterdatalist = [];
+      state.modal = {};
+      state.totalcount = 0;
+      state.pagelimit = 20;
     },
     clearFormData: (state) => {
       state.formdata = {};
     },
     clearFilterData: (state) => {
       state.filterdata = {};
+    },
+    clearOldFilterData: (state) => {
+      state.oldfilterdata = {};
     },
     setDataLoading: (state, action) => {
       state.loading = action.payload;
@@ -240,6 +258,25 @@ const dataSlice = createSlice({
     },
     clearDataError: (state) => {
       state.error = null;
+    },
+    // Modal actions
+    setModal: (state, action) => {
+      state.modal = { ...state.modal, ...action.payload };
+    },
+    // Total count actions
+    setTotalCount: (state, action) => {
+      state.totalcount = action.payload;
+    },
+    // Page limit actions
+    setPageLimit: (state, action) => {
+      state.pagelimit = action.payload;
+    },
+    // Sort data actions
+    setSortData: (state, action) => {
+      state.sortdata = action.payload;
+    },
+    clearSortData: (state) => {
+      state.sortdata = { field: 'createdAt', order: -1 };
     },
   },
   extraReducers: (builder) => {
@@ -273,8 +310,9 @@ export const {
   setRightSidebarFormData,
   setDataFormData,
   setFilterData,
+  setOldFilterData,
   setMasterData,
-  setMasterDataListing,
+  setMasterDataList,
   setPageNo,
   setPageName,
   setNextPage,
@@ -282,9 +320,17 @@ export const {
   clearData,
   clearFormData,
   clearFilterData,
+  clearOldFilterData,
   setDataLoading,
   setDataError,
   clearDataError,
+  setModal,
+  openModal,
+  closeModal,
+  setTotalCount,
+  setPageLimit,
+  setSortData,
+  clearSortData,
 } = dataSlice.actions;
 
 // ==================== SELECTORS ====================
@@ -294,14 +340,19 @@ export const selectData = (state) => state.data;
 export const selectRightSidebarFormData = (state) => state.rightsidebarformdata;
 export const selectFormData = (state) => state.formdata;
 export const selectFilterData = (state) => state.filterdata;
+export const selectOldFilterData = (state) => state.oldfilterdata;
 export const selectMasterData = (state) => state.masterdata;
-export const selectMasterDataListing = (state) => state.masterdatalisting;
+export const selectMasterDataList = (state) => state.masterdatalist;
 export const selectPageNo = (state) => state.pageno;
 export const selectPageName = (state) => state.pagename;
 export const selectNextPage = (state) => state.nextpage;
 export const selectLoginInfo = (state) => state.logininfo;
 export const selectDataLoading = (state) => state.loading;
 export const selectDataError = (state) => state.error;
+export const selectModal = (state) => state.modal;
+export const selectTotalCount = (state) => state.totalcount;
+export const selectPageLimit = (state) => state.pagelimit;
+export const selectSortData = (state) => state.sortdata;
 
 // ==================== UTILITY FUNCTIONS ====================
 

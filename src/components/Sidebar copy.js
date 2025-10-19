@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation"; // ✅ Correct Hook
 import { FaHome, FaCog, FaUser, FaBars, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FiSidebar } from "react-icons/fi";
-import { GiArchiveResearch } from "react-icons/gi";
 
 const Sidebar = (props) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -139,7 +138,7 @@ const Sidebar = (props) => {
                         )}
                     </li> */}
 
-                    {/* {userRole === "Administrator" && (
+                    {userRole === "Administrator" && (
                         <li className="mb-2">
                             <Link href="/users"
                                 className={`d-flex align-items-center py-2 px-2 rounded text-decoration-none transition ${isOpen || props.isFixed ? "gap-3" : "justify-content-center"} ${isActive("/users") ? "" : ""
@@ -163,110 +162,9 @@ const Sidebar = (props) => {
                                 <span className="w-6 d-flex justify-content-center" style={{ color: isActive("/users") ? '#ffffff' : '#cbd5e1' }}><FaUser /></span>
                                 {
                                     isOpen || props.isFixed ?
-                                        <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"} d-block`}>
+                                        <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"
+                                            }`}>
                                             Users
-                                        </span>
-                                        :
-                                        <></>
-                                }
-                            </Link>
-                        </li>
-                    )} */}
-
-                    {userRole === "Administrator" && (
-                        <li className="mb-2">
-                            <Link href="/category"
-                                className={`d-flex align-items-center py-2 px-2 rounded text-decoration-none transition ${isOpen || props.isFixed ? "gap-3" : "justify-content-center"} ${isActive("/category") ? "" : ""
-                                    }`}
-                                style={{
-                                    backgroundColor: isActive("/category") ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                                    color: isActive("/category") ? '#ffffff' : '#cbd5e1',
-                                    borderLeft: isActive("/category") ? '3px solid #3b82f6' : 'none'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!isActive("/category")) {
-                                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isActive("/category")) {
-                                        e.target.style.backgroundColor = 'transparent';
-                                    }
-                                }}
-                            >
-                                <span className="w-6 d-flex justify-content-center" style={{ color: isActive("/category") ? '#ffffff' : '#cbd5e1' }}><FaUser /></span>
-                                {
-                                    isOpen || props.isFixed ?
-                                        <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"} d-block`}>
-                                            Category
-                                        </span>
-                                        :
-                                        <></>
-                                }
-                            </Link>
-                        </li>
-                    )}
-
-                    {userRole === "Administrator" && (
-                        <li className="mb-2">
-                            <Link href="/researchstudy"
-                                className={`d-flex align-items-center py-2 px-2 rounded text-decoration-none transition ${isOpen || props.isFixed ? "gap-3" : "justify-content-center"} ${isActive("/researchstudy") ? "" : ""
-                                    }`}
-                                style={{
-                                    backgroundColor: isActive("/researchstudy") ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                                    color: isActive("/researchstudy") ? '#ffffff' : '#cbd5e1',
-                                    borderLeft: isActive("/researchstudy") ? '3px solid #3b82f6' : 'none'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!isActive("/researchstudy")) {
-                                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isActive("/researchstudy")) {
-                                        e.target.style.backgroundColor = 'transparent';
-                                    }
-                                }}
-                            >
-                                <span className="w-6 d-flex justify-content-center" style={{ color: isActive("/researchstudy") ? '#ffffff' : '#cbd5e1' }}><GiArchiveResearch /></span>
-                                {
-                                    isOpen || props.isFixed ?
-                                        <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"} d-block`}>
-                                            Research Study Master
-                                        </span>
-                                        :
-                                        <></>
-                                }
-                            </Link>
-                        </li>
-                    )}
-
-                    {userRole === "Administrator" && (
-                        <li className="mb-2">
-                            <Link href="/researchtype"
-                                className={`d-flex align-items-center py-2 px-2 rounded text-decoration-none transition ${isOpen || props.isFixed ? "gap-3" : "justify-content-center"} ${isActive("/researchtype") ? "" : ""
-                                    }`}
-                                style={{
-                                    backgroundColor: isActive("/researchtype") ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                                    color: isActive("/researchtype") ? '#ffffff' : '#cbd5e1',
-                                    borderLeft: isActive("/researchtype") ? '3px solid #3b82f6' : 'none'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!isActive("/researchtype")) {
-                                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isActive("/researchtype")) {
-                                        e.target.style.backgroundColor = 'transparent';
-                                    }
-                                }}
-                            >
-                                <span className="w-6 d-flex justify-content-center" style={{ color: isActive("/researchtype") ? '#ffffff' : '#cbd5e1' }}><GiArchiveResearch /></span>
-                                {
-                                    isOpen || props.isFixed ?
-                                        <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"} d-block`}>
-                                            Research Type Master
                                         </span>
                                         :
                                         <></>

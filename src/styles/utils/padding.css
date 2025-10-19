@@ -3,6 +3,10 @@
     padding-top: 4px;
 }
 
+.pt-6p {
+    padding-top: 6px;
+}
+
 .pt-8p {
     padding-top: 8px;
 }
@@ -345,6 +349,11 @@
     padding-right: 4px;
 }
 
+.px-9p {
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
 .px-8p {
     padding-left: 8px;
     padding-right: 8px;
@@ -418,4 +427,9 @@
 .px-64p {
     padding-left: 64px;
     padding-right: 64px;
+}
+
+
+.p-16p {
+    padding: 16px !important; 
 }

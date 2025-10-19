@@ -95,11 +95,17 @@ export default function TestLocalStorage() {
   };
 
   const clearAllData = () => {
-    localStorage.removeItem('crm_users');
-    localStorage.removeItem('crm_leads');
-    localStorage.removeItem('crm_master_countries');
-    localStorage.removeItem('crm_master_industries');
-    localStorage.removeItem('crm_master_leadSources');
+    userStorage.resetUsers();
+    localStorage.removeItem('leads');
+    localStorage.removeItem('master_countries');
+    localStorage.removeItem('master_industries');
+    localStorage.removeItem('master_leadSources');
+    loadData();
+    runTests();
+  };
+
+  const forceUpdateAdmin = () => {
+    userStorage.forceUpdateAdmin();
     loadData();
     runTests();
   };
@@ -191,6 +197,12 @@ export default function TestLocalStorage() {
         >
           Clear All Data
         </button>
+        <button
+          onClick={forceUpdateAdmin}
+          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+        >
+          Force Update Admin
+        </button>
       </div>
 
       {/* Instructions */}
@@ -199,9 +211,10 @@ export default function TestLocalStorage() {
         <ul className="text-sm space-y-1">
           <li>• This page tests all localStorage functionality</li>
           <li>• All CRM APIs have been replaced with localStorage</li>
-          <li>• Default users: admin@example.com (admin123), sales@example.com (sales123)</li>
+          <li>• Default users: admin@gmail.com (Admin@123), sales@example.com (sales123)</li>
           <li>• Data persists in browser localStorage</li>
-          <li>• Use "Clear All Data" to reset to initial state</li>
+          <li>• Use &quot;Clear All Data&quot; to reset to initial state</li>
+          <li>• Use &quot;Force Update Admin&quot; to fix admin login issues</li>
         </ul>
       </div>
     </div>

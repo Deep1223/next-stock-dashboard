@@ -75,7 +75,7 @@ const Config = {
 
     // ==================== ERROR MESSAGES ====================
     // General Error Messages
-    fillallfieldserror: 'Please fill all required fields',
+    fillallfieldserror: 'Please Fill All Required Fields',
     fillallrequiredfild: 'Please fill all required fields',
     requirederror: 'is required',
     thisfieldrequirederror: 'This field is required',
@@ -135,6 +135,8 @@ const Config = {
     datadeleted: 'Data deleted successfully',
     datacreated: 'Data created successfully',
     datafetched: 'Data fetched successfully',
+    dataaddedsuccessfully: 'Data added successfully',
+    dataaddedfailed: 'Failed to add data',
     operationcompleted: 'Operation completed successfully',
     changesaved: 'Changes saved successfully',
     settingsupdated: 'Settings updated successfully',
@@ -379,6 +381,8 @@ const Config = {
     // ==================== API ENDPOINTS ====================
     // API Base URLs (if needed)
     apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+    serverurl: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    useraction: '/api',
     authEndpoint: '/auth',
     usersEndpoint: '/users',
     leadsEndpoint: '/leads',
@@ -427,6 +431,28 @@ const Config = {
     toastPauseOnHover: true,
     toastDraggable: true,
     toastLimit: 5,
+
+    // ==================== <MASTER DATA> ====================
+    // Language Options
+    language: [
+        {
+            label: 'English',
+            value: 'en'
+        },
+        {
+            label: 'Hindi',
+            value: 'hi'
+        },
+        {
+            label: 'Marathi',
+            value: 'mr'
+        },
+        {
+            label: 'Others',
+            value: 'others'
+        }
+    ]
+    // ===================== </MASTER DATA> ====================
 };
 
 export default Config;

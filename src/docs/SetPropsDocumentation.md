@@ -44,7 +44,7 @@ setProps({ filterdata: IISMethods.getcopy(filterData) });
 setProps({ masterdata: IISMethods.getcopy(masterDataArray) });
 
 // Set master data listing array
-setProps({ masterdatalisting: IISMethods.getcopy(listingData) });
+setProps({ masterdatalist: IISMethods.getcopy(listingData) });
 ```
 
 ### 2. Pagination
@@ -223,7 +223,7 @@ const loadMasterData = async () => {
     
     setProps({
       masterdata: IISMethods.getcopy(result.data),
-      masterdatalisting: IISMethods.getcopy(result.listing),
+      masterdatalist: IISMethods.getcopy(result.listing),
       loading: false
     });
   } catch (error) {

@@ -25,7 +25,7 @@ const Users = () => {
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false)
   const [deleteDetails, setDeleteDetails] = useState('')
   const [rightSidebarData, setRightSidebarData] = useState(MasterJson.users)
-  const [activeTab, setActiveTab] = useState(rightSidebarData[0].tabname);
+  const [activeTab, setActiveTab] = useState(rightSidebarData?.[0].tabname);
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null);
