@@ -49,7 +49,7 @@ const CategoryController = (props) => {
     const setFormData = async (id) => {
 
         if (id) {
-            const data = IISMethods.getObjectfromArray(getCurrentState().data, '_id', id)
+            const data = IISMethods.getObjectfromArray(getCurrentState().data, 'id', id)
 
             setProps({ formdata: IISMethods.getcopy(data) })
         }
@@ -114,8 +114,8 @@ const CategoryController = (props) => {
 
             console.log('Filtered Form Data:');
 
-            if (getCurrentState().formdata._id) {
-                updateData(getCurrentState().formdata._id, getCurrentState().formdata)
+            if (getCurrentState().formdata.id) {
+                updateData(getCurrentState().formdata.id, getCurrentState().formdata)
             }
             else {
                 addData(getCurrentState().formdata)

@@ -41,7 +41,7 @@ const logininfo = useSelector(selectLoginInfo);
 // logininfo structure:
 // {
 //   user: {
-//     _id: "1",
+//     id: "1",
 //     firstName: "Admin",
 //     lastName: "User",
 //     userEmail: "admin@gmail.com",

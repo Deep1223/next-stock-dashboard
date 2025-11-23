@@ -24,7 +24,7 @@ export const userStorage = {
     const createdBy = getCurrentState().loginInfo.firstName + ' ' + getCurrentState().loginInfo.lastName
     
     const newUser = {
-      _id: Date.now().toString(),
+      id: Date.now().toString(),
       ...userData,
       userStatus: "Active",
       createdAt: new Date().toISOString(),
@@ -39,7 +39,7 @@ export const userStorage = {
   // Update user
   updateUser: (userId, updateData) => {
     const users = userStorage.getUsers();
-    const userIndex = users.findIndex(user => user._id === userId);
+    const userIndex = users.findIndex(user => user.id === userId);
     if (userIndex !== -1) {
       const now = new Date();
       const timestamp = now.toLocaleString();
@@ -77,7 +77,7 @@ export const userStorage = {
     const userId = localStorage.getItem("userId");
     if (!userId) return null;
     const users = userStorage.getUsers();
-    return users.find(user => user._id === userId);
+    return users.find(user => user.id === userId);
   },
 
   // Clear all users and reset to default
@@ -86,7 +86,7 @@ export const userStorage = {
     // Reinitialize with default users
     const defaultUsers = [
       {
-        _id: "1",
+        id: "1",
         userName: "Admin User",
         userEmail: "admin@gmail.com",
         userPassword: "Admin@123",
@@ -96,7 +96,7 @@ export const userStorage = {
         createdAt: "2024-01-01T00:00:00Z"
       },
       {
-        _id: "2",
+        id: "2",
         userName: "Sales User",
         userEmail: "sales@example.com",
         userPassword: "sales123",
@@ -125,7 +125,7 @@ export const userStorage = {
     } else {
       // Add new admin user
       users.push({
-        _id: Date.now().toString(),
+        id: Date.now().toString(),
         userName: "Admin User",
         userEmail: "admin@gmail.com",
         userPassword: "Admin@123",
@@ -158,7 +158,7 @@ export const leadsStorage = {
   addLeads: (leadsData) => {
     const existingLeads = leadsStorage.getLeads();
     const newLeads = leadsData.map(lead => ({
-      _id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       ...lead,
       createdAt: new Date().toISOString()
     }));
@@ -192,22 +192,22 @@ export const masterDataStorage = {
     // Initialize with some default data if not exists
     const defaultData = {
       countries: [
-        { _id: '1', name: 'United States', code: 'US' },
-        { _id: '2', name: 'Canada', code: 'CA' },
-        { _id: '3', name: 'United Kingdom', code: 'UK' },
-        { _id: '4', name: 'Australia', code: 'AU' }
+        { id: '1', name: 'United States', code: 'US' },
+        { id: '2', name: 'Canada', code: 'CA' },
+        { id: '3', name: 'United Kingdom', code: 'UK' },
+        { id: '4', name: 'Australia', code: 'AU' }
       ],
       industries: [
-        { _id: '1', name: 'Technology', description: 'Technology sector' },
-        { _id: '2', name: 'Healthcare', description: 'Healthcare sector' },
-        { _id: '3', name: 'Finance', description: 'Finance sector' },
-        { _id: '4', name: 'Education', description: 'Education sector' }
+        { id: '1', name: 'Technology', description: 'Technology sector' },
+        { id: '2', name: 'Healthcare', description: 'Healthcare sector' },
+        { id: '3', name: 'Finance', description: 'Finance sector' },
+        { id: '4', name: 'Education', description: 'Education sector' }
       ],
       leadSources: [
-        { _id: '1', name: 'Website', description: 'Company website' },
-        { _id: '2', name: 'Referral', description: 'Customer referral' },
-        { _id: '3', name: 'Social Media', description: 'Social media platforms' },
-        { _id: '4', name: 'Cold Call', description: 'Cold calling' }
+        { id: '1', name: 'Website', description: 'Company website' },
+        { id: '2', name: 'Referral', description: 'Customer referral' },
+        { id: '3', name: 'Social Media', description: 'Social media platforms' },
+        { id: '4', name: 'Cold Call', description: 'Cold calling' }
       ]
     };
 
@@ -236,7 +236,7 @@ export const initializeStorage = () => {
     });
   } else if (adminUser.userPassword !== "Admin@123") {
     // Update admin user password if it's incorrect
-    userStorage.updateUser(adminUser._id, { userPassword: "Admin@123" });
+    userStorage.updateUser(adminUser.id, { userPassword: "Admin@123" });
   }
 
   // Ensure sales user exists
@@ -261,7 +261,7 @@ export const sessionStorage = {
   setSession: (user, token) => {
     localStorage.setItem("userrole", user.userRole);
     localStorage.setItem("token", token || "local_token_" + Date.now());
-    localStorage.setItem("userId", user._id);
+    localStorage.setItem("userId", user.id);
     localStorage.setItem("userEmail", user.userEmail);
     localStorage.setItem("firstName", user.firstName || "");
     localStorage.setItem("lastName", user.lastName || "");

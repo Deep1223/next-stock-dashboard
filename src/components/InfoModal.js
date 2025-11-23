@@ -20,15 +20,15 @@ const InfoModal = (props) => {
                     <div className="mt-12">
                         <div className="col-md-12 col-lg-12">
                             <div className="info-modal-data">
-                                <p className="mb-4">
+                                <p className="mb-2">
                                     Entry by :{" "}
                                     <span className="info-modal-ans font-weight-600">
-                                        {props.viewInfoData.recordinfo?.entryBy ? `${props.viewInfoData.recordinfo.entryBy} at ${IISMethods.getDateTimeFormate(props.viewInfoData.recordinfo.entryTime)}` : '-'}
+                                        {(props.viewInfoData.recordinfo?.createdby && props.viewInfoData.recordinfo.createdat) ? `${props.viewInfoData.recordinfo.createdby} at ${IISMethods.getDateTimeFormate(props.viewInfoData.recordinfo.createdat)}` : '-'}
                                     </span>
                                 </p>
-                                <p className="mb-4">
+                                <p className="mb-2">
                                     Update by :{" "}
-                                    <span className="info-modal-ans font-weight-600">{(props.viewInfoData.recordinfo?.updateBy && props.viewInfoData.recordinfo.updateTime) ? `${props.viewInfoData.recordinfo.updateBy} at ${IISMethods.getDateTimeFormate(props.viewInfoData.recordinfo.updateTime)}` : '-'}</span>
+                                    <span className="info-modal-ans font-weight-600">{(props.viewInfoData.recordinfo?.updatedby && props.viewInfoData.recordinfo.updatedat) ? `${props.viewInfoData.recordinfo.updatedby} at ${IISMethods.getDateTimeFormate(props.viewInfoData.recordinfo.updatedat)}` : '-'}</span>
                                 </p>
                             </div>
                         </div>

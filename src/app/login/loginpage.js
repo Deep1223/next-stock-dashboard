@@ -216,7 +216,7 @@ export default function LoginPage() {
                         </button>
 
                         <div className="signup-link">
-                            <span>Don't have an account?</span>
+                            <span>Don&apos;t have an account?</span>
                             <button
                                 type="button"
                                 className="signup-button"

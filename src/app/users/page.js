@@ -32,7 +32,7 @@ const Users = () => {
   // Static user data - 10 users
   const staticUsers = [
     {
-      _id: "1",
+      id: "1",
       userName: "John Doe",
       userEmail: "john.doe@example.com",
       userPhoneNumber: "+1-555-0123",
@@ -41,7 +41,7 @@ const Users = () => {
       createdAt: "2024-01-15T10:30:00Z"
     },
     {
-      _id: "2",
+      id: "2",
       userName: "Jane Smith",
       userEmail: "jane.smith@example.com",
       userPhoneNumber: "+1-555-0124",
@@ -50,7 +50,7 @@ const Users = () => {
       createdAt: "2024-01-16T09:15:00Z"
     },
     {
-      _id: "3",
+      id: "3",
       userName: "Mike Johnson",
       userEmail: "mike.johnson@example.com",
       userPhoneNumber: "+1-555-0125",
@@ -59,7 +59,7 @@ const Users = () => {
       createdAt: "2024-01-17T14:20:00Z"
     },
     {
-      _id: "4",
+      id "4",
       userName: "Sarah Wilson",
       userEmail: "sarah.wilson@example.com",
       userPhoneNumber: "+1-555-0126",
@@ -68,7 +68,7 @@ const Users = () => {
       createdAt: "2024-01-18T11:45:00Z"
     },
     {
-      _id: "5",
+      id "5",
       userName: "David Brown",
       userEmail: "david.brown@example.com",
       userPhoneNumber: "+1-555-0127",
@@ -77,7 +77,7 @@ const Users = () => {
       createdAt: "2024-01-19T16:30:00Z"
     },
     {
-      _id: "6",
+      id "6",
       userName: "Emily Davis",
       userEmail: "emily.davis@example.com",
       userPhoneNumber: "+1-555-0128",
@@ -86,7 +86,7 @@ const Users = () => {
       createdAt: "2024-01-20T08:15:00Z"
     },
     {
-      _id: "7",
+      id "7",
       userName: "Robert Miller",
       userEmail: "robert.miller@example.com",
       userPhoneNumber: "+1-555-0129",
@@ -95,7 +95,7 @@ const Users = () => {
       createdAt: "2024-01-21T13:25:00Z"
     },
     {
-      _id: "8",
+      id: "8",
       userName: "Lisa Garcia",
       userEmail: "lisa.garcia@example.com",
       userPhoneNumber: "+1-555-0130",
@@ -104,7 +104,7 @@ const Users = () => {
       createdAt: "2024-01-22T10:10:00Z"
     },
     {
-      _id: "9",
+      id: "9",
       userName: "James Martinez",
       userEmail: "james.martinez@example.com",
       userPhoneNumber: "+1-555-0131",
@@ -113,7 +113,7 @@ const Users = () => {
       createdAt: "2024-01-23T15:40:00Z"
     },
     {
-      _id: "10",
+      id: "10",
       userName: "Jennifer Anderson",
       userEmail: "jennifer.anderson@example.com",
       userPhoneNumber: "+1-555-0132",
@@ -295,12 +295,12 @@ const Users = () => {
       const { userStorage } = await import('@/utils/localStorage');
       
       // Update user in localStorage
-      const updatedUser = userStorage.updateUser(selectedUser._id, updateData);
+      const updatedUser = userStorage.updateUser(selectedUser.id, updateData);
       
       if (updatedUser) {
         // Update local state
         const updatedUsers = users.map(user => 
-          user._id === selectedUser._id 
+          user.id === selectedUser.id 
             ? { ...user, ...updateData }
             : user
         );

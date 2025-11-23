@@ -65,7 +65,7 @@ export default function TestLocalStorage() {
       results.push({
         test: 'Add New User',
         status: newUser ? 'PASS' : 'FAIL',
-        details: newUser ? `Created user with ID: ${newUser._id}` : 'Failed to create user'
+        details: newUser ? `Created user with ID: ${newUser.id}` : 'Failed to create user'
       });
 
       // Test 5: Test adding leads
@@ -143,7 +143,7 @@ export default function TestLocalStorage() {
           <h3 className="text-lg font-semibold mb-3">Users ({users.length})</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {users.map(user => (
-              <div key={user._id} className="p-2 bg-gray-50 rounded text-sm">
+              <div key={user.id} className="p-2 bg-gray-50 rounded text-sm">
                 <div className="font-medium">{user.userName}</div>
                 <div className="text-gray-600">{user.userEmail}</div>
                 <div className="text-gray-500">{user.userRole}</div>
@@ -157,7 +157,7 @@ export default function TestLocalStorage() {
           <h3 className="text-lg font-semibold mb-3">Leads ({leads.length})</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {leads.map(lead => (
-              <div key={lead._id} className="p-2 bg-gray-50 rounded text-sm">
+              <div key={lead.id} className="p-2 bg-gray-50 rounded text-sm">
                 <div className="font-medium">{lead.name}</div>
                 <div className="text-gray-600">{lead.email}</div>
                 <div className="text-gray-500">{lead.leadStatus}</div>

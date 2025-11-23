@@ -26,7 +26,7 @@ const ThreeDotMenu = (props) => {
                 onMouseLeave={(e) => e.stopPropagation()}
             >
                 <button className="dropdown-item d-flex align-items-center gap-2 py-2 border-bottom" onClick={async () => {
-                    await props.setFormData(props.data._id);
+                    await props.setFormData(props.data.id);
                     props.setDropdownOpen(null);
                 }}>
                     <FaRegEdit /> Edit
@@ -37,7 +37,7 @@ const ThreeDotMenu = (props) => {
                     onClick={async () => {
                         props.setDeleteDetails(props.data);
                         IISMethods.handleGrid(true, 'deletemodal', 1);
-                        // props.handleDeleteData(props.data._id);
+                        // props.handleDeleteData(props.data.id);
                         props.setDropdownOpen(null);
                     }}
                 >
@@ -322,7 +322,7 @@ const CategoryGridList = (props) => {
                                                                     field.type === "checkbox" ?
                                                                         <div className="form-check form-switch">
                                                                             <input className="form-check-input" type="checkbox" role="switch" id="switchCheckDefault"
-                                                                                checked={data[field.field] ? data[field.field] === 1 : 0} onChange={(e) => { onChangeCheckbox(field.type, field.field, e.target.checked ? 1 : 0, data._id, { ...data }) }} />
+                                                                                checked={data[field.field] ? data[field.field] === 1 : 0} onChange={(e) => { onChangeCheckbox(field.type, field.field, e.target.checked ? 1 : 0, data.id, { ...data }) }} />
                                                                         </div>
                                                                         :
                                                                         field.type === 'textarea' ?

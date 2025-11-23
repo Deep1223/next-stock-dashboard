@@ -31,7 +31,7 @@ const MasterController = (props) => {
             nextpage: 0,
             totalcount: 0,
             pagelimit: 20,
-            sortdata: { field: 'createdAt', order: -1 }, // Default: last added first
+            sortdata: { field: 'id', order: -1 }, // Default: last added first
         });
 
         // Load data on component mount
@@ -75,7 +75,7 @@ const MasterController = (props) => {
             console.log('### result.data', result.data);
             const data = result.data.map(item => ({
                 label: printSelectPicker(item, fields),
-                value: item.id || item._id
+                value: item.id
             }));
             
             const masterdata = {
@@ -349,6 +349,7 @@ const MasterController = (props) => {
 
     const handleDeleteData = async (id) => {
         try {
+            console.log('id', id)
             const result = await ApiService.delete(
                 getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
                 id

@@ -72,7 +72,7 @@ setProps({
 setProps({
   logininfo: IISMethods.getcopy({
     user: {
-      _id: '1',
+      id: '1',
       userName: 'John Doe',
       userEmail: 'john@example.com',
       userRole: 'admin'

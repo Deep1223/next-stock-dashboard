@@ -119,7 +119,7 @@ const DeleteModal = (props) => {
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => props.handleDeleteData(props.deleteDetails._id)}
+                                    onClick={() => props.handleDeleteData(props.deleteDetails.id)}
                                     disabled={!isButtonEnabled || isDeleting}
                                     className={`btn ${isButtonEnabled ? 'btn-danger text-white' : 'btn-secondary text-light disabled'}`}
                                 >

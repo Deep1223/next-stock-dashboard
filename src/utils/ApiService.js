@@ -4,6 +4,7 @@
  */
 
 import Config from '@/config/config';
+import { getCurrentState } from './reduxUtils';
 
 class ApiService {
     constructor() {
@@ -69,8 +70,13 @@ class ApiService {
     async create(pagealias, data) {
         try {
             const url = `${this.baseUrl}/${pagealias}/add`;
+
             const response = await this.makeApiRequest(url, {
-                method: 'POST',
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "username": `${getCurrentState().logininfo.firstName} ${getCurrentState().logininfo.lastName}` || 'Guest',
+                },
                 body: JSON.stringify(data)
             });
 
@@ -91,6 +97,7 @@ class ApiService {
         }
     }
 
+
     /**
      * READ - Get list with pagination, filters, sort, and search
      * @param {string} pagealias - API endpoint name
@@ -109,56 +116,58 @@ class ApiService {
                     pagination = { page: 1, limit: 20 },
                     sort = {},
                     filters = {},
-                    search = '',
-                    projection = {}
+                    search = ''
                 } = options;
 
-                // Build query parameters
-                const params = new URLSearchParams();
-
-                // Add search parameter
-                if (search && search.trim()) {
-                    params.append('search', search.trim());
-                }
-
-                // Add filter parameters (excluding empty values)
-                Object.keys(filters).forEach(key => {
-                    const value = filters[key];
-                    if (value !== '' && value !== null && value !== undefined) {
-                        params.append(key, value);
+                // Build payload for POST request
+                const payload = {
+                    searchtext: search.trim(),
+                    paginationinfo: {
+                        pageno: pagination.page,
+                        pagelimit: pagination.limit,
+                        filter: filters,
+                        sort: sort.field ? { [sort.field]: sort.order } : {}
                     }
-                });
+                };
 
-                // Add pagination
-                params.append('page', pagination.page);
-                params.append('limit', pagination.limit);
-
-                // Add sort
-                if (sort.field) {
-                    params.append('sortField', sort.field);
-                    params.append('sortOrder', sort.order);
-                }
-
-                // Add projection if provided
-                if (projection && Object.keys(projection).length > 0) {
-                    params.append('projection', JSON.stringify(projection));
-                }
-
-                const url = `${this.baseUrl}/${pagealias}?${params.toString()}`;
+                const url = `${this.baseUrl}/${pagealias}`;
+                
+                // Send POST request instead of GET
                 const response = await this.makeApiRequest(url, {
-                    method: 'GET'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
                 });
 
+                // Handle new response format
+                if (response.respstatus === 200 && response.data) {
+                    const { data, currentpage, nextpage, totaldocs, status, message } = response.data;
+
+                    return {
+                        status: status || 200,
+                        success: status === 200,
+                        message: message || 'Data fetched successfully',
+                        data: data || [],
+                        totalCount: totaldocs || 0,
+                        currentPage: currentpage || pagination.page,
+                        totalPages: Math.ceil((totaldocs || 0) / pagination.limit),
+                        hasNextPage: nextpage > 0,
+                        nextPage: nextpage,
+                        limit: pagination.limit
+                    };
+                }
+
+                // Handle error response
                 return {
-                    status: response.success ? 200 : 400,
-                    success: response.success,
-                    message: response.message || 'Data fetched successfully',
-                    data: response.data || [],
-                    totalCount: response.totalCount || response.totalcount || response.data?.length || 0,
-                    currentPage: response.currentPage || pagination.page,
-                    totalPages: response.totalPages || 1,
-                    hasNextPage: response.hasNextPage || false,
-                    limit: response.limit || pagination.limit
+                    status: response.respstatus || 400,
+                    success: false,
+                    message: response.data?.message || 'Failed to fetch data',
+                    data: [],
+                    totalCount: 0,
+                    hasNextPage: false,
+                    nextPage: 0
                 };
             }
         } catch (error) {
@@ -169,7 +178,8 @@ class ApiService {
                 message: error.message || `Failed to fetch ${pagealias}`,
                 data: [],
                 totalCount: 0,
-                hasNextPage: false
+                hasNextPage: false,
+                nextPage: 0
             };
         }
     }
@@ -185,12 +195,14 @@ class ApiService {
         try {
             if (pagealias) {
                 const url = `${this.baseUrl}/${pagealias}/update`;
+
                 const response = await this.makeApiRequest(url, {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        id,
-                        ...data
-                    })
+                    method: "PUT",   // 🔥 POST → PUT
+                    headers: {
+                        "Content-Type": "application/json",
+                        "username": `${getCurrentState().logininfo.firstName} ${getCurrentState().logininfo.lastName}` || 'Guest',
+                    },
+                    body: JSON.stringify({ id, ...data })
                 });
 
                 return {
@@ -211,18 +223,30 @@ class ApiService {
         }
     }
 
+
     /**
      * DELETE - Delete record
      * @param {string} pagealias - API endpoint name
      * @param {string|number} id - Record ID
      * @returns {Promise<object>} Response with status and message
      */
+    /**
+ * DELETE - Delete record
+ * @param {string} pagealias - API endpoint name
+ * @param {string|number} id - Record ID
+ * @returns {Promise<object>} Response with status and message
+ */
     async delete(pagealias, id) {
         try {
+            // Validate inputs
             if (pagealias) {
                 const url = `${this.baseUrl}/${pagealias}/delete`;
+
                 const response = await this.makeApiRequest(url, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({ id })
                 });
 
@@ -231,8 +255,9 @@ class ApiService {
                     success: response.success,
                     message: response.message || `${pagealias} deleted successfully`,
                     data: response.data || response
-                }
-            };
+                };
+            }
+
         } catch (error) {
             console.error(`Error deleting ${pagealias}:`, error);
             return {

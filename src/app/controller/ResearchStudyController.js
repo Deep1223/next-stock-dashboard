@@ -75,7 +75,7 @@ const ResearchStudyController = (props) => {
         if (result.status === 200) {
             const data = result.data.map(item => ({
                 label: printSelectPicker(item, fields),
-                value: item._id
+                value: item.id
             }));
             
             const masterdata = {
@@ -96,7 +96,7 @@ const ResearchStudyController = (props) => {
 
     const setFormData = async (id) => {
         if (id) {
-            const data = IISMethods.getObjectfromArray(getCurrentState().data, '_id', id)
+            const data = IISMethods.getObjectfromArray(getCurrentState().data, 'id', id)
 
             setProps({ formdata: IISMethods.getcopy(data) })
         }
@@ -168,8 +168,8 @@ const ResearchStudyController = (props) => {
 
             setProps({ formdata: IISMethods.getcopy(getCurrentState().formdata) })
 
-            if (getCurrentState().formdata._id) {
-                updateData(getCurrentState().formdata._id, getCurrentState().formdata)
+            if (getCurrentState().formdata.id) {
+                updateData(getCurrentState().formdata.id, getCurrentState().formdata)
             }
             else {
                 addData(getCurrentState().formdata)

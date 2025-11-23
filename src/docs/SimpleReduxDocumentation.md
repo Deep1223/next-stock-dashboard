@@ -154,8 +154,8 @@ dispatch(setMasterData({
 
 // Set master data listing
 dispatch(setMasterDataList([
-  { _id: '1', name: 'Admin Role', type: 'role' },
-  { _id: '2', name: 'Sales Role', type: 'role' }
+  { id: '1', name: 'Admin Role', type: 'role' },
+  { id: '2', name: 'Sales Role', type: 'role' }
 ]));
 
 // Set pagination
@@ -166,7 +166,7 @@ dispatch(setNextPage(1));
 // Set login info
 dispatch(setLoginInfo({
   user: {
-    _id: '1',
+    id: '1',
     userName: 'John Doe',
     userEmail: 'john@example.com',
     userRole: 'admin'

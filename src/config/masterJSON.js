@@ -116,7 +116,7 @@ const MasterJson = (type) => {
                                 status: 1
                             },
                             projection: {
-                                _id: 1,
+                                id: 1,
                                 categoryname: 1,
                             },
 
@@ -145,7 +145,7 @@ const MasterJson = (type) => {
                                 status: 1
                             },
                             projection: {
-                                _id: 1,
+                                id: 1,
                                 researchtypename: 1,
                             },
 
@@ -249,7 +249,7 @@ const MasterJson = (type) => {
                                 status: 1
                             },
                             projection: {
-                                _id: 1,
+                                id: 1,
                                 languagename: 1,
                             },
 

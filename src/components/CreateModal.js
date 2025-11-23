@@ -68,7 +68,7 @@ const CreateModal = (props) => {
                 .find(f => f.field === field.onchange);
         
             if (dependentField) {
-                const selectedItem = data?.find(item => item._id === value.value);
+                const selectedItem = data?.find(item => item.id === value.value);
 
                 if (selectedItem) {
                     const dependentValue = selectedItem[dependentField.onchangevalue];
