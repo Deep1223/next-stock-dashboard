@@ -111,6 +111,7 @@ class ApiService {
      */
     async read(pagealias, options = {}) {
         try {
+            console.log('pagealias', pagealias)
             if (pagealias) {
                 const {
                     pagination = { page: 1, limit: 20 },

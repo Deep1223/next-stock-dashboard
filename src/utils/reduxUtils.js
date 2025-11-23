@@ -354,6 +354,57 @@ export const setSortData = (sortdata) => {
   dispatchAction(setSortDataAction(sortdata));
 };
 
+// ==================== CLEAR DATA ACTIONS ====================
+
+/**
+ * Clear all data - Resets data, formdata, filterdata, pagination, etc.
+ * This dispatches the clearData action from reducer
+ */
+export const clearData = () => {
+  const { clearData: clearDataAction } = require('@/store/reducer');
+  dispatchAction(clearDataAction());
+};
+
+/**
+ * Clear form data only
+ */
+export const clearFormData = () => {
+  const { clearFormData: clearFormDataAction } = require('@/store/reducer');
+  dispatchAction(clearFormDataAction());
+};
+
+/**
+ * Clear filter data only
+ */
+export const clearFilterData = () => {
+  const { clearFilterData: clearFilterDataAction } = require('@/store/reducer');
+  dispatchAction(clearFilterDataAction());
+};
+
+/**
+ * Clear old filter data only
+ */
+export const clearOldFilterData = () => {
+  const { clearOldFilterData: clearOldFilterDataAction } = require('@/store/reducer');
+  dispatchAction(clearOldFilterDataAction());
+};
+
+/**
+ * Clear data error
+ */
+export const clearDataError = () => {
+  const { clearDataError: clearDataErrorAction } = require('@/store/reducer');
+  dispatchAction(clearDataErrorAction());
+};
+
+/**
+ * Clear sort data - Resets to default sort
+ */
+export const clearSortData = () => {
+  const { clearSortData: clearSortDataAction } = require('@/store/reducer');
+  dispatchAction(clearSortDataAction());
+};
+
 // ==================== PROPS SETTER FUNCTIONS ====================
 
 /**

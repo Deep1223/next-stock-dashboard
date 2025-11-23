@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import IISMethods from '@/utils/IISMethods';
-import { setProps, getCurrentState, getSortData } from '@/utils/reduxUtils';
+import { setProps, getCurrentState, getSortData, clearData } from '@/utils/reduxUtils';
 import MasterView from '@/app/common/MasterView';
 import { useAppSelector } from '@/store/hooks';
 import JsCall from '@/utils/JsCall';
@@ -18,7 +18,10 @@ const MasterController = (props) => {
     const nextpage = useAppSelector(state => state.nextpage);
     const totalcount = useAppSelector(state => state.totalcount);
 
+    // ✅ Initialize state and load data on mount
     useEffect(() => {
+        console.log('🔄 MasterController mounted - Initializing...');
+
         setProps({
             data: [],
             formData: {},
@@ -31,18 +34,25 @@ const MasterController = (props) => {
             nextpage: 0,
             totalcount: 0,
             pagelimit: 20,
-            sortdata: { field: 'id', order: -1 }, // Default: last added first
+            sortdata: { field: 'id', order: -1 },
         });
+    }, []); // Empty dependency array - runs once on mount
 
-        // Load data on component mount
-        getlist();
-    }, []);
-
+    // ✅ Update pagename when rightSidebarData changes
     useEffect(() => {
-        setProps({
-            pagename: getCurrentState().rightsidebarformdata?.[0]?.pagename || '',
-        });
-    }, [getCurrentState().rightsidebarformdata?.[0]?.pagename]);
+        const pagename = rightSidebarData?.[0]?.pagename || '';
+        const listData = async (pagename) => {
+            clearData();
+            console.log('Setting pagename:', pagename);
+            setProps({ pagename });
+
+            await getlist();
+        }
+
+        if (pagename) {
+            listData(pagename);
+        }
+    }, [rightSidebarData]);
 
     const printSelectPicker = (item, fields) => {
         return item[fields.masterdatafield]
@@ -50,8 +60,7 @@ const MasterController = (props) => {
 
     const getMasterData = async (page, fields) => {
         const staticfilter = fields.staticfilter || {};
-        
-        // Filter projection to only include fields with value 1
+
         let projection = {};
         if (fields.projection) {
             Object.keys(fields.projection).forEach(key => {
@@ -60,7 +69,7 @@ const MasterController = (props) => {
                 }
             });
         }
-        
+
         const result = await ApiService.read(fields.masterdata, {
             pagination: {
                 page: page,
@@ -77,7 +86,7 @@ const MasterController = (props) => {
                 label: printSelectPicker(item, fields),
                 value: item.id
             }));
-            
+
             const masterdata = {
                 [fields.masterdata]: data
             }
@@ -97,7 +106,6 @@ const MasterController = (props) => {
     const setFormData = async (id) => {
         if (id) {
             const data = IISMethods.getObjectfromArray(getCurrentState().data, 'id', id)
-
             setProps({ formdata: IISMethods.getcopy(data) })
         }
         else {
@@ -149,7 +157,6 @@ const MasterController = (props) => {
                     item.fields.forEach(field => {
                         const element = document.getElementById(`form-${field.field}`);
 
-                        // Only proceed if element exists (i.e., not hidden)
                         if (!element) {
                             if (field.type === 'checkbox') {
                                 getCurrentState().formdata[field.field] = 0;
@@ -196,17 +203,15 @@ const MasterController = (props) => {
 
     const updateData = async (id, formData) => {
         try {
-            // Use ApiService to update data
             const responseData = await ApiService.update(
-                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
-                id, 
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname,
+                id,
                 formData
             );
 
             if (responseData.status === 200) {
                 IISMethods.successmsg(Config.dataupdated, 2);
                 IISMethods.handleGrid(false, 'rightsidebar', 0)
-                // Refresh the data list
                 getlist();
             } else {
                 IISMethods.errormsg(responseData.message || Config.dataaddedfailed, 1);
@@ -221,9 +226,8 @@ const MasterController = (props) => {
     const addData = async (reqData) => {
         try {
             console.log('reqData', reqData);
-            // Use ApiService to create data
             const responseData = await ApiService.create(
-                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname,
                 reqData
             );
 
@@ -244,63 +248,67 @@ const MasterController = (props) => {
 
     const getlist = async () => {
         try {
-            let filter = IISMethods.getcopy(getCurrentState().filterdata) || {};
+            const currentState = getCurrentState();
+            const aliasname = currentState.rightsidebarformdata?.[0]?.aliasname;
+
+            // ✅ Check if aliasname exists before making API call
+            if (!aliasname) {
+                console.warn('⚠️ No aliasname found, skipping API call');
+                return;
+            }
+
+            console.log('🔍 Fetching list for:', aliasname);
+
+            let filter = IISMethods.getcopy(currentState.filterdata) || {};
             let sortData = getSortData();
 
-            // Extract searchbar BEFORE passing to ApiService
             const searchTerm = filter?.searchbar || '';
 
-            // Remove searchbar from filters IMMEDIATELY
             if (filter.hasOwnProperty('searchbar')) {
                 delete filter.searchbar;
             }
 
-            // Clean up empty filter values
             Object.keys(filter).forEach(key => {
                 if (filter[key] === '' || filter[key] === null || filter[key] === undefined) {
                     delete filter[key];
                 }
             })
 
-            // Set loading state
             setProps({ loading: true });
 
-            // Call ApiService with clean filters and separate search
-            const result = await ApiService.read(
-                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
-                {
-                    pagination: {
-                        page: getCurrentState().pageno,
-                        limit: getCurrentState().pagelimit
-                    },
-                    sort: sortData,
-                    filters: filter,  // Clean filters WITHOUT searchbar
-                    search: searchTerm  // Search term separately
-                }
-            );
+            const result = await ApiService.read(aliasname, {
+                pagination: {
+                    page: currentState.pageno,
+                    limit: currentState.pagelimit
+                },
+                sort: sortData,
+                filters: filter,
+                search: searchTerm
+            });
 
-            // Update Redux state with the response data
+            console.log('📦 API Result:', result);
+
             if (result && result.data) {
                 setProps({
                     data: result.data,
                     totalcount: result.totalCount || 0,
-                    nextpage: result.hasNextPage ? 1 : 0,
+                    nextpage: result.nextPage || 0,
                     loading: false
                 })
+                console.log('✅ Data loaded successfully:', result.data.length, 'records');
             } else {
-                // Handle case where no data is returned
                 setProps({
                     data: [],
                     totalcount: 0,
                     nextpage: 0,
                     loading: false
                 })
+                console.log('⚠️ No data returned');
             }
 
         } catch (error) {
-            console.error(`Error loading ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
+            console.error(`❌ Error loading ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
 
-            // Update state to show error and stop loading
             setProps({
                 data: [],
                 totalcount: 0,
@@ -309,49 +317,44 @@ const MasterController = (props) => {
                 error: error.message || `Failed to load ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}`
             });
 
-            // Show error message to user
             IISMethods.errormsg(`Failed to load data. Please try again.`, 1);
         }
     }
 
-    // Handle page change
     const handlePageChange = (newPage) => {
         setProps({ pageno: newPage });
-        getlist(); // Reload data with new page
+        getlist();
     }
 
-    // Handle page size change
     const handlePageSizeChange = (newPageSize) => {
         setProps({
             pagelimit: newPageSize,
-            pageno: 1 // Reset to first page when changing page size
+            pageno: 1
         });
-        getlist(); // Reload data with new page size
+        getlist();
     }
 
-    // Handle filter change
     const handleFilterChange = (newFilters) => {
         setProps({
             filterdata: newFilters,
-            pageno: 1 // Reset to first page when filtering
+            pageno: 1
         });
-        getlist(); // Reload data with new filters
+        getlist();
     }
 
-    // Handle sort change
     const handleSortChange = (field, order) => {
         setProps({
             sortdata: { field, order },
-            pageno: 1 // Reset to first page when sorting
+            pageno: 1
         });
-        getlist(); // Reload data with new sort
+        getlist();
     }
 
     const handleDeleteData = async (id) => {
         try {
             console.log('id', id)
             const result = await ApiService.delete(
-                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname,
                 id
             )
             if (result.status === 200) {
@@ -369,9 +372,9 @@ const MasterController = (props) => {
     }
 
     const handleSearch = (searchTerm) => {
-        setProps({ 
-            filterdata: { ...getCurrentState().filterdata, searchbar: searchTerm }, 
-            pageno: 1 
+        setProps({
+            filterdata: { ...getCurrentState().filterdata, searchbar: searchTerm },
+            pageno: 1
         })
 
         setProps({ oldfilterdata: { ...getCurrentState().filterdata, searchbar: searchTerm } })
