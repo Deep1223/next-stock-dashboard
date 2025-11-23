@@ -34,7 +34,7 @@ const MasterController = (props) => {
             sortdata: { field: 'createdAt', order: -1 }, // Default: last added first
         });
 
-        // Load '+rightSidebarData[0].aliasname+' on component mount
+        // Load data on component mount
         getlist();
     }, []);
 
@@ -75,7 +75,7 @@ const MasterController = (props) => {
             console.log('### result.data', result.data);
             const data = result.data.map(item => ({
                 label: printSelectPicker(item, fields),
-                value: item._id
+                value: item.id || item._id
             }));
             
             const masterdata = {
@@ -96,7 +96,7 @@ const MasterController = (props) => {
 
     const setFormData = async (id) => {
         if (id) {
-            const data = IISMethods.getObjectfromArray(getCurrentState().data, '_id', id)
+            const data = IISMethods.getObjectfromArray(getCurrentState().data, 'id', id)
 
             setProps({ formdata: IISMethods.getcopy(data) })
         }
@@ -149,7 +149,7 @@ const MasterController = (props) => {
                     item.fields.forEach(field => {
                         const element = document.getElementById(`form-${field.field}`);
 
-                        // 🔹 Only proceed if element exists (i.e., not hidden)
+                        // Only proceed if element exists (i.e., not hidden)
                         if (!element) {
                             if (field.type === 'checkbox') {
                                 getCurrentState().formdata[field.field] = 0;
@@ -164,8 +164,8 @@ const MasterController = (props) => {
 
             setProps({ formdata: IISMethods.getcopy(getCurrentState().formdata) })
 
-            if (getCurrentState().formdata._id) {
-                updateData(getCurrentState().formdata._id, getCurrentState().formdata)
+            if (getCurrentState().formdata.id) {
+                updateData(getCurrentState().formdata.id, getCurrentState().formdata)
             }
             else {
                 addData(getCurrentState().formdata)
@@ -197,7 +197,11 @@ const MasterController = (props) => {
     const updateData = async (id, formData) => {
         try {
             // Use ApiService to update data
-            const responseData = await ApiService.update(getCurrentState().rightsidebarformdata?.[0]?.aliasname, id, formData);
+            const responseData = await ApiService.update(
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                id, 
+                formData
+            );
 
             if (responseData.status === 200) {
                 IISMethods.successmsg(Config.dataupdated, 2);
@@ -209,14 +213,19 @@ const MasterController = (props) => {
             }
 
         } catch (error) {
-            console.error('Error updating '+getCurrentState().rightsidebarformdata?.[0]?.aliasname+':', error);
+            console.error(`Error updating ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
+            IISMethods.errormsg('Failed to update record', 1);
         }
     }
 
     const addData = async (reqData) => {
         try {
+            console.log('reqData', reqData);
             // Use ApiService to create data
-            const responseData = await ApiService.create(getCurrentState().rightsidebarformdata?.[0]?.aliasname, reqData);
+            const responseData = await ApiService.create(
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                reqData
+            );
 
             if (responseData.status === 200) {
                 IISMethods.successmsg(Config.dataaddedsuccessfully, 1)
@@ -224,11 +233,12 @@ const MasterController = (props) => {
                 getlist()
             }
             else {
-                IISMethods.errormsg(Config.dataaddedfailed, 1)
+                IISMethods.errormsg(responseData.message || Config.dataaddedfailed, 1)
             }
 
         } catch (error) {
-            console.error('Error adding '+getCurrentState().rightsidebarformdata?.[0]?.aliasname+':', error);
+            console.error(`Error adding ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
+            IISMethods.errormsg('Failed to add record', 1);
         }
     }
 
@@ -256,21 +266,24 @@ const MasterController = (props) => {
             setProps({ loading: true });
 
             // Call ApiService with clean filters and separate search
-            const result = await ApiService.read(getCurrentState().rightsidebarformdata?.[0]?.aliasname, {
-                pagination: {
-                    page: getCurrentState().pageno,
-                    limit: getCurrentState().pagelimit
-                },
-                sort: sortData,
-                filters: filter,  // Clean filters WITHOUT searchbar
-                search: searchTerm  // Search term separately
-            });
+            const result = await ApiService.read(
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                {
+                    pagination: {
+                        page: getCurrentState().pageno,
+                        limit: getCurrentState().pagelimit
+                    },
+                    sort: sortData,
+                    filters: filter,  // Clean filters WITHOUT searchbar
+                    search: searchTerm  // Search term separately
+                }
+            );
 
             // Update Redux state with the response data
             if (result && result.data) {
                 setProps({
                     data: result.data,
-                    totalcount: result.totalCount || result.totalcount || 0,
+                    totalcount: result.totalCount || 0,
                     nextpage: result.hasNextPage ? 1 : 0,
                     loading: false
                 })
@@ -285,7 +298,7 @@ const MasterController = (props) => {
             }
 
         } catch (error) {
-            console.error('Error loading '+getCurrentState().rightsidebarformdata?.[0]?.aliasname+':', error);
+            console.error(`Error loading ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
 
             // Update state to show error and stop loading
             setProps({
@@ -293,11 +306,11 @@ const MasterController = (props) => {
                 totalcount: 0,
                 nextpage: 0,
                 loading: false,
-                error: error.message || 'Failed to load '+getCurrentState().rightsidebarformdata?.[0]?.aliasname
+                error: error.message || `Failed to load ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}`
             });
 
             // Show error message to user
-            IISMethods.errormsg('Failed to load '+getCurrentState().rightsidebarformdata?.[0]?.aliasname+'. Please try again.', 1);
+            IISMethods.errormsg(`Failed to load data. Please try again.`, 1);
         }
     }
 
@@ -336,22 +349,29 @@ const MasterController = (props) => {
 
     const handleDeleteData = async (id) => {
         try {
-            const result = await ApiService.delete(getCurrentState().rightsidebarformdata?.[0]?.aliasname, id)
+            const result = await ApiService.delete(
+                getCurrentState().rightsidebarformdata?.[0]?.aliasname, 
+                id
+            )
             if (result.status === 200) {
                 IISMethods.successmsg(Config.datadeleted, 1)
                 IISMethods.handleGrid(false, 'deletemodal', 0)
                 getlist();
             }
             else {
-                IISMethods.errormsg(Config.dataaddedfailed, 1)
+                IISMethods.errormsg(result.message || Config.dataaddedfailed, 1)
             }
         } catch (error) {
-            console.error('Error deleting '+getCurrentState().rightsidebarformdata?.[0]?.aliasname+':', error);
+            console.error(`Error deleting ${getCurrentState().rightsidebarformdata?.[0]?.aliasname}:`, error);
+            IISMethods.errormsg('Failed to delete record', 1);
         }
     }
 
     const handleSearch = (searchTerm) => {
-        setProps({ filterdata: { ...getCurrentState().filterdata, searchbar: searchTerm }, pageno: 1 })
+        setProps({ 
+            filterdata: { ...getCurrentState().filterdata, searchbar: searchTerm }, 
+            pageno: 1 
+        })
 
         setProps({ oldfilterdata: { ...getCurrentState().filterdata, searchbar: searchTerm } })
         getlist()

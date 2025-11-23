@@ -149,6 +149,7 @@ export const loginUser = createAsyncThunk(
         IISMethods.removeLocalStorage("rememberMe");
       }
 
+      // Return user data directly from login response
       return { user, token };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -291,6 +292,34 @@ const dataSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Login User handlers
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        // Store login response directly in logininfo
+        state.logininfo = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.logininfo = {};
+      })
+      // Logout User handlers
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.logininfo = {};
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

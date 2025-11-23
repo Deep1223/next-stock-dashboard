@@ -13,6 +13,10 @@ const nextConfig = {
       {
         source: '/researchtype',
         destination: '/view/researchtype',
+      },
+      {
+        source: '/stockmaster',
+        destination: '/view/stockmaster',
       }
     ];
   },

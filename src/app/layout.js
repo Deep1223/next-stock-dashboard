@@ -1,19 +1,18 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Provider } from 'react-redux';
-import { store } from '@/store/store';
-import 'react-toastify/dist/ReactToastify.css';
-import 'rsuite/dist/rsuite.min.css';
-// Bootstrap JS will be loaded dynamically on client side
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import "react-toastify/dist/ReactToastify.css";
+import "rsuite/dist/rsuite.min.css";
 import "../styles/globals.css";
 import "../styles/styles.css";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ClientOnly from "../components/ClientOnly";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 
 const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
@@ -21,41 +20,40 @@ const Layout = ({ children }) => {
   const [isFixed, setIsFixed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  
-  const isAuthPage = pathname === "/login" || pathname === "/";
 
+  const isAuthPage =
+    pathname === "/login" || pathname === "/" || pathname === "/signup";
+
+  // Bootstrap JS
   useEffect(() => {
-    // Load Bootstrap JS dynamically on client side
-    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+    import("bootstrap/dist/js/bootstrap.bundle.min.js");
   }, []);
 
+  // 🔁 Auto logout without localStorage
   useEffect(() => {
     if (isAuthPage) return;
 
+    // sirf memory me lastActivity track karenge
+    let lastActivity = Date.now();
+
     const resetSession = () => {
-      localStorage.setItem("lastActivity", Date.now().toString());
+      lastActivity = Date.now();
     };
 
     const checkAutoLogout = () => {
-      const lastActivity = parseInt(localStorage.getItem("lastActivity") || "0", 10);
       const currentTime = Date.now();
-
       if (currentTime - lastActivity > AUTO_LOGOUT_TIME) {
-        localStorage.removeItem("lastActivity"); // Clear session
         toast.warning("Session expired. Logging out...");
-        router.push("/login"); // Redirect to login
+        router.push("/login");
       }
     };
 
-    // Set initial session time on component mount
-    resetSession();
-
-    // Listen for user interactions to reset the session timer
+    // user activity listeners
     window.addEventListener("mousemove", resetSession);
     window.addEventListener("keydown", resetSession);
     window.addEventListener("click", resetSession);
 
-    // Check auto logout every minute
+    // har 1 min me check
     const interval = setInterval(checkAutoLogout, 60 * 1000);
 
     return () => {
@@ -68,6 +66,12 @@ const Layout = ({ children }) => {
 
   return (
     <html lang="en">
+      <head suppressHydrationWarning>
+        <link
+          rel="stylesheet"
+          href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css"
+        />
+      </head>
       <body className="d-flex vh-100">
         <Provider store={store}>
           <ClientOnly>
@@ -86,17 +90,22 @@ const Layout = ({ children }) => {
             />
           </ClientOnly>
 
-          {/* Show Sidebar and Header for all modules except login & landing page */}
-          {!isAuthPage && <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />}
+          {!isAuthPage && (
+            <Sidebar isFixed={isFixed} setIsFixed={setIsFixed} />
+          )}
 
-          <div className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed ? "main-content-expanded" : "main-content-collapsed"} ${isAuthPage ? "ml-unset" : ""}`}>
+          <div
+            className={`d-flex flex-column main-content-transition main-content-wrapper ${!isAuthPage && isFixed
+                ? "main-content-expanded"
+                : "main-content-collapsed"
+              } ${isAuthPage ? "ml-unset" : ""}`}
+          >
             {!isAuthPage && <Header />}
 
             <main className={`flex-grow-1 ${isAuthPage ? "" : "p-4"}`}>
               {children}
             </main>
 
-            {/* Hide Footer for login and landing page */}
             {!isAuthPage && <Footer />}
           </div>
         </Provider>

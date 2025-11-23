@@ -259,7 +259,7 @@ const MasterJson = (type) => {
 
                             filter: 0,
                         },
-                    
+
                     ]
                 }
             ];
@@ -292,6 +292,76 @@ const MasterJson = (type) => {
                             filtertype: 'text',
                             filterplaceholder: 'Enter Research Type Name',
                             label: 'Research Type Name',
+                        },
+                        {
+                            field: 'status',
+                            text: 'Status',
+                            type: 'checkbox',
+                            disabled: false,
+                            required: false,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Select Status',
+                            defaultvalue: 1,
+
+                            showingrid: true,
+                            sorting: false,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        }
+                    ]
+                }
+            ];
+            break;
+
+        case 'stockmaster':
+            return [
+                {
+                    tabname: 'Stock Master',
+                    pagename: 'Stock Master',
+                    aliasname: 'stockmaster',
+                    rightsidebarsize: 'sm',
+                    fields: [
+                        {
+                            field: 'stockname',
+                            text: 'Stock Name',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Stock Name',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Stock Name',
+                            label: 'Stock Name',
+                        },
+                        {
+                            field: 'stockcode',
+                            text: 'Stock Code',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Stock Code',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Stock Code',
+                            label: 'Stock Code',
                         },
                         {
                             field: 'status',

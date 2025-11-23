@@ -380,8 +380,8 @@ const Config = {
 
     // ==================== API ENDPOINTS ====================
     // API Base URLs (if needed)
-    apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
-    serverurl: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api',
+    serverurl: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:5000/api',
     useraction: '/api',
     authEndpoint: '/auth',
     usersEndpoint: '/users',

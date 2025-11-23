@@ -1,5 +1,7 @@
 // localStorage utility functions to replace CRM APIs
 
+import { getCurrentState } from "./reduxUtils";
+
 // User management functions
 export const userStorage = {
   // Get all users from localStorage
@@ -16,11 +18,18 @@ export const userStorage = {
   // Add a new user
   addUser: (userData) => {
     const users = userStorage.getUsers();
+    const now = new Date();
+    const timestamp = now.toLocaleString();
+    const currentUser = userStorage.getCurrentUser();
+    const createdBy = getCurrentState().loginInfo.firstName + ' ' + getCurrentState().loginInfo.lastName
+    
     const newUser = {
       _id: Date.now().toString(),
       ...userData,
       userStatus: "Active",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      createdBy: createdBy,
+      updatedBy: createdBy
     };
     users.push(newUser);
     userStorage.saveUsers(users);
@@ -32,7 +41,17 @@ export const userStorage = {
     const users = userStorage.getUsers();
     const userIndex = users.findIndex(user => user._id === userId);
     if (userIndex !== -1) {
-      users[userIndex] = { ...users[userIndex], ...updateData };
+      const now = new Date();
+      const timestamp = now.toLocaleString();
+      const currentUser = userStorage.getCurrentUser();
+      const updatedBy = currentUser ? `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() + ' - ' + timestamp : `System - ${timestamp}`;
+      
+      users[userIndex] = { 
+        ...users[userIndex], 
+        ...updateData,
+        updatedBy: updatedBy,
+        updatedAt: new Date().toISOString()
+      };
       userStorage.saveUsers(users);
       return users[userIndex];
     }
@@ -51,6 +70,14 @@ export const userStorage = {
   userExists: (email) => {
     const users = userStorage.getUsers();
     return users.some(user => user.userEmail === email);
+  },
+
+  // Get currently logged-in user from session
+  getCurrentUser: () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return null;
+    const users = userStorage.getUsers();
+    return users.find(user => user._id === userId);
   },
 
   // Clear all users and reset to default
@@ -236,6 +263,8 @@ export const sessionStorage = {
     localStorage.setItem("token", token || "local_token_" + Date.now());
     localStorage.setItem("userId", user._id);
     localStorage.setItem("userEmail", user.userEmail);
+    localStorage.setItem("firstName", user.firstName || "");
+    localStorage.setItem("lastName", user.lastName || "");
     localStorage.setItem("lastActivity", Date.now().toString());
   },
 
@@ -245,6 +274,8 @@ export const sessionStorage = {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
     localStorage.removeItem("lastActivity");
   },
 
@@ -255,6 +286,8 @@ export const sessionStorage = {
       token: localStorage.getItem("token"),
       userId: localStorage.getItem("userId"),
       userEmail: localStorage.getItem("userEmail"),
+      firstName: localStorage.getItem("firstName"),
+      lastName: localStorage.getItem("lastName"),
       lastActivity: localStorage.getItem("lastActivity")
     };
   }

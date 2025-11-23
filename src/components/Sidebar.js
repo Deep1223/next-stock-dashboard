@@ -172,7 +172,7 @@ const Sidebar = (props) => {
                             </Link>
                         </li>
                     )} */}
-
+{/* 
                     {userRole === "Administrator" && (
                         <li className="mb-2">
                             <Link href="/category"
@@ -273,7 +273,39 @@ const Sidebar = (props) => {
                                 }
                             </Link>
                         </li>
-                    )}
+                    )} */}
+
+                    <li className="mb-2">
+                        <Link href="/stockmaster"
+                            className={`d-flex align-items-center py-2 px-2 rounded text-decoration-none transition ${isOpen || props.isFixed ? "gap-3" : "justify-content-center"} ${isActive("/stockmaster") ? "" : ""
+                                }`}
+                            style={{
+                                backgroundColor: isActive("/stockmaster") ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+                                color: isActive("/stockmaster") ? '#ffffff' : '#cbd5e1',
+                                borderLeft: isActive("/stockmaster") ? '3px solid #3b82f6' : 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isActive("/stockmaster")) {
+                                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isActive("/stockmaster")) {
+                                    e.target.style.backgroundColor = 'transparent';
+                                }
+                            }}
+                        >
+                            <span className="w-6 d-flex justify-content-center" style={{ color: isActive("/stockmaster") ? '#ffffff' : '#cbd5e1' }}><GiArchiveResearch /></span>
+                            {
+                                isOpen || props.isFixed ?
+                                    <span className={`transition-all text-nowrap ${isOpen || props.isFixed ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-n5 w-0"} d-block`}>
+                                        Stock Master
+                                    </span>
+                                    :
+                                    <></>
+                            }
+                        </Link>
+                    </li>
 
                 </ul>
             </nav>

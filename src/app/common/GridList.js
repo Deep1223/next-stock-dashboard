@@ -25,7 +25,7 @@ const ThreeDotMenu = (props) => {
                 onMouseLeave={(e) => e.stopPropagation()}
             >
                 <button className="dropdown-item d-flex align-items-center gap-2 py-2 border-bottom" onClick={async () => {
-                    await props.setFormData(props.data._id);
+                    await props.setFormData(props.data.id);
                     props.setDropdownOpen(null);
                 }}>
                     <FaRegEdit /> Edit
@@ -36,7 +36,6 @@ const ThreeDotMenu = (props) => {
                     onClick={async () => {
                         props.setDeleteDetails(props.data);
                         IISMethods.handleGrid(true, 'deletemodal', 1);
-                        // props.handleDeleteData(props.data._id);
                         props.setDropdownOpen(null);
                     }}
                 >
@@ -107,22 +106,19 @@ const GridList = (props) => {
             setDropdownOpen(null);
         }
     };
+
     // Initialize sortedData from Redux data and apply client-side sorting as fallback
     useEffect(() => {
         let updatedData = [];
 
         // Check for filtered data first (if provided)
         if (props.filtereddata && Array.isArray(props.filtereddata) && props.filtereddata.length > 0) {
-            // Case 1: filtereddata is already an array
             updatedData = [...props.filtereddata];
         } else if (props.filtereddata && Array.isArray(props.filtereddata.data) && props.filtereddata.data.length > 0) {
-            // Case 2: filtereddata is an object with a 'data' array inside
             updatedData = [...props.filtereddata.data];
         } else if (Array.isArray(data) && data.length > 0) {
-            // Case 3: Use Redux data directly (primary data source)
             updatedData = [...data];
         } else {
-            // Case 4: No data available yet, set empty array
             updatedData = [];
             if (!loading) {
                 console.log('No data available yet, waiting for data to load...');
@@ -133,7 +129,6 @@ const GridList = (props) => {
         const currentSortData = getSortData();
 
         if (updatedData.length > 0 && currentSortData.field) {
-
             updatedData.sort((a, b) => {
                 const field = currentSortData.field;
                 const order = currentSortData.order;
@@ -174,7 +169,6 @@ const GridList = (props) => {
         }));
     }, []);
 
-
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
@@ -203,7 +197,6 @@ const GridList = (props) => {
             props.handleSortChange(fieldName, newOrder);
         }
     };
-
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -277,7 +270,7 @@ const GridList = (props) => {
                                         ) : sortedData.length > 0 ? (
                                             sortedData.map((data, index) => (
                                                 <tr
-                                                    key={index}
+                                                    key={data.id || index}
                                                     className="border-bottom position-relative"
                                                     style={{ height: 'auto' }}
                                                 >
@@ -302,20 +295,33 @@ const GridList = (props) => {
                                                                 setDeleteDetails={props.setDeleteDetails}
                                                                 setViewInfoData={props.setViewInfoData}
                                                             />
-
                                                         )}
                                                     </td>
 
-                                                    {fieldOrder.map((field, index) => (
-                                                        <td key={index} className={`px-3 py-1 ${field.size}`}>
+                                                    {fieldOrder.map((field, fieldIndex) => (
+                                                        <td key={fieldIndex} className={`px-3 py-1 ${field.size}`}>
                                                             {
                                                                 field.type === "text" ?
                                                                     <span className="text-14p">{data[field.field] ? data[field.field] : '-'}</span>
                                                                     :
                                                                     field.type === "checkbox" ?
                                                                         <div className="form-check form-switch">
-                                                                            <input className="form-check-input" type="checkbox" role="switch" id="switchCheckDefault"
-                                                                                checked={data[field.field] ? data[field.field] === 1 : 0} onChange={(e) => { onChangeCheckbox(field.type, field.field, e.target.checked ? 1 : 0, data._id, { ...data }) }} />
+                                                                            <input 
+                                                                                className="form-check-input" 
+                                                                                type="checkbox" 
+                                                                                role="switch" 
+                                                                                id={`switch-${data.id}-${field.field}`}
+                                                                                checked={data[field.field] ? data[field.field] === 1 : false} 
+                                                                                onChange={(e) => { 
+                                                                                    onChangeCheckbox(
+                                                                                        field.type, 
+                                                                                        field.field, 
+                                                                                        e.target.checked ? 1 : 0, 
+                                                                                        data.id, 
+                                                                                        { ...data }
+                                                                                    ) 
+                                                                                }} 
+                                                                            />
                                                                         </div>
                                                                         :
                                                                         field.type === 'textarea' ?
@@ -383,7 +389,6 @@ const GridList = (props) => {
                         </div>
                     }
                 />
-
             </>
         );
     }
