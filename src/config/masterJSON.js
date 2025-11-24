@@ -385,6 +385,69 @@ const MasterJson = (type) => {
             ];
             break;
 
+        case 'stockhistory':
+            return [
+                {
+                    tabname: 'Stock History',
+                    pagename: 'Stock History',
+                    aliasname: 'stockhistory',
+                    rightsidebarsize: 'sm',
+                    fields: [
+                        {
+                            field: 'stockid',
+                            text: 'Stock',
+                            type: 'checkpicker',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Select Stock',
+                            defaultvalue: '',
+                            masterdata: 'stockmaster',
+                            masterdatafield: 'stockname',
+                            formdatafield: 'stock',
+                            cleanable: true,
+                            searchable: true,
+                            staticfilter: {
+                                status: 1
+                            },
+                            projection: {
+                                id: 1,
+                                stockname: 1,
+                                stockcode: 1
+                            },
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 0,
+                        },
+                        {
+                            field: 'timeframe',
+                            text: 'Time Frame',
+                            type: 'text',
+                            disabled: false,
+                            required: true,
+                            defaultvisibility: true,
+                            size: 'col-12',
+                            placeholder: 'Enter Time Frame',
+                            defaultvalue: '',
+
+                            showingrid: true,
+                            sorting: true,
+                            tablesize: 'tbl-w-250p',
+
+                            filter: 1,
+                            filtertype: 'text',
+                            filterplaceholder: 'Enter Time Frame',
+                            label: 'Time Frame',
+                        },
+                    ]
+                }
+            ];
+            break;
+
         default:
             return [];
     }

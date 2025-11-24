@@ -9,6 +9,7 @@ import RenderViewField from "./RenderViewField";
 import SelectPickerRsuite from "./SelectPickerRsuite";
 import JoditEditorComponent from "./JoditEditor";
 import { DatePicker } from "rsuite";
+import CheckPickerRsuite from "./CheckPickerRsuite";
 
 const RightSidebar = (props) => {
     const modal = useAppSelector(s => s.modal);
@@ -138,62 +139,91 @@ const RightSidebar = (props) => {
                                                                     name={fields.field}
                                                                 />
                                                             </div>
-
                                                         ) :
-                                                            fields.type === 'html-editor' ?
-                                                            (
-                                                                <div
-                                                                    className={`form-group validate-input ${fields.required ? 'required-input' : ''
-                                                                        } ${fields.hasError ? 'error' : ''}`}
-                                                                >
-                                                                    <label className="label-form-control">
-                                                                        {fields.text}
-                                                                        {fields.required && <span className="text-danger"> * </span>}
-                                                                    </label>
-                                                                    <JoditEditorComponent
-                                                                        value={formData[fields.field] || fields.defaultvalue || ""}
-                                                                        onChange={(e) => {
-                                                                            const value = e.target.value;
-                                                                            checkValidation(fields.field, value);
-                                                                            props.handleFormData(fields.type, fields.field, value);
-                                                                        }}
-                                                                        placeholder={fields.placeholder || `Enter ${fields.text}`}
-                                                                        disabled={fields.disabled}
-                                                                        height={fields.height || 300}
-                                                                        id={`form-${fields.field}`}
-                                                                        name={fields.field}
-                                                                        config={{
-                                                                            toolbarPreset: fields.toolbarPreset || 'standard',
-                                                                            ...fields.editorConfig
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            )
-                                                            :
-                                                            fields.type === 'datepicker' ? (
-                                                                <div className={`form-group validate-input ${fields.required ? 'required-input' : ''
-                                                                    } ${fields.hasError ? 'error' : ''}`}
-                                                                >
-                                                                    <label className="label-form-control">
-                                                                        {fields.text}
-                                                                        {fields.required && <span className="text-danger"> * </span>}
-                                                                    </label>
-                                                                    <DatePicker
-                                                                        defaultValue={formData[fields.field] ? new Date(formData[fields.field]) : null}
-                                                                        onChange={(value) => props.handleFormData(fields.type, fields.field, value)}
-                                                                        disabled={fields.disabled}
-                                                                        id={`form-${fields.field}`}
-                                                                        name={fields.field}
-                                                                        placeholder={fields.placeholder || `Select ${fields.text}`}
-                                                                        style={{ width: '100%' }}
-                                                                        size="md"
-                                                                        format="yyyy-MM-dd"
-                                                                        cleanable={fields.cleanable || false}
-                                                                    />
-                                                                </div>
-                                                            ) :
-                                                            <></>
-                                                            }
+                                                            fields.type === 'checkpicker' ? (() => {
+                                                                const masterdata = getCurrentState().masterdata[fields.masterdata] || [];
+
+                                                                // Get current selected values
+                                                                const selectedIds = formData[fields.formdatafield]?.map(item => item[fields.formdatafield + 'id']) || [];
+
+                                                                return (
+                                                                    <div className={`form-group validate-input ${fields.required ? 'required-input' : ''} ${fields.hasError ? 'error' : ''}`}>
+                                                                        <label className="label-form-control">
+                                                                            {fields.text}
+                                                                            {fields.required && <span className="text-danger"> * </span>}
+                                                                        </label>
+
+                                                                        <CheckPickerRsuite
+                                                                            data={masterdata}
+                                                                            placeholder={fields.placeholder}
+                                                                            onChange={(value) => props.handleFormData(fields.type, fields.field, value)}
+                                                                            disabled={fields.disabled}
+                                                                            value={selectedIds}
+                                                                            className="col-12 h-35p"
+                                                                            id={`form-${fields.field}`}
+                                                                            name={fields.field}
+                                                                            searchable={true}
+                                                                            showAllOption={true}  // Enable "All" option
+                                                                            allOptionLabel={fields.allOptionLabel || `All ${fields.text}(s)` || 'All'}  // Customize label
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            })()
+                                                                :
+                                                                fields.type === 'html-editor' ?
+                                                                    (
+                                                                        <div
+                                                                            className={`form-group validate-input ${fields.required ? 'required-input' : ''
+                                                                                } ${fields.hasError ? 'error' : ''}`}
+                                                                        >
+                                                                            <label className="label-form-control">
+                                                                                {fields.text}
+                                                                                {fields.required && <span className="text-danger"> * </span>}
+                                                                            </label>
+                                                                            <JoditEditorComponent
+                                                                                value={formData[fields.field] || fields.defaultvalue || ""}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    checkValidation(fields.field, value);
+                                                                                    props.handleFormData(fields.type, fields.field, value);
+                                                                                }}
+                                                                                placeholder={fields.placeholder || `Enter ${fields.text}`}
+                                                                                disabled={fields.disabled}
+                                                                                height={fields.height || 300}
+                                                                                id={`form-${fields.field}`}
+                                                                                name={fields.field}
+                                                                                config={{
+                                                                                    toolbarPreset: fields.toolbarPreset || 'standard',
+                                                                                    ...fields.editorConfig
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    )
+                                                                    :
+                                                                    fields.type === 'datepicker' ? (
+                                                                        <div className={`form-group validate-input ${fields.required ? 'required-input' : ''
+                                                                            } ${fields.hasError ? 'error' : ''}`}
+                                                                        >
+                                                                            <label className="label-form-control">
+                                                                                {fields.text}
+                                                                                {fields.required && <span className="text-danger"> * </span>}
+                                                                            </label>
+                                                                            <DatePicker
+                                                                                defaultValue={formData[fields.field] ? new Date(formData[fields.field]) : null}
+                                                                                onChange={(value) => props.handleFormData(fields.type, fields.field, value)}
+                                                                                disabled={fields.disabled}
+                                                                                id={`form-${fields.field}`}
+                                                                                name={fields.field}
+                                                                                placeholder={fields.placeholder || `Select ${fields.text}`}
+                                                                                style={{ width: '100%' }}
+                                                                                size="md"
+                                                                                format="yyyy-MM-dd"
+                                                                                cleanable={fields.cleanable || false}
+                                                                            />
+                                                                        </div>
+                                                                    ) :
+                                                                        <></>
+                                                    }
                                                 </div>
                                             ))}
                                         </>

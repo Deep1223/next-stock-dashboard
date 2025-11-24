@@ -17,7 +17,11 @@ const nextConfig = {
       {
         source: '/stockmaster',
         destination: '/view/stockmaster',
-      }
+      },
+      {
+        source: '/stockhistory',
+        destination: '/view/stockhistory',
+      },
     ];
   },
 };

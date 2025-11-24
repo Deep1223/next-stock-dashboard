@@ -9,7 +9,7 @@ import JsCall from '@/utils/JsCall';
 import Config from '@/config/config';
 import ApiService from '@/utils/ApiService';
 
-const MasterController = (props) => {
+const StockHistoryController = (props) => {
     const rightSidebarData = useAppSelector(state => state.rightsidebarformdata);
     const formData = useAppSelector(state => state.formdata);
     const filterData = useAppSelector(state => state.filterdata);
@@ -20,7 +20,7 @@ const MasterController = (props) => {
 
     // ✅ Initialize state and load data on mount
     useEffect(() => {
-        console.log('🔄 MasterController mounted - Initializing...');
+        console.log('🔄 StockHistoryController mounted - Initializing...');
 
         setProps({
             data: [],
@@ -131,7 +131,7 @@ const MasterController = (props) => {
         getCurrentState().rightsidebarformdata?.map(item => {
             if (item.fields && Array.isArray(item.fields)) {
                 item.fields.forEach(fields => {
-                    if (fields.type === 'dropdown') {
+                    if (fields.type === 'dropdown' || fields.type === 'checkpicker') {
                         if (fields.masterdata && !fields.masterdataarray) {
                             getMasterData(1, fields);
                         }
@@ -170,7 +170,6 @@ const MasterController = (props) => {
             })
 
             setProps({ formdata: IISMethods.getcopy(getCurrentState().formdata) })
-            console.log('getCurrentState().formdata', getCurrentState().formdata)
             if (getCurrentState().formdata.id) {
                 updateData(getCurrentState().formdata.id, getCurrentState().formdata)
             }
@@ -188,8 +187,16 @@ const MasterController = (props) => {
         }
         else if (type === 'dropdown') {
             const fieldObj = IISMethods.getObjectfromArray(rightSidebarData[0].fields, 'field', key)
-            formData[fieldObj.field] = value || '';
-            formData[fieldObj.formdatafield] = IISMethods.getObjectfromArray(getCurrentState().masterdata[fieldObj.masterdata], 'value', value)?.label || '';
+            if (key === 'stockid') {
+                formData[fieldObj.field] = value || '';
+                formData[fieldObj.formdatafield] = IISMethods.getObjectfromArray(getCurrentState().masterdata[fieldObj.masterdata], 'value', value)?.label || '';
+                formData['symbol'] = IISMethods.getObjectfromArray(getCurrentState().masterdatalist[fieldObj.masterdata], 'id', value)?.stockcode || '';
+            }
+            else {
+                formData[fieldObj.field] = value || '';
+                formData[fieldObj.formdatafield] = IISMethods.getObjectfromArray(getCurrentState().masterdata[fieldObj.masterdata], 'value', value)?.label || '';
+            }
+
         }
         else if (type === 'checkpicker') {
             const fieldObj = IISMethods.getObjectfromArray(rightSidebarData[0].fields, 'field', key);
@@ -207,7 +214,6 @@ const MasterController = (props) => {
             formData[key] = value;
         }
 
-        console.log('### formData', formData);
         setProps({ formdata: IISMethods.getcopy(formData) })
 
         const newRightSidebarFormData = IISMethods.createRightSidebarData(key, rightSidebarData)
@@ -422,4 +428,4 @@ const MasterController = (props) => {
     }
 };
 
-export default MasterController;
+export default StockHistoryController;
